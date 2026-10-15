@@ -296,6 +296,16 @@ test("visual regression simulation notice leaves the viewport on scroll", async 
   expect(await page.locator(".simbar").evaluate((node) => node.getBoundingClientRect().bottom <= 0)).toBe(true);
 });
 
+test("Safe-to-Pay feature surfaces keep a visibly thick perimeter", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  for (const locator of [page.locator(".demostrip"), page.locator('[data-testid="safe-spend-discovery"]')]) {
+    expect(await locator.evaluate((node) => parseFloat(getComputedStyle(node).borderTopWidth))).toBeGreaterThanOrEqual(3);
+  }
+  await runCheck(page, "B");
+  expect(await page.locator("#cp").evaluate((node) => parseFloat(getComputedStyle(node).borderTopWidth))).toBeGreaterThanOrEqual(3);
+});
+
 test("opening the preview as a file explains that the API server is required", async ({ page }) => {
   await page.goto(staticPreview);
   await dismissOnboarding(page);
