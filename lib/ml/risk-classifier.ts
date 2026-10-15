@@ -60,6 +60,18 @@ const modelArtifactSchema = z
         message: "review threshold must be below highRisk threshold",
       });
     }
+    for (const feature of [
+      "recipient_tx_count_log1p",
+      "amount_to_recent_median_ratio",
+    ]) {
+      if (artifact.transforms[feature] === undefined) {
+        context.addIssue({
+          code: "custom",
+          path: ["transforms", feature],
+          message: `missing required transform: ${feature}`,
+        });
+      }
+    }
   });
 
 export type ModelArtifact = z.infer<typeof modelArtifactSchema>;
@@ -112,6 +124,37 @@ const indicatorNames: Record<string, string> = {
   payment_method_demand: "payment_method_demand",
 };
 
+function deterministicIndicators(request: EvaluationRequest): {
+  indicators: string[];
+  critical: boolean;
+} {
+  const active = {
+    new_recipient: request.recipient.isNew.value === true,
+    urgency: request.context.urgency.value === true,
+    secrecy_request: request.context.secrecyRequest.value === true,
+    guaranteed_or_high_return: request.context.guaranteedOrHighReturn.value === true,
+    impersonation: request.context.impersonation.value === true,
+    unexpected_contact: request.context.unexpectedContact.value === true,
+    move_money_to_protect: request.context.moveMoneyToProtect.value === true,
+    advance_fee_or_prize: request.context.advanceFeeOrPrize.value === true,
+    romance_or_online_only_relationship:
+      request.context.romanceOrOnlineOnlyRelationship.value === true,
+    payment_method_demand: request.context.paymentMethodDemand.value === true,
+  };
+  const indicators = Object.entries(active)
+    .filter(([, enabled]) => enabled)
+    .map(([name]) => name);
+  const critical =
+    active.guaranteed_or_high_return ||
+    active.move_money_to_protect ||
+    active.advance_fee_or_prize ||
+    active.romance_or_online_only_relationship ||
+    (active.impersonation && active.urgency) ||
+    (active.unexpected_contact && active.payment_method_demand) ||
+    (active.secrecy_request && active.new_recipient);
+  return { indicators, critical };
+}
+
 export function assessTrust(
   request: EvaluationRequest,
   inputArtifact: unknown = defaultModel,
@@ -119,10 +162,11 @@ export function assessTrust(
   const artifact = validateModelArtifact(inputArtifact);
   const extracted = extractRiskFeatures(request, artifact);
   if (extracted === null) {
+    const fallback = deterministicIndicators(request);
     return {
-      status: "unknown",
+      status: fallback.critical ? "high" : "unknown",
       riskScore: null,
-      indicators: [],
+      indicators: fallback.critical ? fallback.indicators : [],
       modelVersion: null,
     };
   }

@@ -51,6 +51,21 @@ describe("risk model inference", () => {
     });
   });
 
+  it("uses critical deterministic indicators when model inputs are incomplete", () => {
+    const request = structuredClone(scenarios.suspiciousCrypto);
+    request.recipient.previousTransactionCount = {
+      value: null,
+      provenance: "unavailable",
+    };
+
+    expect(assessTrust(request)).toEqual({
+      status: "high",
+      riskScore: null,
+      indicators: expect.arrayContaining(["urgency", "guaranteed_or_high_return"]),
+      modelVersion: null,
+    });
+  });
+
   it("returns explainable indicators for a suspicious scenario", () => {
     const result = assessTrust(scenarios.suspiciousCrypto);
 
@@ -65,5 +80,16 @@ describe("risk model inference", () => {
     const invalid = { ...model, coefficients: model.coefficients.slice(1) };
 
     expect(() => validateModelArtifact(invalid)).toThrow(/coefficients/i);
+  });
+
+  it("rejects artifacts missing a required continuous transform", () => {
+    const invalid = {
+      ...model,
+      transforms: {
+        recipient_tx_count_log1p: model.transforms.recipient_tx_count_log1p,
+      },
+    };
+
+    expect(() => validateModelArtifact(invalid)).toThrow(/transform/i);
   });
 });
