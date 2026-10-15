@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import { createEvaluateHandler } from "../../app/api/evaluate/route.ts";
-import type { ComparisonResult, QwenProvider } from "../../lib/ai/types.ts";
-import { DEMO_SCENARIOS, type DemoScenario } from "../fixtures/demo-scenarios.ts";
+import { createEvaluateHandler } from "../../app/api/evaluate/route";
+import type { ComparisonResult, QwenProvider } from "../../lib/ai/types";
+import { DEMO_SCENARIOS, type DemoScenario } from "../fixtures/demo-scenarios";
 
 type ProviderMode = "success" | "qwen_unavailable";
 
@@ -85,6 +85,6 @@ for (const scenario of DEMO_SCENARIOS) {
 }
 
 test("fictional harness cannot replace the production default route", async () => {
-  const route = await import("../../app/api/evaluate/route.ts");
+  const route = await import("../../app/api/evaluate/route");
   assert.notEqual(route.POST, createEvaluateHandler);
 });

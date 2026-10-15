@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import { buildQwenRequest, runAiAnalysis } from "../../lib/ai/explanation.ts";
-import type { AuthoritativeAssessment, JevProvider, ProviderRequest, QwenProvider, TransactionContext } from "../../lib/ai/types.ts";
+import { buildQwenRequest, runAiAnalysis } from "../../lib/ai/explanation";
+import type { AuthoritativeAssessment, JevProvider, ProviderRequest, QwenProvider, TransactionContext } from "../../lib/ai/types";
 
 const safeAssessment: AuthoritativeAssessment = {
   financial: { status: "safe", safeToSpendBefore: 12_000, safeToSpendAfter: 10_500, transactionAmount: 1_500, reasons: [{ code: "obligations_covered", message: "Required commitments remain covered." }], missingFields: [] },

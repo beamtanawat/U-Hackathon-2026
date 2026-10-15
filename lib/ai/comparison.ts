@@ -1,4 +1,4 @@
-import type { AuthoritativeAssessment, ComparisonResult, JevDecision, ProviderStatus, QwenAnalysis } from "./types.ts";
+import type { AuthoritativeAssessment, ComparisonResult, JevDecision, ProviderStatus, QwenAnalysis } from "./types";
 
 export function compareAnalyses(
   assessment: AuthoritativeAssessment,

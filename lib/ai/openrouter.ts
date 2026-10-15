@@ -1,4 +1,4 @@
-import type { ProviderRequest, QwenProvider, UsageEvent, UsageReporter } from "./types.ts";
+import type { ProviderRequest, QwenProvider, UsageEvent, UsageReporter } from "./types";
 
 const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 export const QWEN_MODEL = "qwen/qwen3.5-9b" as const;

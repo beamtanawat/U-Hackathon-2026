@@ -1,4 +1,4 @@
-import type { AuthoritativeAssessment, Explanation, ExplanationReason, MissingContextQuestion } from "./types.ts";
+import type { AuthoritativeAssessment, Explanation, ExplanationReason, MissingContextQuestion } from "./types";
 
 const QUESTION_COPY: Record<string, string> = {
   recipientHistory: "Is this a recipient you have paid and independently verified before?",

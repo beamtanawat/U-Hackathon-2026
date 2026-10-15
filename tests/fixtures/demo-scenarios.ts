@@ -1,5 +1,5 @@
-import type { EvaluationRequest } from "../../app/api/evaluate/route.ts";
-import type { AuthoritativeAssessment, Explanation, ExplanationOutput, QwenReview } from "../../lib/ai/types.ts";
+import type { EvaluationRequest } from "../../app/api/evaluate/route";
+import type { AuthoritativeAssessment, Explanation, ExplanationOutput, QwenReview } from "../../lib/ai/types";
 
 export interface DemoScenario {
   id: "safe-u-tag" | "protected-buffer" | "suspicious-crypto";

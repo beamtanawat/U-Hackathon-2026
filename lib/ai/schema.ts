@@ -1,4 +1,4 @@
-import type { AuthoritativeAssessment, ExplanationOutput, ExplanationReason, MissingContextQuestion, Provenance, QwenAnalysis, QwenIndicator, QwenReview, SuggestedIndicator } from "./types.ts";
+import type { AuthoritativeAssessment, ExplanationOutput, ExplanationReason, MissingContextQuestion, Provenance, QwenAnalysis, QwenIndicator, QwenReview, SuggestedIndicator } from "./types";
 
 const PROVENANCE = new Set<Provenance>(["host-provided", "user-provided", "derived", "simulated", "unavailable"]);
 const CATEGORIES = new Set<ExplanationReason["category"]>(["financial", "trust", "missing_context"]);

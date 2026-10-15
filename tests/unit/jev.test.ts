@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import type { JevVerificationRequest, UsageEvent } from "../../lib/ai/types.ts";
+import type { JevVerificationRequest, UsageEvent } from "../../lib/ai/types";
 
 const request: JevVerificationRequest = {
   context: {
@@ -22,7 +22,7 @@ const request: JevVerificationRequest = {
 };
 
 test("uses the Jev 1.14 Decisions API and records privacy-safe usage", async () => {
-  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev.ts");
+  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev");
   let url = "";
   let body: Record<string, unknown> = {};
   const events: UsageEvent[] = [];
@@ -47,7 +47,7 @@ test("uses the Jev 1.14 Decisions API and records privacy-safe usage", async () 
 });
 
 test("does not retry Jev failures", async () => {
-  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev.ts");
+  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev");
   let calls = 0;
   const fetchImpl: typeof fetch = async () => { calls += 1; return new Response("private error", { status: 503 }); };
   const provider = createOpenRouterJevProvider({ apiKey: "test-key", fetchImpl });
@@ -57,7 +57,7 @@ test("does not retry Jev failures", async () => {
 });
 
 test("rejects a Jev response with missing model attribution", async () => {
-  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev.ts");
+  const { createOpenRouterJevProvider } = await import("../../lib/ai/jev");
   const fetchImpl: typeof fetch = async () => Response.json({
     answers: { needs_review: { type: "noul", noul: 0.8 } },
     usage: { input_tokens: 42, output_tokens: 3, cost: 0.0000018 },

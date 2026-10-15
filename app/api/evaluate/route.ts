@@ -1,8 +1,8 @@
-import { runAiAnalysis } from "../../../lib/ai/explanation.ts";
-import { createOpenRouterJevProviderFromEnv } from "../../../lib/ai/jev.ts";
-import { createOpenRouterQwenProviderFromEnv } from "../../../lib/ai/openrouter.ts";
-import { assertAuthoritativeAssessment } from "../../../lib/ai/schema.ts";
-import type { AuthoritativeAssessment, JevProvider, Provenance, QwenProvider, TransactionContext, UsageReporter } from "../../../lib/ai/types.ts";
+import { runAiAnalysis } from "../../../lib/ai/explanation";
+import { createOpenRouterJevProviderFromEnv } from "../../../lib/ai/jev";
+import { createOpenRouterQwenProviderFromEnv } from "../../../lib/ai/openrouter";
+import { assertAuthoritativeAssessment } from "../../../lib/ai/schema";
+import type { AuthoritativeAssessment, JevProvider, Provenance, QwenProvider, TransactionContext, UsageReporter } from "../../../lib/ai/types";
 
 export interface EvaluationRequest {
   financialContext: Record<string, unknown>;

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import { POST, createEvaluateHandler } from "../../app/api/evaluate/route.ts";
-import type { AuthoritativeAssessment, QwenProvider } from "../../lib/ai/types.ts";
+import { POST, createEvaluateHandler } from "../../app/api/evaluate/route";
+import type { AuthoritativeAssessment, QwenProvider } from "../../lib/ai/types";
 
 const assessment: AuthoritativeAssessment = {
   financial: {

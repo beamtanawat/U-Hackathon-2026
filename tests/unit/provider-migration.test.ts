@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import { JEV_TIMEOUT_MS, QWEN_TIMEOUT_MS, runAiAnalysis, selectAiRoute } from "../../lib/ai/explanation.ts";
-import type { AuthoritativeAssessment, JevProvider, ProviderRequest, QwenProvider, TransactionContext } from "../../lib/ai/types.ts";
+import { JEV_TIMEOUT_MS, QWEN_TIMEOUT_MS, runAiAnalysis, selectAiRoute } from "../../lib/ai/explanation";
+import type { AuthoritativeAssessment, JevProvider, ProviderRequest, QwenProvider, TransactionContext } from "../../lib/ai/types";
 
 const transaction: TransactionContext = {
   walletType: "crypto",

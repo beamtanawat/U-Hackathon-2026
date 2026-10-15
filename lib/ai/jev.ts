@@ -1,5 +1,5 @@
-import { OpenRouterError } from "./openrouter.ts";
-import type { JevDecision, JevProvider, UsageEvent, UsageReporter } from "./types.ts";
+import { OpenRouterError } from "./openrouter";
+import type { JevDecision, JevProvider, UsageEvent, UsageReporter } from "./types";
 
 const ENDPOINT = "https://openrouter.ai/api/alpha/decisions";
 export const JEV_MODEL = "typesafe/jev-1.14" as const;

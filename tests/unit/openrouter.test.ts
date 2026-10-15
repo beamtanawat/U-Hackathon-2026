@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
-import { createOpenRouterQwenProvider, createOpenRouterQwenProviderFromEnv, OpenRouterError } from "../../lib/ai/openrouter.ts";
-import type { ProviderRequest, UsageEvent } from "../../lib/ai/types.ts";
+import { createOpenRouterQwenProvider, createOpenRouterQwenProviderFromEnv, OpenRouterError } from "../../lib/ai/openrouter";
+import type { ProviderRequest, UsageEvent } from "../../lib/ai/types";
 
 const request: ProviderRequest = {
   system: "Review only supplied evidence.",
