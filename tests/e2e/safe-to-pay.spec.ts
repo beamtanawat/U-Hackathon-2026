@@ -116,6 +116,40 @@ test("Scenario B works after onboarding dismissal", async ({ page }) => {
   await expect(page.locator("#cp .statusrow")).toContainText("High Risk");
 });
 
+test("host shell keeps Safe to Spend as compact Dashboard discovery", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Total Balance" })).toBeVisible();
+  await expect(page.locator('[data-testid="safe-spend-discovery"]')).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Money partition" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "How it works" }).first()).toBeVisible();
+});
+
+test("narrow viewport keeps top navigation and every demo control visible", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    const nav = await page.locator(".navwrap").boundingBox();
+    const content = await page.locator("#page").boundingBox();
+    expect(nav && content && nav.y + nav.height <= content.y).toBe(true);
+    for (const scenario of ["A", "B", "C"]) await expect(page.locator(`[data-scen="${scenario}"]`)).toBeVisible();
+    await expect(page.locator(".stage > summary")).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+  }
+});
+
+test("Reset Demo returns to Dashboard without reopening onboarding", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  await page.locator('[data-scen="B"]').click();
+  await page.locator(".stage > summary").click();
+  await page.getByRole("button", { name: "Reset demo" }).click();
+  await expect(page.getByRole("heading", { name: "Welcome!" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Meet Safe-to-Pay" })).toBeHidden();
+});
+
 test("Scenario B: the real API decides High Risk, the user reduces, then proceeds (simulated)", async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });

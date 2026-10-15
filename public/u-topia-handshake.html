@@ -8,7 +8,7 @@
 /* Layout mirrors the U-Topia web app screenshots: logo + user row, floating pill nav with orange active item,
    a narrow centred column (~680px) of soft-shadowed rounded cards, pill outline action buttons.
    A compact demo strip sits above the content. Pay flow widens only at the Safe-to-Pay step (summary | checkpoint).
-   Under 900px: bottom tab bar, checkpoint becomes a bottom sheet. */
+   Under 900px: compact top navigation, checkpoint becomes a bottom sheet. */
 :root{
   color-scheme:light;
   --bg:#FFFFFF; --soft:#F4F6F9; --line:#E3E6EC; --line-2:#EEF0F4;
@@ -146,6 +146,11 @@ button.preview-chip{cursor:pointer}
 .welcome p{margin:2px 0 0;font-size:16px}
 .sts-mini{margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
 .sts-mini b{color:var(--safe);font-weight:600}
+.sts-discovery{margin-top:9px;padding-top:9px;border-top:1px solid var(--line-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sts-discovery .feature{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 8px;min-width:0}
+.sts-discovery .feature small{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
+.sts-discovery .feature b{color:var(--safe);font-size:17px}
+.sts-discovery .linkbtn{margin-left:auto}
 .segsel{display:inline-flex;padding:4px;border-radius:999px;background:var(--soft);gap:2px}
 .segsel button{border:0;background:transparent;border-radius:999px;padding:5px 16px;min-height:36px;font-size:14px;color:var(--ink-2)}
 .segsel button[aria-pressed="true"]{background:var(--grad);color:#fff;font-weight:600}
@@ -585,17 +590,19 @@ body.onboarding-open{overflow:hidden}
   .hdr .preview-chip,.user .who{display:none}
   .logo{font-size:19px}.logo-mark{width:34px;height:34px;font-size:17px}
   .iconbtn,.avatar{width:38px;height:38px}
-  .navwrap{position:fixed;left:0;right:0;bottom:0;z-index:50;border:0;padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
-  .pillnav{width:100%;justify-content:space-around;box-shadow:none;border:0;padding:0;gap:0}
-  .pillnav button{flex-direction:column;gap:1px;font-size:11.5px;padding:6px 4px;min-height:52px;min-width:0;flex:1}
-  body{padding-bottom:78px}
+  .navwrap{position:static;border-bottom:1px solid var(--line);padding:8px 12px 10px;background:#fff}
+  .pillnav{width:100%;justify-content:space-around;box-shadow:0 5px 16px rgba(15,23,41,.06);padding:4px;gap:1px}
+  .pillnav button{flex-direction:column;gap:1px;font-size:11.5px;padding:6px 2px;min-height:52px;min-width:0;flex:1}
+  body{padding-bottom:env(safe-area-inset-bottom,0px)}
   .content,.demostrip,.foot{padding-inline:16px}
   .simbar{font-size:12px;padding-inline:12px}
   .sec-h{flex-wrap:wrap}
-  .demostrip{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;scroll-snap-type:x proximity}
+  .demostrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;overflow:visible}
   .demostrip .lbl{display:none}
-  .stage{margin-left:0;flex:none;scroll-snap-align:start}
-  .stage .pop{position:fixed;left:16px;right:16px;top:auto;bottom:90px;width:auto}
+  .dchip{width:100%;min-width:0;justify-content:center;white-space:normal;text-align:center;padding-inline:5px;line-height:1.2}
+  .stage{grid-column:1 / -1;margin-left:0;width:100%}
+  .stage > summary{width:100%;justify-content:center}
+  .stage .pop{position:absolute;left:0;right:0;top:52px;bottom:auto;width:auto}
   .pillrow.c4{grid-template-columns:repeat(2,1fr)}
   .pillrow.c3 .pbtn{font-size:14px}
   .bx-pair{grid-template-columns:1fr;gap:6px}
@@ -625,7 +632,7 @@ body.onboarding-open{overflow:hidden}
   .reopen{display:flex!important}
   .bar-row{grid-template-columns:44px minmax(0,1fr)}
   .need,.bar-cap{margin-left:54px}
-  .toast{bottom:92px}
+  .toast{bottom:24px}
 }
 @media (max-width:440px){ .grid2{grid-template-columns:1fr} .split2 .val{font-size:15.5px} }
 @media (max-width:899px){
@@ -634,8 +641,8 @@ body.onboarding-open{overflow:hidden}
   .pa-txt b{font-size:17px}
   .sec-acts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sact small{display:none}
-  .chat-fab{right:16px;bottom:88px}
-  .chat{left:8px;right:8px;width:auto;bottom:84px;height:calc(100dvh - 190px)}
+  .chat-fab{right:16px;bottom:18px}
+  .chat{left:8px;right:8px;width:auto;bottom:14px;height:calc(100dvh - 150px)}
   body.sheet-open .chat-fab{display:none}
 }
 /* ---------- easy-for-everyone pass: larger type, stronger contrast, no light weights, bigger targets ---------- */
@@ -1139,7 +1146,7 @@ function dashboard(){
       <div class="split2">
         <div><div class="lbl">Crypto Wallet</div><div class="val num">${money(fmtC(PROFILE.usdc, 'USDC'))}</div></div>
         <div><div class="lbl">Spending Wallet</div><div class="val num">${money(fmt(PROFILE.balance))}</div>
-          <div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div></div>
+          <div class="sts-discovery" data-testid="safe-spend-discovery"><div class="feature"><span class="tag hs">${ic('shieldC')}Safe to Spend</span><b class="num">${money(fmt(STS0))}</b><small>After upcoming bills, debt, and buffer</small></div><button class="linkbtn" type="button" data-act="howItWorks">How it works</button></div></div>
       </div>
     </div>
     <div class="pillrow c3">
@@ -1147,8 +1154,6 @@ function dashboard(){
       <button class="pbtn t-swap" type="button" data-oos="Swap"><span class="pi">${ic('swap')}</span>Swap</button>
       <button class="pbtn t-send" type="button" data-go="pay"><span class="pi">${ic('sendNE')}</span>Send</button>
     </div>
-    <div class="sec-h"><h2>Money partition</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
-    <div class="card card-in">${stsBreakdown()}<p class="hint" style="margin:10px 0 0">Next income in ${PROFILE.nextIncome} days · Safe-to-spend = max(0, balance − must keep − buffer)</p></div>
     <div class="sec-h"><h2>Spending Breakdown</h2></div>
     ${chart()}
     <div class="sec-h"><h2>Recent Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
