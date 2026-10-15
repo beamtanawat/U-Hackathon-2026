@@ -164,11 +164,28 @@ test("Scenario B: the real API decides High Risk, the user reduces, then proceed
 
   // The UI renders the authoritative result.
   const cp = page.locator("#cp");
+  const financial = cp.locator('[aria-labelledby="fin-h"]');
   await expect(cp.locator(".statusrow")).toContainText("High Risk");
   await expect(cp.locator(".statusrow")).toContainText("Low");
   await expect(cp.locator(".vtext")).toContainText("฿4,400 less");
-  await expect(cp).toContainText("฿5,500");
+  await expect(financial).toContainText("Financial check");
+  await expect(financial).toContainText("Balance");
+  await expect(financial).toContainText("฿18,500");
+  await expect(financial).toContainText("Safe to Spend");
+  await expect(financial).toContainText("฿5,500");
+  await expect(financial).toContainText("Payment");
+  await expect(financial).toContainText("฿12,900");
+  await expect(financial).toContainText("After payment");
+  await expect(financial).toContainText("฿5,600");
+  await expect(financial).toContainText("฿4,400 short");
   await expect(cp).toContainText("Rules-engine explanation");
+  await expect(cp).toHaveClass(/feature-pulse/);
+  const technical = cp.locator("details.details");
+  await expect(technical.locator("summary")).toContainText("Technical details");
+  await expect(technical).not.toHaveAttribute("open", "");
+  await expect(page.locator("#inspector .insp-toggle")).toBeVisible();
+  await expect(page.locator(".flow-top .back")).toBeVisible();
+  await expect(cp.locator('[data-act="cancel"]')).toBeVisible();
   await expect(page.locator("body")).not.toContainText("U-Bot");
   await page.screenshot({ path: "test-results/scenario-b-1-high-risk.png", animations: "disabled" });
 
@@ -201,6 +218,8 @@ test("Scenario A: Safe with no AI call needed", async ({ page }) => {
   expect(body.assessment.financial.status).toBe("safe");
   expect(body.ai.route).toBe("none");
   await expect(page.locator("#cp .statusrow")).toContainText("Safe");
+  await expect(page.locator("#cp [aria-label='Recipient check']")).toContainText("No recipient risk signals");
+  await expect(page.locator("#cp")).not.toContainText("Verified recipient");
 });
 
 test("Scenario C: trust High and affordability Review without an invented exchange rate", async ({ page }) => {
@@ -210,12 +229,39 @@ test("Scenario C: trust High and affordability Review without an invented exchan
   expect(body.assessment.financial.missingFields).toEqual(["exchangeRate"]);
   expect(body.breakdown).toBeNull();
   const cp = page.locator("#cp");
+  const financial = cp.locator('[aria-labelledby="fin-h"]');
+  const recipient = cp.locator('[aria-labelledby="trust-h"]');
+  await expect(financial.getByRole("heading", { name: "Financial check" })).toBeVisible();
+  await expect(recipient.getByRole("heading", { name: /Recipient check/ })).toBeVisible();
   await expect(cp.locator(".statusrow")).toContainText("Review");
   await expect(cp.locator(".statusrow")).toContainText("High");
-  await expect(cp).toContainText("No exchange rate is available");
-  await expect(cp).toContainText("Guaranteed or high return");
-  await expect(cp).toContainText("not verified");
+  await expect(financial).toContainText("Review");
+  await expect(financial).toContainText("No exchange rate is available");
+  await expect(recipient).toContainText("High");
+  await expect(recipient).toContainText("Guaranteed or high return");
+  await expect(recipient).toContainText("not verified");
   await expect(page.locator("body")).not.toContainText("฿33");
+});
+
+test("checkpoint Back returns to the transaction and Cancel returns to Pay", async ({ page }) => {
+  await runCheck(page, "B");
+  await page.locator(".flow-top .back").click();
+  await expect(page.locator("#f-amount")).toHaveValue("12900");
+  await page.locator('[data-scen="B"]').click();
+  const responsePromise = page.waitForResponse((response) => isEvaluate(response.request()));
+  await page.locator("#nextbtn").click();
+  await responsePromise;
+  await page.locator('#cp [data-act="cancel"]').click();
+  await expect(page.getByRole("heading", { name: "Pay", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Send to U-tag/ })).toBeVisible();
+});
+
+test("checkpoint pulse respects reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await runCheck(page, "B");
+  const cp = page.locator("#cp");
+  await expect(cp).toHaveClass(/feature-pulse/);
+  expect(await cp.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
 });
 
 test("API failures are shown honestly instead of a fabricated result", async ({ page }) => {
