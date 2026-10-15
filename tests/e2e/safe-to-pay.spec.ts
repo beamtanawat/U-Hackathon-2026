@@ -1,11 +1,13 @@
 import { expect, test, type Page, type Request } from "@playwright/test";
 
 import { readFileSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const fixture = (name: string) => JSON.parse(readFileSync(new URL(`../../examples/demo-scenarios/${name}`, import.meta.url), "utf8"));
 const scenarioA = fixture("scenario-a-safe-u-tag.json");
 const scenarioB = fixture("scenario-b-insufficient-safe-to-spend.json");
 const scenarioC = fixture("scenario-c-suspicious-crypto.json");
+const staticPreview = pathToFileURL(fileURLToPath(new URL("../../public/u-topia-handshake.html", import.meta.url))).href;
 
 const isEvaluate = (request: Request) => request.url().endsWith("/api/evaluate") && request.method() === "POST";
 
@@ -292,6 +294,17 @@ test("visual regression simulation notice leaves the viewport on scroll", async 
   await page.goto("/");
   await page.evaluate(() => window.scrollTo(0, 900));
   expect(await page.locator(".simbar").evaluate((node) => node.getBoundingClientRect().bottom <= 0)).toBe(true);
+});
+
+test("opening the preview as a file explains that the API server is required", async ({ page }) => {
+  await page.goto(staticPreview);
+  await dismissOnboarding(page);
+  await page.locator('[data-scen="B"]').click();
+  await page.locator("#nextbtn").click();
+  const alert = page.getByRole("alert");
+  await expect(alert).toContainText("Open this demo through the local app server");
+  await expect(alert.getByRole("button", { name: "Try again" })).toHaveCount(0);
+  await expect(alert.getByRole("button", { name: "Back to amount" })).toBeVisible();
 });
 
 test("API failures are shown honestly instead of a fabricated result", async ({ page }) => {

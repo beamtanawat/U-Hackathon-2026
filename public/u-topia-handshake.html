@@ -1054,6 +1054,10 @@ async function runCheck(){
     Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'simulated_network_error'}});
     renderPage(); return;
   }
+  if (location.protocol === 'file:'){
+    Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'api_server_required'}});
+    renderPage(); return;
+  }
   const t0 = performance.now();
   try {
     const res = await fetch('/api/evaluate', {method:'POST', headers:Object.assign({'content-type':'application/json'}, S.toggles.ubotDown ? {'x-uh-ai':'off'} : {}), body:JSON.stringify(S.request)});
@@ -1345,6 +1349,7 @@ function stepCheck(){
 /* ---------- checkpoint ---------- */
 function renderCP(){
   const cp = $('#cp'); if (!cp) return;
+  const needsServer = S.errorInfo && S.errorInfo.code === 'api_server_required';
   let body = '', actions = '';
   if (S.phase === 'loading') body = `<div class="loadbox" role="status">
       <div class="vtext" style="font-size:22px">Checking this payment…</div>
@@ -1352,11 +1357,11 @@ function renderCP(){
       <div class="skel" aria-hidden="true"><div class="sk" style="width:30%"></div><div class="sk" style="height:38px"></div><div class="sk" style="width:60%"></div></div></div>`;
   else if (S.phase === 'error') body = `<div class="statebox" role="alert">
       <div class="sic" style="background:var(--review-bg);color:var(--review)">${ic('wifiOff')}</div>
-      <h3>${S.httpStatus === 429 ? 'Too many checks in a short time' : S.httpStatus ? 'The Safe-to-Pay check couldn’t finish' : 'We couldn’t reach the Safe-to-Pay check'}</h3>
-      <p>Your payment hasn’t been sent and nothing has changed. Try again in a moment.</p>
+      <h3>${needsServer ? 'Open this demo through the local app server' : S.httpStatus === 429 ? 'Too many checks in a short time' : S.httpStatus ? 'The Safe-to-Pay check couldn’t finish' : 'We couldn’t reach the Safe-to-Pay check'}</h3>
+      <p>${needsServer ? 'This HTML file can show the interface, but Safe-to-Pay needs the app API. Run npm run dev and open the localhost URL shown in the terminal.' : 'Your payment hasn’t been sent and nothing has changed. Try again in a moment.'}</p>
       ${S.errorInfo ? `<p class="hint mono">${S.httpStatus ? 'HTTP ' + S.httpStatus + ' · ' : ''}${esc(S.errorInfo.code || 'error')}</p>` : ''}
       ${S.toggles.neterr ? `<p class="hint">Stage control “Simulate network error” is on. Switch it off, then retry.</p>` : ''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button><button class="btn btn-out" type="button" data-act="editAmount">Back to amount</button></div></div>`;
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${needsServer ? '' : `<button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button>`}<button class="btn ${needsServer ? 'btn-primary' : 'btn-out'}" type="button" data-act="editAmount">Back to amount</button></div></div>`;
   else if (S.phase === 'result') body = resultView();
   else if (S.phase === 'outcome') body = outcomeView();
   cp.innerHTML = `<div class="cp-head"><span class="grabber" aria-hidden="true"></span>
