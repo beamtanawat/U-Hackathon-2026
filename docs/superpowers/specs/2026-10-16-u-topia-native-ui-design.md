@@ -59,6 +59,8 @@ Controls include Close, Skip, Back, Next, and Get Started. `How it works` reopen
 
 Completion is stored only as a versioned boolean-like localStorage flag. Storage failures are caught and do not block the application. No financial values or identifiers are persisted. Resetting demo state does not reset onboarding; the visible `How it works` control is the replay mechanism.
 
+`Get Started` opens the U-Topia Pay chooser so the introduction leads directly into the feature's real insertion point. It does not jump to a standalone feature page.
+
 Accessibility requirements:
 
 - `role="dialog"`, an accessible name, and modal semantics.
@@ -86,6 +88,8 @@ The financial and trust results remain independent. Status meaning is expressed 
 The checkpoint receives a short purple perimeter highlight when a result first appears. The motion lasts approximately 1–1.5 seconds and settles to a subtle purple feature border. It runs again when Scenario B changes from High Risk to Safe. It does not run continuously and is disabled for reduced-motion users. U-Topia's blue primary button remains the dominant action.
 
 Back and Cancel remain visible. The user is never routed to a separate U-HANDSHAKE product surface.
+
+Back from the checkpoint returns to the current transaction's preceding amount or wallet-check step rather than unexpectedly returning to Dashboard. Cancel exits the transaction to the Pay chooser.
 
 ## Scenario behavior
 
