@@ -12,16 +12,16 @@ export function evaluateSafeToPay(request: EvaluationRequest): FinancialAssessme
     .filter(([, value]) => value === null)
     .map(([field]) => field);
 
+  if (request.currency.value === null) missingFields.push("currency");
+  if (request.asset.value === null) missingFields.push("asset");
+
   if (missingFields.length > 0) {
-    return {
-      status: "review",
-      safeToSpendBefore: null,
-      safeToSpendAfter: null,
-      postTransactionBalance: null,
-      affectedCommitments: [],
-      reasonCodes: ["MISSING_FINANCIAL_CONTEXT"],
-      missingFields,
-    };
+    return unassessable("MISSING_FINANCIAL_CONTEXT", missingFields);
+  }
+
+  // Never compare amounts in different units and never invent an exchange rate.
+  if (request.asset.value !== request.currency.value) {
+    return unassessable("CURRENCY_CONVERSION_UNAVAILABLE", ["exchangeRate"]);
   }
 
   const availableBalance = fields.availableBalance as number;
@@ -34,7 +34,8 @@ export function evaluateSafeToPay(request: EvaluationRequest): FinancialAssessme
     availableBalance - mandatoryObligations - protectedBuffer,
   );
   const postTransactionBalance = availableBalance - amount;
-  const safeToSpendAfter = safeToSpendBefore - amount;
+  // Unclamped: a negative value is the shortfall against obligations plus buffer.
+  const safeToSpendAfter = postTransactionBalance - mandatoryObligations - protectedBuffer;
 
   if (postTransactionBalance < mandatoryObligations) {
     return {
@@ -68,5 +69,17 @@ export function evaluateSafeToPay(request: EvaluationRequest): FinancialAssessme
     affectedCommitments: [],
     reasonCodes: ["WITHIN_SAFE_TO_SPEND"],
     missingFields: [],
+  };
+}
+
+function unassessable(reasonCode: string, missingFields: string[]): FinancialAssessment {
+  return {
+    status: "review",
+    safeToSpendBefore: null,
+    safeToSpendAfter: null,
+    postTransactionBalance: null,
+    affectedCommitments: [],
+    reasonCodes: [reasonCode],
+    missingFields,
   };
 }

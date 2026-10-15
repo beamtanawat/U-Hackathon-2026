@@ -11,6 +11,7 @@ function request(overrides: Partial<EvaluationRequest> = {}): EvaluationRequest 
     scenarioId: "test",
     walletType: simulated("spending"),
     transferMode: simulated("u_tag"),
+    currency: simulated("THB"),
     availableBalance: simulated(10_000),
     essentialObligations: simulated(4_000),
     debtDue: simulated(1_000),
@@ -81,6 +82,33 @@ describe("evaluateSafeToPay", () => {
 
     expect(result.status).toBe("high_risk");
     expect(result.postTransactionBalance).toBe(-2_000);
+  });
+
+  it("reports the true shortfall when the balance already misses obligations plus buffer", () => {
+    const result = evaluateSafeToPay(request({ availableBalance: simulated(5_000), amount: simulated(100) }));
+
+    expect(result.safeToSpendBefore).toBe(0);
+    expect(result.safeToSpendAfter).toBe(-2_100);
+    expect(result.status).toBe("high_risk");
+  });
+
+  it("returns review without values when amount and balance use different units", () => {
+    expect(evaluateSafeToPay(request({ asset: simulated("USDC") }))).toEqual({
+      status: "review",
+      safeToSpendBefore: null,
+      safeToSpendAfter: null,
+      postTransactionBalance: null,
+      affectedCommitments: [],
+      reasonCodes: ["CURRENCY_CONVERSION_UNAVAILABLE"],
+      missingFields: ["exchangeRate"],
+    });
+  });
+
+  it("treats an unknown currency as missing financial context", () => {
+    const result = evaluateSafeToPay(request({ currency: unknown() }));
+
+    expect(result.status).toBe("review");
+    expect(result.missingFields).toEqual(["currency"]);
   });
 
   it("returns review and names missing financial inputs", () => {

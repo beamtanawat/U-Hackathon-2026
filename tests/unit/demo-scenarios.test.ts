@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import scenarioA from "../../examples/demo-scenarios/scenario-a-safe-u-tag.json";
-import scenarioB from "../../examples/demo-scenarios/scenario-b-protected-buffer.json";
+import scenarioB from "../../examples/demo-scenarios/scenario-b-insufficient-safe-to-spend.json";
 import scenarioC from "../../examples/demo-scenarios/scenario-c-suspicious-crypto.json";
 import manifest from "../../examples/demo-scenarios/manifest.json";
 import {
@@ -31,7 +31,7 @@ describe("judge demo scenarios", () => {
       schemaVersion: 1,
       scenarios: [
         "scenario-a-safe-u-tag.json",
-        "scenario-b-protected-buffer.json",
+        "scenario-b-insufficient-safe-to-spend.json",
         "scenario-c-suspicious-crypto.json",
       ],
     });

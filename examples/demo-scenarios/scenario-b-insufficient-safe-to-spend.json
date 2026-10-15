@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "id": "scenario-b-insufficient-safe-to-spend",
+  "title": "Balance is enough, Safe-to-Spend is not",
+  "demoGoal": "The 18,500 THB balance covers a 12,900 THB phone, but paying leaves 5,600 THB against 10,000 THB of obligations due before payday: High Risk.",
+  "request": {
+    "scenarioId": "balance-enough-safe-to-spend-not-enough",
+    "walletType": {
+      "value": "spending",
+      "provenance": "simulated"
+    },
+    "transferMode": {
+      "value": "u_tag",
+      "provenance": "simulated"
+    },
+    "currency": {
+      "value": "THB",
+      "provenance": "simulated"
+    },
+    "availableBalance": {
+      "value": 18500,
+      "provenance": "simulated"
+    },
+    "essentialObligations": {
+      "value": 7200,
+      "provenance": "simulated"
+    },
+    "debtDue": {
+      "value": 2800,
+      "provenance": "simulated"
+    },
+    "protectedBuffer": {
+      "value": 3000,
+      "provenance": "simulated"
+    },
+    "amount": {
+      "value": 12900,
+      "provenance": "simulated"
+    },
+    "asset": {
+      "value": "THB",
+      "provenance": "simulated"
+    },
+    "network": {
+      "value": null,
+      "provenance": "unavailable"
+    },
+    "recipient": {
+      "kind": {
+        "value": "u_tag",
+        "provenance": "simulated"
+      },
+      "identifier": {
+        "value": "@phone-store",
+        "provenance": "simulated"
+      },
+      "isNew": {
+        "value": false,
+        "provenance": "simulated"
+      },
+      "previousTransactionCount": {
+        "value": 1,
+        "provenance": "simulated"
+      }
+    },
+    "recentMedianAmount": {
+      "value": 2500,
+      "provenance": "simulated"
+    },
+    "context": {
+      "urgency": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "secrecyRequest": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "guaranteedOrHighReturn": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "impersonation": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "unexpectedContact": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "moveMoneyToProtect": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "advanceFeeOrPrize": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "romanceOrOnlineOnlyRelationship": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "paymentMethodDemand": {
+        "value": null,
+        "provenance": "unavailable"
+      }
+    }
+  },
+  "expectedAssessment": {
+    "financial": {
+      "status": "high_risk",
+      "safeToSpendBefore": 5500,
+      "safeToSpendAfter": -7400,
+      "postTransactionBalance": 5600,
+      "affectedCommitments": [
+        "mandatory_obligations",
+        "protected_buffer"
+      ],
+      "reasonCodes": [
+        "MANDATORY_OBLIGATIONS_AT_RISK"
+      ],
+      "missingFields": []
+    },
+    "trust": {
+      "status": "low",
+      "riskScore": 0.605911176817072,
+      "indicators": [],
+      "modelVersion": "scam-context-v1"
+    }
+  }
+}
