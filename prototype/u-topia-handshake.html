@@ -658,10 +658,53 @@ label.fl{font-size:15.5px}
   .cp{max-height:calc(92dvh / var(--zoom,1))}
   .chat{height:calc((100dvh - 190px) / var(--zoom,1));width:auto}
 }
+
+/* Integration clarity and guided demo */
+body{font-size:16px}
+.simbar{justify-content:center;padding-block:7px}
+.feature-legend{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1px solid var(--hs-line);border-radius:999px;background:#fff;color:var(--ink-2);font-size:12.5px;font-weight:650;white-space:nowrap}
+.feature-legend::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--hs)}
+.demostrip{gap:8px;padding-block:2px}
+.scenario-group{display:flex;align-items:center;gap:6px}
+.tutorial-btn{border:1px solid var(--hs-line);background:var(--hs-bg);color:var(--hs);border-radius:999px;min-height:38px;padding:7px 13px;font-weight:700;display:inline-flex;align-items:center;gap:7px}
+.tutorial-btn:hover{background:#eee9ff}
+.exit-demo{justify-self:end;border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;min-height:42px;padding:8px 14px;font-weight:650;white-space:nowrap}
+.exit-demo:hover{border-color:#bcc4d2;background:var(--soft)}
+.hs-feature{position:relative;border-color:var(--hs-line);box-shadow:0 0 0 1px rgba(112,78,211,.05),var(--shadow)}
+.hs-feature::before{content:"U-HANDSHAKE added";position:absolute;top:-11px;right:18px;padding:3px 9px;border:1px solid var(--hs-line);border-radius:999px;background:#fff;color:var(--hs);font-size:11px;font-weight:750;letter-spacing:.01em}
+.flow-top{gap:12px}
+.flow-top h1{line-height:1.15}
+.fgrid{gap:14px}
+.sact{align-items:center}
+.primary-act,.sec-acts{gap:10px}
+.tour{position:fixed;inset:0;z-index:120;pointer-events:none}
+.tour[hidden]{display:none}
+.tour-shade{position:absolute;inset:0;background:rgba(15,23,41,.08)}
+.tour-pop{position:fixed;width:min(360px,calc(100vw - 32px));padding:18px;border:1px solid var(--hs-line);border-radius:18px;background:#fff;box-shadow:0 20px 60px rgba(15,23,41,.24);pointer-events:auto}
+.tour-count{color:var(--hs);font-size:12px;font-weight:750}
+.tour-pop h2{font-size:20px;line-height:1.2;margin:5px 0 7px}
+.tour-pop p{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.5}
+.tour-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+.tour-scenario{min-height:42px;padding:7px 8px;border:1px solid var(--hs-line);border-radius:12px;background:var(--hs-bg);color:var(--ink);font-weight:700}
+.tour-scenario.main{background:var(--hs);color:#fff;border-color:var(--hs)}
+.tour-actions{display:flex;align-items:center;gap:8px;margin-top:16px}
+.tour-actions .skip{border:0;background:transparent;color:var(--muted);min-height:40px;padding:6px 8px}
+.tour-actions .back-tour{margin-left:auto;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;min-height:40px;padding:7px 14px;font-weight:650}
+.tour-actions .next-tour{border:0;background:var(--hs);color:#fff;border-radius:999px;min-height:40px;padding:7px 16px;font-weight:700}
+.tour-target{position:relative;z-index:110!important;box-shadow:0 0 0 4px #fff,0 0 0 8px var(--hs)!important;border-radius:14px}
+@media (max-width:899px){
+  body{font-size:16px}
+  .demostrip{overflow-x:auto;flex-wrap:nowrap;padding-inline:16px;padding-bottom:8px}
+  .demostrip>.lbl,.scenario-group,.tutorial-btn,.stage{flex:0 0 auto}
+  .flow-top{grid-template-columns:auto 1fr;align-items:start;text-align:left}
+  .flow-top>div{text-align:center}
+  .exit-demo{grid-column:1/-1;justify-self:stretch;min-height:40px}
+  .tour-pop{left:16px!important;right:16px!important;bottom:16px!important;top:auto!important;width:auto}
+}
 </style>
 </head>
 <body>
-<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>U-HANDSHAKE decision-safety integration</b> · U-Topia reference preview with fictional data. No real money is moved.</span></div>
+<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>U-Topia reference preview</b> · Fictional data. No real money is moved.</span><span class="feature-legend" id="featureLegend">Purple marks features added by U-HANDSHAKE</span></div>
 <header class="hdr">
   <div class="logo"><div class="logo-mark" aria-hidden="true">U</div>U-Topia</div>
   <span class="preview-chip">Reference Integration Preview</span>
@@ -682,6 +725,24 @@ label.fl{font-size:15.5px}
 </footer>
 <div class="backdrop" id="backdrop" data-act="closeSheet"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<section class="tour" id="tour" hidden role="dialog" aria-label="U-HANDSHAKE feature tutorial">
+  <div class="tour-shade"></div>
+  <div class="tour-pop" id="tourPop">
+    <div class="tour-count" id="tourCount"></div>
+    <h2 id="tourTitle"></h2>
+    <p id="tourText"></p>
+    <div class="tour-scenarios" id="tourScenarios" hidden>
+      <button class="tour-scenario" type="button" data-scen="A">A Safe</button>
+      <button class="tour-scenario main" type="button" data-scen="B">B Start main demo</button>
+      <button class="tour-scenario" type="button" data-scen="C">C Scam signals</button>
+    </div>
+    <div class="tour-actions">
+      <button class="skip" type="button" data-tour="close">Skip tutorial</button>
+      <button class="back-tour" type="button" data-tour="back">Back</button>
+      <button class="next-tour" type="button" data-tour="next">Next</button>
+    </div>
+  </div>
+</section>
 <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat"><span class="fi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><span class="lbl">Help · Ask U-Bot</span></button>
 <section class="chat" id="chat" hidden aria-label="U-Bot chat">
   <div class="chat-h"><span class="av"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><div><b>U-Bot</b><small>Questions about Safe-to-Pay &amp; this demo</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -796,6 +857,14 @@ let S = Object.assign({
   hideBal:false, range:'30d', stageOpen:false
 }, blank());
 let runToken = 0, lastView = '', toastT;
+const TOUR = {open:false, index:0, returnFocus:null};
+const TOUR_STEPS = [
+  {target:'#featureLegend', page:'dashboard', title:'See what U-HANDSHAKE adds', text:'Purple labels separate the decision-safety layer from the existing U-Topia interface.'},
+  {target:'#partition', page:'dashboard', title:'Partition money before spending', text:'Balance is split into commitments, protected buffer, and safe-to-spend so a user sees what is truly available.'},
+  {target:'#integrationPoint', page:'pay', title:'Check at the decision point', text:'Safe-to-Pay runs after the amount is entered and before confirmation. It advises without blocking the payment.'},
+  {target:'#chatFab', page:'pay', title:'Let U-Bot explain the result', text:'Deterministic rules and explainable ML produce the result. U-Bot translates it into clear next actions.'},
+  {target:'#scenarioGroup', page:'pay', title:'Choose a scenario', text:'Run A for a safe purchase, B for the main financial-risk story, or C for a suspicious crypto transfer.'}
+];
 
 function toast(msg){ const t = $('#toast'); t.innerHTML = ic('info') + '<span>' + esc(msg) + '</span>'; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 const money = s => S.hideBal ? '••••••' : s;
@@ -812,6 +881,58 @@ function loadScenario(id){
   resetRun(); renderAll(); window.scrollTo({top:0});
 }
 function go(page){ S.page = page; if (page === 'pay' && (S.phase === 'idle' || S.phase === 'outcome')){ if (S.phase === 'outcome') resetRun(); S.step = 'choose'; } renderAll(); window.scrollTo({top:0}); }
+function exitDemo(){
+  if (TOUR.open) closeTour(false);
+  Object.assign(S, blank(), {scenario:null, page:'dashboard', step:'choose', flow:'utag', edited:false, stageOpen:false});
+  resetRun(); renderAll(); window.scrollTo({top:0});
+}
+
+function startTour(){
+  TOUR.returnFocus = document.activeElement;
+  TOUR.open = true;
+  TOUR.index = 0;
+  Object.assign(S, blank(), {scenario:null, page:'dashboard', step:'choose', flow:'utag', edited:false, stageOpen:false});
+  resetRun();
+  renderAll();
+  renderTour();
+  requestAnimationFrame(() => { const n = document.querySelector('[data-tour="next"]'); if (n) n.focus(); });
+}
+function closeTour(restoreFocus = true){
+  document.querySelectorAll('.tour-target').forEach(el => el.classList.remove('tour-target'));
+  TOUR.open = false;
+  $('#tour').hidden = true;
+  if (restoreFocus && TOUR.returnFocus && document.contains(TOUR.returnFocus)) TOUR.returnFocus.focus();
+}
+function renderTour(){
+  if (!TOUR.open) return;
+  const step = TOUR_STEPS[TOUR.index];
+  if (step.page === 'dashboard' && S.page !== 'dashboard'){
+    S.page = 'dashboard'; renderAll(); return;
+  }
+  if (step.page === 'pay' && (S.page !== 'pay' || S.step !== 'choose')){
+    S.page = 'pay'; S.step = 'choose'; renderAll(); return;
+  }
+  document.querySelectorAll('.tour-target').forEach(el => el.classList.remove('tour-target'));
+  const target = $(step.target), tour = $('#tour'), pop = $('#tourPop');
+  if (!target) return;
+  target.classList.add('tour-target');
+  tour.hidden = false;
+  $('#tourCount').textContent = `${TOUR.index + 1} of ${TOUR_STEPS.length}`;
+  $('#tourTitle').textContent = step.title;
+  $('#tourText').textContent = step.text;
+  const back = document.querySelector('[data-tour="back"]'), next = document.querySelector('[data-tour="next"]');
+  $('#tourScenarios').hidden = TOUR.index !== TOUR_STEPS.length - 1;
+  back.hidden = TOUR.index === 0;
+  next.hidden = TOUR.index === TOUR_STEPS.length - 1;
+  target.scrollIntoView({block:'nearest', inline:'nearest', behavior:'auto'});
+  if (!mobile()){
+    const r = target.getBoundingClientRect(), w = 360, gap = 14;
+    const left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2));
+    const below = r.bottom + gap;
+    const top = below + pop.offsetHeight < innerHeight - 16 ? below : Math.max(16, r.top - pop.offsetHeight - gap);
+    pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+  }
+}
 
 /* ---------- validation ---------- */
 function recipientError(){
@@ -1016,7 +1137,8 @@ function renderStrip(){
   const on = Object.values(S.toggles).filter(Boolean).length;
   $('#strip').innerHTML = `<div class="demostrip" aria-label="Demo controls">
     <span class="lbl">${ic('shieldC')}Safe-to-Pay demo</span>
-    ${Object.entries(SCEN).map(([id, s]) => `<button type="button" class="dchip t${id}" data-scen="${id}" aria-pressed="${S.scenario === id && S.page === 'pay'}" title="${esc(s.title)}"><b>${id}</b>${s.short}</button>`).join('')}
+    <button type="button" class="tutorial-btn" data-act="tourStart">${ic('sparkle')}Feature Tutorial</button>
+    <div class="scenario-group" id="scenarioGroup">${Object.entries(SCEN).map(([id, s]) => `<button type="button" class="dchip t${id}" data-scen="${id}" aria-pressed="${S.scenario === id && S.page === 'pay'}" title="${esc(s.title)}"><b>${id}</b>${s.short}</button>`).join('')}</div>
     <details class="stage" ${S.stageOpen ? 'open' : ''}><summary>${ic('sliders')}Stage controls${on ? ` <span class="on">${on}</span>` : ''}</summary>
       <div class="pop">
         <label class="toggle"><input type="checkbox" data-toggle="neterr" ${S.toggles.neterr ? 'checked' : ''}>Network error</label>
@@ -1086,7 +1208,7 @@ function dashboard(){
       <button class="pbtn t-send" type="button" data-go="pay"><span class="pi">${ic('sendNE')}</span>Send</button>
     </div>
     <div class="sec-h"><h2>Money partition</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
-    <div class="card card-in">${stsBreakdown()}<p class="hint" style="margin:10px 0 0">Next income in ${PROFILE.nextIncome} days · Safe-to-spend = max(0, balance − must keep − buffer)</p></div>
+    <div class="card card-in hs-feature" id="partition">${stsBreakdown()}<p class="hint" style="margin:10px 0 0">Next income in ${PROFILE.nextIncome} days · Safe-to-spend = max(0, balance − must keep − buffer)</p></div>
     <div class="sec-h"><h2>Spending Breakdown</h2></div>
     ${chart()}
     <div class="sec-h"><h2>Recent Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
@@ -1150,7 +1272,7 @@ function payChoose(){
     <div class="paylist">
       <button type="button" class="listcard" data-startflow="utag"><span class="lic blue">${ic('at')}</span><span><b>Send to U-tag</b><small>Send to any U-tag user</small></span>${ic('chevR', 'chev')}</button>
       <button type="button" class="listcard" data-startflow="crypto"><span class="lic purple">${ic('send')}</span><span><b>Send crypto</b><small>Send crypto on chain</small></span>${ic('chevR', 'chev')}</button>
-      <div class="note">${ic('shieldC')}<span>Both flows include a Safe-to-Pay check after the amount and before you confirm. It never blocks a payment.</span></div>
+      <div class="note hs-feature" id="integrationPoint">${ic('shieldC')}<span>Both flows include a Safe-to-Pay check after the amount and before you confirm. It never blocks a payment.</span></div>
     </div></div>`;
 }
 function stepper(){
@@ -1164,7 +1286,7 @@ function stepper(){
 function flowShell(inner, wide){
   const steps = STEPS[S.flow], cur = steps.indexOf(S.step);
   return `<div class="content ${wide ? 'wide' : ''}"><div class="flow ${wide ? 'wide' : ''}">
-    <div class="flow-top"><button class="back" type="button" data-act="back">${ic('left')}Back</button><div><h1>${S.flow === 'utag' ? 'Send to U-tag' : 'Send crypto'}</h1><span class="stepof">Step ${cur + 1} of ${steps.length}</span></div><span></span></div>
+    <div class="flow-top"><button class="back" type="button" data-act="back">${ic('left')}Back</button><div><h1>${S.flow === 'utag' ? 'Send to U-tag' : 'Send crypto'}</h1><span class="stepof">Step ${cur + 1} of ${steps.length}</span></div><button class="exit-demo" type="button" data-act="exitDemo">Exit demo</button></div>
     ${stepper()}<div class="stepbody">${inner}</div></div></div>`;
 }
 function errLine(id, msg){ return `<div id="${id}" aria-live="polite">${msg ? `<div class="err">${ic('info')}<span>${msg}</span></div>` : ''}</div>`; }
@@ -1565,7 +1687,7 @@ function renderPage(){
   if (S.page === 'pay' && S.step === 'check'){ renderCP(); renderInspector(); }
   else { $('#backdrop').classList.remove('open'); document.body.classList.remove('sheet-open'); }
 }
-function renderAll(){ renderNav(); renderStrip(); renderPage(); }
+function renderAll(){ renderNav(); renderStrip(); renderPage(); if (TOUR.open) requestAnimationFrame(renderTour); }
 
 /* ---------- events ---------- */
 function startFlow(flow){ Object.assign(S, blank(), {flow, scenario:null, page:'pay', step: flow === 'utag' ? 'recipient' : 'dest'}); resetRun(); renderAll(); window.scrollTo({top:0}); }
@@ -1579,7 +1701,7 @@ document.addEventListener('click', e => {
   if (!t) return;
   if (t.dataset.oos){ toast(`${t.dataset.oos}: not in this demo. Try Pay.`); return; }
   if (t.dataset.go){ go(t.dataset.go); return; }
-  if (t.dataset.scen){ S.stageOpen = false; loadScenario(t.dataset.scen); return; }
+  if (t.dataset.scen){ if (TOUR.open) closeTour(false); S.stageOpen = false; loadScenario(t.dataset.scen); return; }
   if (t.dataset.startflow){ startFlow(t.dataset.startflow); return; }
   if (t.dataset.wtab){ S.walletTab = t.dataset.wtab; renderPage(); return; }
   if (t.dataset.range){ S.range = t.dataset.range; renderPage(); return; }
@@ -1592,6 +1714,8 @@ document.addEventListener('click', e => {
     else if (S.step === 'wallet'){ if (S.ack1 && S.ack2){ S.reducedFrom = null; runCheck(); } }
   }
   else if (a === 'back') stepBack();
+  else if (a === 'exitDemo') exitDemo();
+  else if (a === 'tourStart') startTour();
   else if (a === 'run') runCheck();
   else if (a === 'eye'){ S.hideBal = !S.hideBal; renderPage(); }
   else if (a === 'editAmount'){ resetRun(); S.step = 'amount'; renderPage(); }
@@ -1636,10 +1760,23 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  if (TOUR.open){ closeTour(); return; }
   if (CHAT.open){ setChat(false); $('#chatFab').focus(); return; }
   const st = document.querySelector('.stage[open]'); if (st){ st.open = false; return; }
   if (S.sheetOpen && mobile()){ S.sheetOpen = false; renderCP(); }
 });
+$('#tour').addEventListener('click', e => {
+  const b = e.target.closest('[data-tour]'); if (!b) return;
+  if (b.dataset.tour === 'close'){ closeTour(); return; }
+  if (b.dataset.tour === 'back') TOUR.index = Math.max(0, TOUR.index - 1);
+  else TOUR.index = Math.min(TOUR_STEPS.length - 1, TOUR.index + 1);
+  renderTour();
+  requestAnimationFrame(() => {
+    const focus = document.querySelector(TOUR.index === TOUR_STEPS.length - 1 ? '[data-scen="B"]' : '[data-tour="next"]');
+    if (focus) focus.focus();
+  });
+});
+window.addEventListener('resize', () => { if (TOUR.open) renderTour(); });
 
 /* ---------- U-Bot chat: rule-based, numbers come only from the engine fixtures and results ---------- */
 const CHAT = {open:false, log:[{who:'bot', t:'Hi, I’m U-Bot. Ask me about Safe-to-Pay, safe-to-spend, or how this demo works.'}]};
