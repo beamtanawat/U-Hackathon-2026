@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>U-HANDSHAKE in U-Topia</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout mirrors the U-Topia web app screenshots: logo + user row, floating pill nav with orange active item,
    a narrow centred column (~680px) of soft-shadowed rounded cards, pill outline action buttons.
@@ -19,7 +16,7 @@
   --navy:#0E1D4F; --blue:#0B5FD6; --blue-bg:#EAF2FF; --blue-line:#B9D3FA;
   --grad:linear-gradient(90deg,#0B5FD6 0%,#0A1A4F 100%);
   --grad-btn:linear-gradient(90deg,#0A1A4F 0%,#0B66F0 100%);
-  --orange:#B54708; --orange-hi:#F26A1B; --orange-bg:#FFF3EA; --orange-line:#F7D2B8;
+  --orange:#B54708; --orange-hi:#C64E0B; --orange-bg:#FFF3EA; --orange-line:#F7D2B8;
   --hs:#5A3ED0; --hs-bg:#F4F1FF; --hs-line:#D6CDFA;
   --safe:#0B7348; --safe-bg:#E6F5EE; --safe-line:#A9DCC4;
   --review:#8A5300; --review-bg:#FFF3DA; --review-line:#F0CF85;
@@ -29,13 +26,15 @@
   --p-host:#6FB0FF; --p-input:#F2A7D3; --p-fixture:#D9C48C;
   --code-bg:#0F1729; --j-key:#9FC6FF; --j-str:#A8E6B8; --j-num:#F7C98B; --j-bool:#E3A8FF; --j-punct:#8794B0;
   --shadow:0 6px 22px rgba(15,23,41,.07);
-  --f:"Outfit","Segoe UI",system-ui,sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --f:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
+html{scrollbar-color:#A7AFC0 #F4F6F9;scrollbar-width:thin}
 body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5;padding-bottom:env(safe-area-inset-bottom,0px)}
+::selection{background:var(--hs-bg);color:var(--navy)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 [hidden]{display:none!important}
@@ -52,7 +51,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .enter{animation:rise .24s var(--ease) both}
 
 /* ---------- preview notice + header ---------- */
-.simbar{position:sticky;top:0;z-index:70;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:6px 16px;padding-top:calc(6px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.simbar{position:sticky;top:0;z-index:70;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
 .simbar b{font-weight:700}
 .hdr{padding:12px 28px 0;display:flex;align-items:center;gap:12px}
 .logo{display:flex;align-items:center;gap:8px;font-weight:500;font-size:21px;color:var(--navy)}
@@ -61,7 +60,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .user{margin-left:auto;display:flex;align-items:center;gap:10px;text-align:right}
 .user b{display:block;font-weight:500;font-size:14.5px;line-height:1.2}
 .user small{color:var(--muted);font-size:12.5px}
-.avatar{width:40px;height:40px;border-radius:50%;background:#99A1B3;color:#fff;display:grid;place-items:center;font-weight:500;flex:none;font-size:14px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--muted);color:#fff;display:grid;place-items:center;font-weight:500;flex:none;font-size:14px}
 .iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;position:relative;box-shadow:0 2px 8px rgba(15,23,41,.05)}
 .iconbtn.sq{border-radius:10px;background:var(--soft);border-color:transparent;box-shadow:none}
 .dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--orange-hi);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px;border:2px solid #fff}
@@ -69,15 +68,15 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .navwrap{border-bottom:1px solid var(--line);padding:6px 16px 14px;display:flex;justify-content:center}
 .pillnav{display:flex;gap:4px;padding:6px;border-radius:999px;border:1px solid var(--line);background:#fff;box-shadow:0 8px 24px rgba(15,23,41,.08)}
 .pillnav button{border:0;background:transparent;border-radius:999px;padding:9px 22px;min-height:44px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:400;color:var(--ink);min-width:118px;justify-content:center;transition:background .2s,color .2s}
-.pillnav button[aria-current="page"]{background:var(--orange-bg);color:var(--orange);box-shadow:0 4px 14px rgba(242,106,27,.16),0 0 0 1px var(--orange-line) inset;font-weight:500}
+.pillnav button[aria-current="page"]{background:var(--orange-bg);color:var(--orange);box-shadow:0 4px 14px rgba(15,23,41,.1),0 0 0 1px var(--orange-line) inset;font-weight:500}
 .pillnav button[aria-current="page"] .ic{color:var(--orange-hi)}
 .pillnav button:hover:not([aria-current="page"]){background:var(--soft)}
 
 /* ---------- demo strip ---------- */
-.demostrip{max-width:1080px;margin:12px auto 0;padding:0 24px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.demostrip{max-width:1080px;margin:12px auto 0;padding:0 24px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;scroll-padding-inline:16px}
 .demostrip .lbl{font-size:12.5px;font-weight:600;color:var(--muted);margin-right:2px;display:inline-flex;gap:5px;align-items:center}
 .demostrip .lbl .ic{color:var(--hs)}
-.dchip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;min-height:40px;font-size:13.5px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.dchip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;min-height:40px;font-size:13.5px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap;flex:none;scroll-snap-align:start}
 .dchip b{font-weight:700}
 .dchip.main{border-color:var(--orange-line)}
 .dchip.main b{color:var(--orange)}
@@ -129,7 +128,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .btn-out{background:#fff;border-color:var(--line);color:var(--ink);box-shadow:0 3px 12px rgba(15,23,41,.05)}
 .btn:disabled{opacity:.45;cursor:not-allowed;filter:none;box-shadow:none}
 .linkbtn{border:0;background:none;color:var(--blue);font-weight:600;font-size:14px;padding:0 2px;min-height:40px;display:inline-flex;align-items:center;gap:4px}
-.note{display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border-radius:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--hs);color:var(--ink-2);font-size:14px}
+.note{display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border-radius:14px;background:var(--hs-bg);border:1px solid var(--hs-line);color:var(--ink-2);font-size:14px}
 .note .ic{color:var(--hs);margin-top:2px}
 
 /* badges */
@@ -203,7 +202,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 
 /* profile */
 .prof{display:grid;justify-items:center;gap:6px;text-align:center;max-width:300px;margin:6px auto 0;position:relative}
-.prof .bigav{width:86px;height:86px;border-radius:50%;background:#99A1B3;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:500;position:relative;box-shadow:0 0 0 4px #fff,0 6px 18px rgba(15,23,41,.12)}
+.prof .bigav{width:86px;height:86px;border-radius:50%;background:var(--muted);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:500;position:relative;box-shadow:0 0 0 4px #fff,0 6px 18px rgba(15,23,41,.12)}
 .prof .cam{position:absolute;right:-4px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;border:2px solid #fff;font-size:13px}
 .prof h1{font-size:24px;font-weight:600;margin-top:6px}
 .utag{font-size:12.5px;color:var(--orange);background:var(--orange-bg);border-radius:999px;padding:2px 10px}
@@ -462,7 +461,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .listcard .chev{width:32px;height:32px;padding:7px;border-radius:50%;background:var(--blue-bg);color:var(--blue)}
 .dchip{font-weight:600}
 .dchip.tA{background:var(--safe-bg);border-color:var(--safe-line);color:var(--safe)}
-.dchip.tB{background:var(--orange-hi);border-color:var(--orange-hi);color:#fff;box-shadow:0 6px 14px rgba(242,106,27,.28)}
+.dchip.tB{background:var(--orange-hi);border-color:var(--orange-hi);color:#fff;box-shadow:0 6px 14px rgba(15,23,41,.16)}
 .dchip.tB b{color:#fff}
 .dchip.tC{background:var(--risk-bg);border-color:var(--risk-line);color:var(--risk)}
 .dchip[aria-pressed="true"]{outline:2.5px solid var(--ink);outline-offset:2px}
@@ -507,7 +506,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .chat-fab .fi{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:19px;position:relative}
 .chat-fab .fi::after{content:"";position:absolute;top:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#3DDC97;border:2px solid #0B5FD6}
 .chat-fab[aria-expanded="true"]{background:var(--ink)}
-.chat{position:fixed;right:28px;bottom:96px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100dvh - 170px));display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 24px 60px rgba(15,23,41,.24);overflow:hidden;animation:rise .22s var(--ease) both}
+.chat{position:fixed;right:28px;bottom:96px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100dvh - 170px));display:flex;flex-direction:column;background:#fff;border:0;border-radius:24px;box-shadow:0 24px 60px rgba(15,23,41,.24);overflow:hidden;animation:rise .22s var(--ease) both}
 .chat-h{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--grad-btn);color:#fff}
 .chat-h .av{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:19px;flex:none}
 .chat-h b{display:block;font-size:16px;font-weight:600}
@@ -549,7 +548,10 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
   body{padding-bottom:78px}
   .content,.demostrip,.foot{padding-inline:16px}
   .simbar{font-size:12px;padding-inline:12px}
-  .demostrip{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .sec-h{flex-wrap:wrap}
+  .demostrip{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;scroll-snap-type:x proximity}
+  .demostrip .lbl{display:none}
+  .stage{margin-left:0;flex:none;scroll-snap-align:start}
   .stage .pop{position:fixed;left:16px;right:16px;top:auto;bottom:90px;width:auto}
   .pillrow.c4{grid-template-columns:repeat(2,1fr)}
   .pillrow.c3 .pbtn{font-size:14px}
@@ -659,7 +661,7 @@ label.fl{font-size:15.5px}
 </style>
 </head>
 <body>
-<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>Reference Integration Preview</b> · not the U-Topia app. Simulation — fictional data. No real money is moved.</span></div>
+<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>U-HANDSHAKE decision-safety integration</b> · U-Topia reference preview with fictional data. No real money is moved.</span></div>
 <header class="hdr">
   <div class="logo"><div class="logo-mark" aria-hidden="true">U</div>U-Topia</div>
   <span class="preview-chip">Reference Integration Preview</span>
@@ -768,9 +770,9 @@ const SPEND = { /* fictional spending history for the breakdown chart */
 const CONTACTS = [{tag:'@coffee-lab', name:'Coffee Lab', paid:6}, {tag:'@phone-store', name:'Phone Store', paid:1}, {tag:'@ploy.k', name:'Ploy K.', paid:3}];
 const NETWORKS = {uchain:{label:'U-Chain (fictional)', prefix:'uc1', used:true}, xnet:{label:'XNet (fictional)', prefix:'xn1', used:false}};
 const SCEN = {
-  A:{title:'Safe purchase', short:'Safe purchase', flow:'utag', recipient:'@coffee-lab', amount:'1290'},
-  B:{title:'Balance is enough, safe-to-spend is not', short:'Main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
-  C:{title:'Suspicious crypto transfer', short:'Suspicious crypto', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', network:'xnet', asset:'USDT', amount:'120', label:'Alpha Crypto Mentor',
+  A:{title:'Safe purchase', short:'Safe', flow:'utag', recipient:'@coffee-lab', amount:'1290'},
+  B:{title:'Balance is enough, safe-to-spend is not', short:'Start main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
+  C:{title:'Suspicious crypto transfer', short:'Scam signals', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', network:'xnet', asset:'USDT', amount:'120', label:'Alpha Crypto Mentor',
      message:'Guaranteed 30% return in 7 days. Send now, slots close tonight. Keep this between us.'}
 };
 const CHECKLIST = [
@@ -1083,7 +1085,7 @@ function dashboard(){
       <button class="pbtn t-swap" type="button" data-oos="Swap"><span class="pi">${ic('swap')}</span>Swap</button>
       <button class="pbtn t-send" type="button" data-go="pay"><span class="pi">${ic('sendNE')}</span>Send</button>
     </div>
-    <div class="sec-h"><h2>Safe-to-spend</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
+    <div class="sec-h"><h2>Money partition</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
     <div class="card card-in">${stsBreakdown()}<p class="hint" style="margin:10px 0 0">Next income in ${PROFILE.nextIncome} days · Safe-to-spend = max(0, balance − must keep − buffer)</p></div>
     <div class="sec-h"><h2>Spending Breakdown</h2></div>
     ${chart()}
