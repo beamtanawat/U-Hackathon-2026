@@ -155,18 +155,35 @@ function deterministicIndicators(request: EvaluationRequest): {
   return { indicators, critical };
 }
 
+const STATUS_RANK = { low: 0, review: 1, high: 2 } as const;
+type ScoredStatus = keyof typeof STATUS_RANK;
+
+/**
+ * Deterministic floor applied on top of the model, using Archay's critical
+ * rules: a critical combination is always High, and any supplied context
+ * signal (urgency, secrecy, impersonation, ...) is at least Review.
+ * A new recipient on its own is left to the model.
+ */
+function policyFloor(indicators: string[], critical: boolean): ScoredStatus {
+  if (critical) return "high";
+  return indicators.some((indicator) => indicator !== "new_recipient") ? "review" : "low";
+}
+
 export function assessTrust(
   request: EvaluationRequest,
   inputArtifact: unknown = defaultModel,
 ): TrustAssessment {
   const artifact = validateModelArtifact(inputArtifact);
+  const rules = deterministicIndicators(request);
+  const floor = policyFloor(rules.indicators, rules.critical);
   const extracted = extractRiskFeatures(request, artifact);
   if (extracted === null) {
-    const fallback = deterministicIndicators(request);
+    // Without model inputs, keep every supplied indicator; with no supplied
+    // signal at all the honest answer is Unknown, never Low.
     return {
-      status: fallback.critical ? "high" : "unknown",
+      status: floor === "low" ? "unknown" : floor,
       riskScore: null,
-      indicators: fallback.critical ? fallback.indicators : [],
+      indicators: rules.indicators,
       modelVersion: null,
     };
   }
@@ -181,9 +198,10 @@ export function assessTrust(
         extracted.values[feature] === 1,
     )
     .map(({ feature }) => indicatorNames[feature]);
+  const modelStatus = classifyRiskScore(riskScore, artifact);
 
   return {
-    status: classifyRiskScore(riskScore, artifact),
+    status: STATUS_RANK[floor] > STATUS_RANK[modelStatus] ? floor : modelStatus,
     riskScore,
     indicators,
     modelVersion: artifact.modelVersion,

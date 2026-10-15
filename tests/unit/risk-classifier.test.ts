@@ -66,6 +66,36 @@ describe("risk model inference", () => {
     });
   });
 
+  it("keeps a critical indicator High even when the model scores it low", () => {
+    const request = structuredClone(scenarios.safeUTag);
+    request.context.guaranteedOrHighReturn = { value: true, provenance: "user_provided" };
+
+    const result = assessTrust(request);
+    expect(result.riskScore).toBeLessThan(0.5);
+    expect(result.status).toBe("high");
+    expect(result.indicators).toContain("guaranteed_or_high_return");
+  });
+
+  it("raises a single supplied context signal to at least Review", () => {
+    const request = structuredClone(scenarios.safeUTag);
+    request.context.urgency = { value: true, provenance: "user_provided" };
+
+    expect(assessTrust(request).status).toBe("review");
+  });
+
+  it("keeps supplied indicators when model inputs are missing", () => {
+    const request = structuredClone(scenarios.safeUTag);
+    request.recentMedianAmount = { value: null, provenance: "unavailable" };
+    request.context.urgency = { value: true, provenance: "user_provided" };
+
+    expect(assessTrust(request)).toEqual({
+      status: "review",
+      riskScore: null,
+      indicators: ["urgency"],
+      modelVersion: null,
+    });
+  });
+
   it("returns explainable indicators for a suspicious scenario", () => {
     const result = assessTrust(scenarios.suspiciousCrypto);
 
