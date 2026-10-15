@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    "scenario-a-safe-u-tag.json",
+    "scenario-b-protected-buffer.json",
+    "scenario-c-suspicious-crypto.json"
+  ]
+}

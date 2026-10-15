@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "modelType": "logistic_regression",
+  "modelVersion": "scam-context-v1",
+  "positiveLabel": "suspicious_context",
+  "featureOrder": [
+    "is_new_recipient",
+    "recipient_tx_count_log1p",
+    "amount_to_recent_median_ratio",
+    "context_present",
+    "urgency",
+    "urgency_known",
+    "secrecy_request",
+    "secrecy_request_known",
+    "guaranteed_or_high_return",
+    "guaranteed_or_high_return_known",
+    "impersonation",
+    "impersonation_known",
+    "unexpected_contact",
+    "unexpected_contact_known",
+    "move_money_to_protect",
+    "move_money_to_protect_known",
+    "advance_fee_or_prize",
+    "advance_fee_or_prize_known",
+    "romance_or_online_only_relationship",
+    "romance_or_online_only_relationship_known",
+    "payment_method_demand",
+    "payment_method_demand_known"
+  ],
+  "transforms": {
+    "recipient_tx_count_log1p": {
+      "type": "standardize",
+      "mean": 0.931255729903765,
+      "scale": 0.9938085127179618
+    },
+    "amount_to_recent_median_ratio": {
+      "type": "standardize",
+      "mean": 4.03688305235914,
+      "scale": 2.9103733119572905
+    }
+  },
+  "coefficients": [
+    0.9013792324785582,
+    -0.42345872121260275,
+    1.4688206376426056,
+    -0.23812008005608915,
+    1.1692815233209526,
+    -0.23812008005608915,
+    1.119326139895924,
+    -0.23812008005608915,
+    1.634739986787006,
+    -0.23812008005608915,
+    1.2449856207988124,
+    -0.23812008005608915,
+    2.2308640913960733,
+    -0.23812008005608915,
+    0.3710297402314052,
+    -0.23812008005608915,
+    1.5826697359669106,
+    -0.23812008005608915,
+    1.0604669063247767,
+    -0.23812008005608915,
+    0.9157369636543998,
+    -0.23812008005608915
+  ],
+  "intercept": -0.23812008005608915,
+  "link": "sigmoid",
+  "thresholds": {
+    "review": 0.6591457921081462,
+    "highRisk": 0.6741142775599109
+  },
+  "training": {
+    "seed": 42,
+    "datasetSha256": "c7b1cb0ea5b7cc3b6f6e1f952286439024e17992859757042a732b0ec4575ff9",
+    "scenarioFamiliesSha256": "c505c1f854e13047b41f9a3da4a9963d07bdc000952dd52c40ca1dfed5e45a89",
+    "scikitLearnVersion": "1.7.2",
+    "splitUnit": "scenario_family_id"
+  },
+  "testMetrics": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f2": 1.0,
+    "confusionMatrix": [
+      [
+        24,
+        0
+      ],
+      [
+        0,
+        24
+      ]
+    ],
+    "averagePrecision": 0.9999999999999999,
+    "support": 48,
+    "falseNegativeFamilies": [],
+    "ruleBaselineF2": 1.0
+  },
+  "coefficientAudit": {
+    "guaranteed_or_high_return": 1.634739986787006,
+    "move_money_to_protect": 0.3710297402314052,
+    "advance_fee_or_prize": 1.5826697359669106,
+    "romance_or_online_only_relationship": 1.0604669063247767
+  },
+  "goldenVectors": [
+    {
+      "caseId": "test-benign-school-fee-01",
+      "features": {
+        "is_new_recipient": 0.0,
+        "recipient_tx_count_log1p": 0.6824072986410415,
+        "amount_to_recent_median_ratio": -0.328864525718173,
+        "context_present": 1.0,
+        "urgency": 0.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 0.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 0.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.03256736110008396
+    },
+    {
+      "caseId": "test-benign-school-fee-02",
+      "features": {
+        "is_new_recipient": 0.0,
+        "recipient_tx_count_log1p": 0.45787354947447845,
+        "amount_to_recent_median_ratio": -0.44009843240776614,
+        "context_present": 1.0,
+        "urgency": 0.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 0.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 0.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.0304827567643995
+    },
+    {
+      "caseId": "test-benign-school-fee-03",
+      "features": {
+        "is_new_recipient": 0.0,
+        "recipient_tx_count_log1p": 0.16839920027112884,
+        "amount_to_recent_median_ratio": -0.3206480921848606,
+        "context_present": 1.0,
+        "urgency": 0.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 0.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 0.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.04063641580691619
+    },
+    {
+      "caseId": "test-suspicious-government-impersonation-01",
+      "features": {
+        "is_new_recipient": 1.0,
+        "recipient_tx_count_log1p": -0.937057509556724,
+        "amount_to_recent_median_ratio": 1.1353301492591368,
+        "context_present": 1.0,
+        "urgency": 1.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 1.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 1.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.9797680567872915
+    },
+    {
+      "caseId": "test-suspicious-government-impersonation-02",
+      "features": {
+        "is_new_recipient": 1.0,
+        "recipient_tx_count_log1p": -0.937057509556724,
+        "amount_to_recent_median_ratio": 0.9941042944215225,
+        "context_present": 1.0,
+        "urgency": 1.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 1.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 1.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.9752197946809666
+    },
+    {
+      "caseId": "test-suspicious-government-impersonation-03",
+      "features": {
+        "is_new_recipient": 1.0,
+        "recipient_tx_count_log1p": -0.937057509556724,
+        "amount_to_recent_median_ratio": 1.1816095813175238,
+        "context_present": 1.0,
+        "urgency": 1.0,
+        "urgency_known": 1.0,
+        "secrecy_request": 1.0,
+        "secrecy_request_known": 1.0,
+        "guaranteed_or_high_return": 0.0,
+        "guaranteed_or_high_return_known": 1.0,
+        "impersonation": 1.0,
+        "impersonation_known": 1.0,
+        "unexpected_contact": 0.0,
+        "unexpected_contact_known": 1.0,
+        "move_money_to_protect": 0.0,
+        "move_money_to_protect_known": 1.0,
+        "advance_fee_or_prize": 0.0,
+        "advance_fee_or_prize_known": 1.0,
+        "romance_or_online_only_relationship": 0.0,
+        "romance_or_online_only_relationship_known": 1.0,
+        "payment_method_demand": 0.0,
+        "payment_method_demand_known": 1.0
+      },
+      "score": 0.9810724791881972
+    }
+  ],
+  "limitations": [
+    "Curated simulated scenarios are not representative of real-world fraud prevalence.",
+    "The score ranks suspicious context and is not a calibrated fraud probability.",
+    "The model must fall back to deterministic rules when required structured inputs are missing."
+  ]
+}

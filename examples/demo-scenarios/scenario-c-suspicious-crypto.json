@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "scenario-c-suspicious-crypto",
+  "title": "Affordable transfer with suspicious crypto context",
+  "demoGoal": "Show financial and trust decisions separately: mandatory obligations remain covered while contextual risk is high.",
+  "request": {
+    "scenarioId": "new-destination-crypto",
+    "walletType": { "value": "crypto", "provenance": "simulated" },
+    "transferMode": { "value": "on_chain", "provenance": "simulated" },
+    "availableBalance": { "value": 5000, "provenance": "simulated" },
+    "essentialObligations": { "value": 1500, "provenance": "simulated" },
+    "debtDue": { "value": 500, "provenance": "simulated" },
+    "protectedBuffer": { "value": 1000, "provenance": "simulated" },
+    "amount": { "value": 2500, "provenance": "simulated" },
+    "asset": { "value": "USDC", "provenance": "simulated" },
+    "network": { "value": "BNB Smart Chain", "provenance": "simulated" },
+    "recipient": {
+      "kind": { "value": "wallet_address", "provenance": "simulated" },
+      "identifier": { "value": "destination:demo-risk-001", "provenance": "simulated" },
+      "isNew": { "value": true, "provenance": "simulated" },
+      "previousTransactionCount": { "value": 0, "provenance": "simulated" }
+    },
+    "recentMedianAmount": { "value": 250, "provenance": "simulated" },
+    "context": {
+      "urgency": { "value": true, "provenance": "simulated" },
+      "secrecyRequest": { "value": null, "provenance": "unavailable" },
+      "guaranteedOrHighReturn": { "value": true, "provenance": "simulated" },
+      "impersonation": { "value": null, "provenance": "unavailable" },
+      "unexpectedContact": { "value": null, "provenance": "unavailable" },
+      "moveMoneyToProtect": { "value": null, "provenance": "unavailable" },
+      "advanceFeeOrPrize": { "value": null, "provenance": "unavailable" },
+      "romanceOrOnlineOnlyRelationship": { "value": null, "provenance": "unavailable" },
+      "paymentMethodDemand": { "value": null, "provenance": "unavailable" }
+    }
+  },
+  "expectedAssessment": {
+    "financial": {
+      "status": "review",
+      "safeToSpendBefore": 2000,
+      "safeToSpendAfter": -500,
+      "postTransactionBalance": 2500,
+      "affectedCommitments": ["protected_buffer"],
+      "reasonCodes": ["USES_PROTECTED_BUFFER"],
+      "missingFields": []
+    },
+    "trust": {
+      "status": "high",
+      "riskScore": 0.9978905555436451,
+      "indicators": ["new_recipient", "urgency", "guaranteed_or_high_return"],
+      "modelVersion": "scam-context-v1"
+    }
+  }
+}
