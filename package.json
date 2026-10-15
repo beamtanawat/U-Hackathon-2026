@@ -11,8 +11,9 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "test:e2e": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
+    "typecheck": "tsc --noEmit",
+    "e2e:install": "PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright install --only-shell chromium"
   },
   "dependencies": {
     "next": "^16.4.1",

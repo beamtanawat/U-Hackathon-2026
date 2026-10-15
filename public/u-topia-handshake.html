@@ -500,7 +500,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .t-verify{--t:var(--blue);--t-bg:var(--blue-bg);--t-line:var(--blue-line)}
 .t-postpone{--t:var(--hs);--t-bg:var(--hs-bg);--t-line:var(--hs-line)}
 .t-cancel{--t:var(--risk);--t-bg:var(--risk-bg);--t-line:var(--risk-line)}
-/* U-Bot chat */
+/* demo helper chat */
 .chat-fab{position:fixed;right:28px;bottom:28px;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 20px 10px 10px;min-height:56px;border-radius:999px;border:0;background:var(--grad-btn);color:#fff;font-weight:600;font-size:15.5px;box-shadow:0 14px 30px rgba(11,102,240,.38);transition:transform .15s}
 .chat-fab:hover{transform:translateY(-2px)}
 .chat-fab .fi{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:19px;position:relative}
@@ -682,13 +682,13 @@ label.fl{font-size:15.5px}
 </footer>
 <div class="backdrop" id="backdrop" data-act="closeSheet"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat"><span class="fi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><span class="lbl">Help · Ask U-Bot</span></button>
-<section class="chat" id="chat" hidden aria-label="U-Bot chat">
-  <div class="chat-h"><span class="av"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><div><b>U-Bot</b><small>Questions about Safe-to-Pay &amp; this demo</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat"><span class="fi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><span class="lbl">Help</span></button>
+<section class="chat" id="chat" hidden aria-label="Demo helper chat">
+  <div class="chat-h"><span class="av"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><div><b>Demo helper</b><small>Rule-based answers about Safe-to-Pay &amp; this demo</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="chat-note">Demo assistant · fictional data · not financial advice</div>
   <div class="chat-log" id="chat-log" aria-live="polite"></div>
   <div class="chat-sugg" id="chat-sugg"></div>
-  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask a question…" aria-label="Ask U-Bot" autocomplete="off"><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
+  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask a question…" aria-label="Ask the demo helper" autocomplete="off"><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
 </section>
 
 <script>
@@ -696,7 +696,7 @@ label.fl{font-size:15.5px}
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = n => n == null ? '—' : (n < 0 ? '−' : '') + '฿' + Math.abs(Math.round(n)).toLocaleString('en-US');
-const fmtC = (n, a) => (+n).toLocaleString('en-US', {maximumFractionDigits: a === 'ETH' ? 4 : 2}) + ' ' + a;
+const fmtC = (n, a) => (+n).toLocaleString('en-US', {maximumFractionDigits: 2}) + ' ' + a;
 const sum = arr => arr.reduce((t, x) => t + x.amount, 0);
 const trunc = s => s.length > 10 ? s.slice(0, 4) + '…' + s.slice(-4) : s;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -749,19 +749,21 @@ const I = {
 const ic = (n, cls) => `<svg class="ic ${cls||''}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
 
 const FIN = {safe:{label:'Safe', icon:'checkCircle', cls:'s-safe'}, review:{label:'Review', icon:'tri', cls:'s-review'}, high_risk:{label:'High Risk', icon:'oct', cls:'s-risk'}};
-const TRUST = {low:{label:'Low', icon:'checkCircle', cls:'s-safe'}, review:{label:'Review', icon:'tri', cls:'s-review'}, high:{label:'High', icon:'oct', cls:'s-risk'}, unknown:{label:'Unknown', icon:'q', cls:'s-unknown'}, not_run:{label:'Not needed', icon:'minusC', cls:'s-unknown'}};
+const TRUST = {low:{label:'Low', icon:'checkCircle', cls:'s-safe'}, review:{label:'Review', icon:'tri', cls:'s-review'}, high:{label:'High', icon:'oct', cls:'s-risk'}, unknown:{label:'Unknown', icon:'q', cls:'s-unknown'}, not_assessed:{label:'Not assessed', icon:'minusC', cls:'s-unknown'}};
 const badge = (m, lg, key) => `<span class="badge ${m.cls} ${lg?'lg':''}">${ic(m.icon)}${key ? `<span class="k">${key}:</span>` : ''}${m.label}</span>`;
 
 /* ---------- fictional fixtures (unchanged) ---------- */
 const PROFILE = {
-  balance:18500, buffer:3000, nextIncome:12, usdt:320, eth:0.04,
+  balance:18500, buffer:3000, nextIncome:12, usdc:320,
+  /* Simulated baselines (not verified history): recent median transfer per wallet,
+     used only by the trust model's unusual-amount feature. Same values as
+     examples/demo-scenarios/*.json. */
+  recentMedianThb:2500, recentMedianUsdc:40,
   essentials:[{id:'utilities',label:'Utilities & phone',amount:1200,due_in_days:3},{id:'rent',label:'Rent',amount:6000,due_in_days:5}],
   debts:[{id:'card_min',label:'Card minimum',amount:1500,due_in_days:8},{id:'bnpl',label:'BNPL installment',amount:1300,due_in_days:10}]
 };
 const MUST_KEEP = sum(PROFILE.essentials) + sum(PROFILE.debts);
 const STS0 = Math.max(0, PROFILE.balance - MUST_KEEP - PROFILE.buffer);
-const RATES = {USDT:100/3, ETH:80000};
-const CRYPTO_THB = Math.round(PROFILE.usdt * RATES.USDT + PROFILE.eth * RATES.ETH);
 const SPEND = { /* fictional spending history for the breakdown chart */
   '7d':{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values:[320,0,450,180,90,600,240], max:800},
   '30d':{labels:['Week 1','Week 2','Week 3','Week 4'], values:[2100,1650,2400,1200], max:3000},
@@ -770,10 +772,13 @@ const SPEND = { /* fictional spending history for the breakdown chart */
 const CONTACTS = [{tag:'@coffee-lab', name:'Coffee Lab', paid:6}, {tag:'@phone-store', name:'Phone Store', paid:1}, {tag:'@ploy.k', name:'Ploy K.', paid:3}];
 const NETWORKS = {uchain:{label:'U-Chain (fictional)', prefix:'uc1', used:true}, xnet:{label:'XNet (fictional)', prefix:'xn1', used:false}};
 const SCEN = {
-  A:{title:'Safe purchase', short:'Safe', flow:'utag', recipient:'@coffee-lab', amount:'1290'},
-  B:{title:'Balance is enough, safe-to-spend is not', short:'Start main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
-  C:{title:'Suspicious crypto transfer', short:'Scam signals', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', network:'xnet', asset:'USDT', amount:'120', label:'Alpha Crypto Mentor',
-     message:'Guaranteed 30% return in 7 days. Send now, slots close tonight. Keep this between us.'}
+  /* Mirrors examples/demo-scenarios/*.json; the E2E test asserts the request is identical. */
+  A:{id:'safe-u-tag', title:'Safe purchase', short:'Safe', flow:'utag', recipient:'@coffee-lab', amount:'1290'},
+  B:{id:'balance-enough-safe-to-spend-not-enough', title:'Balance is enough, safe-to-spend is not', short:'Start main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
+  C:{id:'new-destination-crypto', title:'Suspicious crypto transfer', short:'Scam signals', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', destinationRef:'destination:demo-risk-001', network:'xnet', asset:'USDC', amount:'120', label:'Alpha Crypto Mentor',
+     message:'Guaranteed 30% return in 7 days. Send now, slots close tonight. Keep this between us.',
+     /* Context flags the fictional message carries; supplied by the fixture, never inferred. */
+     context:{urgency:true, secrecyRequest:true, guaranteedOrHighReturn:true}}
 };
 const CHECKLIST = [
   'Contact the person through a channel you found yourself, not the chat that asked for money.',
@@ -786,10 +791,10 @@ const STEPS = {utag:['recipient','amount','check','confirm'], crypto:['dest','am
 const STEP_LABEL = {recipient:'Recipient', dest:'Destination', amount:'Amount', wallet:'Wallet check', check:'Safe-to-Pay', confirm:'Confirm'};
 
 /* ---------- state ---------- */
-const blank = () => ({recipient:'', amount:'', address:'', network:'', asset:'USDT', label:'', message:'', ack1:false, ack2:false});
+const blank = () => ({recipient:'', amount:'', address:'', network:'', asset:'USDC', label:'', message:'', ack1:false, ack2:false});
 let S = Object.assign({
   page:'dashboard', walletTab:'crypto', step:'choose', flow:'utag', scenario:null, edited:false,
-  phase:'idle', request:null, result:null, outcome:null, ms:null, reducedFrom:null,
+  phase:'idle', request:null, result:null, response:null, httpStatus:null, errorInfo:null, outcome:null, ms:null, reducedFrom:null,
   verifyOpen:false, checks:CHECKLIST.map(() => false),
   toggles:{neterr:false, ubotDown:false, incomplete:false},
   sheetOpen:false, inspOpen:false, inspTab:'req', activity:[], animateBars:false,
@@ -802,7 +807,7 @@ const money = s => S.hideBal ? '••••••' : s;
 
 function resetRun(){
   runToken++;
-  Object.assign(S, {phase:'idle', request:null, result:null, outcome:null, ms:null, reducedFrom:null, verifyOpen:false, checks:CHECKLIST.map(() => false), sheetOpen:false});
+  Object.assign(S, {phase:'idle', request:null, result:null, response:null, httpStatus:null, errorInfo:null, outcome:null, ms:null, reducedFrom:null, verifyOpen:false, checks:CHECKLIST.map(() => false), sheetOpen:false});
 }
 function loadScenario(id){
   const sc = SCEN[id];
@@ -832,148 +837,71 @@ function amountError(){
   if (n < 0) return 'The amount can’t be negative. Enter a positive number.';
   if (n === 0) return 'Enter an amount above 0.';
   if (S.flow === 'utag'){ if (n > PROFILE.balance) return `That’s more than your ${fmt(PROFILE.balance)} balance. Enter ${fmt(PROFILE.balance)} or less.`; }
-  else { const held = S.asset === 'USDT' ? PROFILE.usdt : PROFILE.eth; if (n > held) return `That’s more than the ${fmtC(held, S.asset)} you hold.`; }
+  else if (n > PROFILE.usdc) return `That’s more than the ${fmtC(PROFILE.usdc, S.asset)} you hold.`;
   return null;
 }
 const normTag = t => { t = t.trim(); return t && t[0] !== '@' ? '@' + t : t; };
 function networkMatch(){ const n = NETWORKS[S.network]; if (!n || !S.address) return null; return S.address.toLowerCase().startsWith(n.prefix); }
 
-/* ---------- request (host builds it) ---------- */
-const PROV = {
-  'meta.host':'host','meta.simulation':'host','meta.scenario_id':'fixture',
-  'transaction':'input','transaction.currency':'host','transaction.amount_thb_equiv':'host','transaction.fx_rate_fixture':'fixture',
-  'wallet_context':'host','wallet_context.essential_obligations':'fixture','wallet_context.debt_bnpl_due':'fixture','wallet_context.next_income_in_days':'fixture',
-  'recipient_context':'host','recipient_context.label':'input','recipient_context.message_text':'fixture'
-};
+/* ---------- request (host adapter builds the canonical EvaluationRequest) ---------- */
+const SIMV = v => ({value:v, provenance:'simulated'});
+const NA = () => ({value:null, provenance:'unavailable'});
+const CONTEXT_KEYS = ['urgency','secrecyRequest','guaranteedOrHighReturn','impersonation','unexpectedContact','moveMoneyToProtect','advanceFeeOrPrize','romanceOrOnlineOnlyRelationship','paymentMethodDemand'];
 function buildRequest(){
-  const amt = Number(S.amount);
-  const meta = {host:'u-topia-reference-preview', simulation:true, scenario_id: S.scenario ? S.scenario + (S.edited ? '-edited' : '') : 'custom'};
-  let transaction, recipient_context;
-  if (S.flow === 'utag'){
-    const tag = normTag(S.recipient), c = CONTACTS.find(x => x.tag === tag);
-    transaction = {flow:'utag_transfer', recipient_utag:tag, amount:amt, currency:'THB'};
-    recipient_context = {saved_contact:!!c, times_paid_before:c ? c.paid : 0};
-  } else {
-    const rate = RATES[S.asset];
-    transaction = {flow:'crypto_transfer', destination_address:trunc(S.address.trim()), network:S.network, asset:S.asset, amount_crypto:amt, fx_rate_fixture:+rate.toFixed(4), amount_thb_equiv:Math.round(amt * rate), currency:'THB'};
-    recipient_context = {address_seen_before:false, network_used_before:!!(NETWORKS[S.network]||{}).used, label:S.label.trim() || null, message_text:S.message.trim() || null};
-  }
-  const wallet_context = {wallet:'spending', balance:PROFILE.balance, currency:'THB', protected_buffer:PROFILE.buffer};
-  if (!S.toggles.incomplete){
-    wallet_context.essential_obligations = PROFILE.essentials.map(x => ({...x}));
-    wallet_context.debt_bnpl_due = PROFILE.debts.map(x => ({...x}));
-    wallet_context.next_income_in_days = PROFILE.nextIncome;
-  }
-  return {meta, transaction, wallet_context, recipient_context};
+  const u = S.flow === 'utag', sc = S.scenario ? SCEN[S.scenario] : null, fixture = sc && !S.edited;
+  /* Unedited scenario values are fixture data; anything the user typed is user-provided. */
+  const input = v => ({value:v, provenance: fixture ? 'simulated' : 'user_provided'});
+  const contact = u ? CONTACTS.find(c => c.tag === normTag(S.recipient)) : null;
+  const context = {};
+  CONTEXT_KEYS.forEach(k => { context[k] = fixture && sc.context && sc.context[k] !== undefined ? SIMV(sc.context[k]) : NA(); });
+  const req = {
+    walletType: SIMV(u ? 'spending' : 'crypto'),
+    transferMode: SIMV(u ? 'u_tag' : 'on_chain'),
+    currency: SIMV('THB'),
+    availableBalance: SIMV(PROFILE.balance),
+    essentialObligations: S.toggles.incomplete ? NA() : SIMV(sum(PROFILE.essentials)),
+    debtDue: S.toggles.incomplete ? NA() : SIMV(sum(PROFILE.debts)),
+    protectedBuffer: SIMV(PROFILE.buffer),
+    amount: input(Number(S.amount)),
+    asset: input(u ? 'THB' : S.asset),
+    network: u ? NA() : input(NETWORKS[S.network].label),
+    recipient: {
+      kind: SIMV(u ? 'u_tag' : 'wallet_address'),
+      /* Never send the raw address: only a fixture reference or a truncated fingerprint. */
+      identifier: input(u ? normTag(S.recipient) : (fixture ? sc.destinationRef : 'destination:' + trunc(S.address.trim()))),
+      isNew: SIMV(u ? !contact : true),
+      previousTransactionCount: SIMV(u ? (contact ? contact.paid : 0) : 0)
+    },
+    recentMedianAmount: SIMV(u ? PROFILE.recentMedianThb : PROFILE.recentMedianUsdc),
+    context
+  };
+  return fixture ? {scenarioId: sc.id, ...req} : req;
 }
 
-/* ---------- engine (fixed rules; displayed, never changed) ---------- */
-const IND_LABEL = {new_recipient:'New recipient', urgency_language:'Urgency language', guaranteed_return_language:'Guaranteed-return language', secrecy_request:'Secrecy request', unusual_payment_method:'Unusual payment method'};
-const P_TABLE = [0.08, 0.22, 0.41, 0.58, 0.74, 0.87];
-const RX = {
-  urgency_language:/\b(now|tonight|today|hurry|asap|last chance|slots? close)\b/i,
-  guaranteed_return_language:/guarantee|risk[- ]free|\d+\s?% (return|profit)/i,
-  secrecy_request:/between us|don'?t tell|keep (it|this) (quiet|secret)|secret/i
-};
-function evalTrust(req){
-  const tx = req.transaction, rc = req.recipient_context;
-  if (tx.flow === 'utag_transfer'){
-    if (rc.saved_contact) return {status:'not_run', reason:`Saved contact, paid ${rc.times_paid_before} time${rc.times_paid_before === 1 ? '' : 's'} before.`};
-    return {status:'unknown', indicators:['new_recipient'], probability:null, model_version:null, reason:'New U-Tag with no message context, so there aren’t enough signals to assess.'};
-  }
-  const ind = [];
-  if (!rc.address_seen_before) ind.push('new_recipient');
-  const msg = rc.message_text || '';
-  ['urgency_language','guaranteed_return_language','secrecy_request'].forEach(k => { if (RX[k].test(msg)) ind.push(k); });
-  if (!rc.network_used_before) ind.push('unusual_payment_method');
-  const p = P_TABLE[Math.min(ind.length, 5)];
-  return {status: p >= 0.7 ? 'high' : p >= 0.4 ? 'review' : 'low', indicators:ind, probability:p, model_version:'trust-signals v0.1 · trained on synthetic data'};
-}
-function evaluate(req){
-  const w = req.wallet_context, tx = req.transaction;
-  const amount = tx.flow === 'utag_transfer' ? tx.amount : tx.amount_thb_equiv;
-  const bal = w.balance, buf = w.protected_buffer, post = bal - amount;
-  const missing = ['essential_obligations','debt_bnpl_due','next_income_in_days'].filter(k => w[k] == null);
-  let fin;
-  if (missing.length){
-    fin = {status:'review', missing_fields:missing, balance_before:bal, amount_thb:amount, balance_after:post, protected_buffer:buf,
-      must_keep:null, safe_to_spend_before:null, safe_to_spend_after:null, affected_commitments:[],
-      reasons:['Must keep and safe-to-spend need your obligations, so they were not calculated.', 'Nothing was estimated or filled in.']};
-  } else {
-    const ess = sum(w.essential_obligations), debt = sum(w.debt_bnpl_due), mk = ess + debt;
-    const stsB = Math.max(0, bal - mk - buf), stsA = Math.max(0, post - mk - buf);
-    const status = post >= mk + buf ? 'safe' : post >= mk ? 'review' : 'high_risk';
-    const items = [...w.essential_obligations, ...w.debt_bnpl_due].slice().sort((a, b) => a.due_in_days - b.due_in_days);
-    let avail = Math.max(0, post);
-    const affected = items.map(it => { const cov = Math.min(it.amount, avail); avail -= cov;
-      return {id:it.id, label:it.label, amount:it.amount, due_in_days:it.due_in_days, covered:cov, short:it.amount - cov, state: cov >= it.amount ? 'covered' : cov > 0 ? 'partly_covered' : 'not_covered'}; });
-    const bufLeft = Math.min(buf, avail), shortfall = Math.max(0, mk - post);
-    const hit = affected.filter(a => a.state !== 'covered');
-    let reasons;
-    if (status === 'high_risk') reasons = [
-      `Balance after payment would be ${fmt(post)}, which is ${fmt(shortfall)} below must keep (${fmt(mk)}).`,
-      `Your protected buffer (${fmt(buf)}) would be fully used.`,
-      `${hit.length} commitment${hit.length === 1 ? '' : 's'} would be short before payday in ${w.next_income_in_days} days.`,
-      `The most you can pay and keep everything covered: ${fmt(stsB)}.`];
-    else if (status === 'review') reasons = [
-      `Balance after payment (${fmt(post)}) still covers must keep (${fmt(mk)}).`,
-      `It uses ${fmt(buf - bufLeft)} of your ${fmt(buf)} protected buffer.`,
-      `Paying ${fmt(stsB)} or less keeps the full buffer.`];
-    else reasons = [
-      `Balance after payment (${fmt(post)}) stays above must keep + buffer (${fmt(mk + buf)}).`,
-      `All ${items.length} commitments stay covered.`,
-      `Safe-to-spend after payment: ${fmt(stsA)}.`];
-    fin = {status, balance_before:bal, amount_thb:amount, balance_after:post, essential_due:ess, debt_bnpl_due:debt, must_keep:mk,
-      protected_buffer:buf, buffer_remaining:bufLeft, safe_to_spend_before:stsB, safe_to_spend_after:stsA,
-      shortfall_vs_must_keep:shortfall, max_safe_amount:stsB, next_income_in_days:w.next_income_in_days, affected_commitments:affected, reasons};
-  }
-  const trust = evalTrust(req);
-  let rec;
-  if (trust.status === 'high' || trust.status === 'review') rec = fin.status === 'high_risk' ? ['verify_recipient','reduce_amount'] : ['verify_recipient','cancel'];
-  else if (fin.missing_fields) rec = ['postpone'];
-  else if (fin.status === 'high_risk') rec = ['reduce_amount','postpone'];
-  else if (fin.status === 'review') rec = ['reduce_amount'];
-  else rec = ['proceed'];
-  const res = {request_id:'sim-' + Math.random().toString(36).slice(2, 8), engine_version:'safe-to-pay-rules v1.0', financial:fin, trust, recommended_actions:rec};
-  res.explanation = S.toggles.ubotDown ? {source:'fallback', text:fallbackText(res), alternatives:[]} : ubot(res, req);
-  return res;
-}
-/* U-Bot only templates engine values, so its numbers cannot differ from the engine. */
-function ubot(res, req){
-  const f = res.financial, t = res.trust;
-  const amtLabel = req.transaction.flow === 'utag_transfer' ? fmt(f.amount_thb) : `${fmtC(req.transaction.amount_crypto, req.transaction.asset)} (≈ ${fmt(f.amount_thb)})`;
-  let text, alts = [];
-  if (t.status === 'high' || t.status === 'review'){
-    text = (f.missing_fields ? 'I couldn’t check the money side fully because some details are missing. ' :
-      f.status === 'safe' ? `Money-wise this fits: ${fmt(f.safe_to_spend_after)} stays safe to spend. ` :
-      `Money-wise this needs a look: it would leave ${fmt(f.balance_after)} against ${fmt(f.must_keep)} you need to keep. `) +
-      `The recipient check found ${t.indicators.length} signals that often show up in investment scams, such as a guaranteed return and a request for secrecy. They are signals, not proof. Crypto transfers can’t be reversed, so it may be worth confirming who this is first.`;
-    alts = ['Verify the recipient through a channel you found yourself', 'Cancel for now. Nothing is sent until you confirm', 'Show the message to someone you trust'];
-  } else if (f.missing_fields){
-    text = `Some details I need are missing (${f.missing_fields.join(', ')}), so I can’t tell how this affects your bills. I haven’t guessed any numbers.`;
-    alts = ['Postpone until the wallet can share your obligations', 'Proceed if you already know your bills are covered'];
-  } else if (f.status === 'high_risk'){
-    const hit = f.affected_commitments.filter(a => a.state !== 'covered').map(a => a.label.toLowerCase());
-    text = `You can pay ${amtLabel}, but it would leave ${fmt(f.shortfall_vs_must_keep)} less than you need for ${hit.slice(0, -1).join(', ')}${hit.length > 1 ? ' and ' : ''}${hit.slice(-1)} before payday in ${f.next_income_in_days} days.`;
-    alts = [`Pay ${fmt(f.max_safe_amount)} now, the most that keeps every commitment covered`, `Wait until payday in ${f.next_income_in_days} days, then pay the full ${fmt(f.amount_thb)}`, 'Ask the store about a cheaper model or a smaller deposit'];
-  } else if (f.status === 'review'){
-    text = `You can afford this and your bills stay covered, but it uses ${fmt(f.protected_buffer - f.buffer_remaining)} of your ${fmt(f.protected_buffer)} buffer.`;
-    alts = [`Pay ${fmt(f.max_safe_amount)} or less to keep the full buffer`, 'Go ahead and top the buffer back up after payday'];
-  } else text = `This fits within your safe-to-spend, and you’d still have ${fmt(f.safe_to_spend_after)} free to spend.`;
-  return {source:'u-bot', text, alternatives:alts};
-}
-const FALLBACK = {
-  safe:'This payment stays within your safe-to-spend amount. Your commitments and buffer are not affected.',
-  review:'This payment would use part of your protected buffer. Your commitments stay covered. You can reduce the amount or continue.',
-  high_risk:'This payment would leave less than you need for upcoming commitments before your next income. You can reduce the amount, postpone, or continue.',
-  missing:'Some details needed for a full check are missing, so the result is marked Review. No values were estimated.',
-  trust:'Some recipient signals need a closer look. They are indicators, not proof. You can verify the recipient before sending.'
-};
-function fallbackText(res){
-  const f = res.financial;
-  let t = f.missing_fields ? FALLBACK.missing : FALLBACK[f.status];
-  if (res.trust.status === 'high' || res.trust.status === 'review') t += ' ' + FALLBACK.trust;
-  return t;
+/* ---------- map the authoritative API response to the view (no calculations here) ---------- */
+const IND_LABEL = {new_recipient:'New recipient', urgency:'Urgency', secrecy_request:'Secrecy request', guaranteed_or_high_return:'Guaranteed or high return',
+  impersonation:'Impersonation', unexpected_contact:'Unexpected contact', move_money_to_protect:'“Move money to keep it safe”', advance_fee_or_prize:'Advance fee or prize',
+  romance_or_online_only_relationship:'Online-only relationship', payment_method_demand:'Payment method demand'};
+const indLabel = k => IND_LABEL[k] || esc(k);
+function toView(res){
+  const fa = res.assessment.financial, ta = res.assessment.trust, b = res.breakdown;
+  const financial = b ? {
+    status:fa.status, currency:b.currency, balance_before:b.availableBalance, amount:b.amount, balance_after:b.postTransactionBalance,
+    essential_due:b.essentialObligations, debt_bnpl_due:b.debtDue, must_keep:b.mandatoryObligations, protected_buffer:b.protectedBuffer,
+    buffer_used:b.bufferUsed, buffer_remaining:b.protectedBuffer - b.bufferUsed, safe_to_spend_before:b.safeToSpendBefore, safe_to_spend_after:b.safeToSpendAfter,
+    shortfall_vs_must_keep:b.shortfallVsMandatory, max_safe_amount:b.maxSafeAmount, affected:fa.affectedCommitments,
+    reasons:res.reasons.financial.map(x => x.message), reason_codes:fa.reasonCodes
+  } : {
+    status:fa.status, missing_fields:fa.missingFields, reasons:res.reasons.financial.map(x => x.message), reason_codes:fa.reasonCodes,
+    affected:[], safe_to_spend_before:null, safe_to_spend_after:null, max_safe_amount:null
+  };
+  const contact = S.flow === 'utag' ? CONTACTS.find(c => c.tag === normTag(S.recipient)) : null;
+  const trust = {status:ta.status, indicators:ta.indicators, evidence:res.reasons.trust, probability:ta.riskScore, model_version:ta.modelVersion,
+    reason: ta.status === 'unknown' ? 'Not enough recipient history or context was supplied to assess this recipient.'
+      : contact && ta.indicators.length === 0 ? `Saved contact, paid ${contact.paid} time${contact.paid === 1 ? '' : 's'} before (simulated history). No risk signals in the supplied context.` : ''};
+  const e = res.ai.explanation;
+  return {engine_version:res.engineVersion, financial, trust, recommended_actions:res.recommendedActions,
+    explanation:{source:e.source, text:e.summary + ' ' + e.nextStep}, ai:{mode:res.ai.mode, route:res.ai.route, grounding:res.ai.grounding}};
 }
 
 /* ---------- run the check ---------- */
@@ -982,19 +910,34 @@ async function runCheck(){
   S.step = 'check'; S.phase = 'loading'; S.sheetOpen = true; S.outcome = null; S.verifyOpen = false;
   S.request = buildRequest(); S.result = null;
   renderPage();
-  await sleep(reduced ? 350 : 1000);
-  if (token !== runToken) return;
-  if (S.toggles.neterr){ S.phase = 'error'; S.ms = null; }
-  else { S.ms = 140 + Math.round(Math.random() * 110); S.result = evaluate(S.request); S.phase = 'result'; S.animateBars = true; }
+  if (S.toggles.neterr){
+    /* Stage control: simulate a network failure without contacting the API. */
+    await sleep(reduced ? 150 : 400);
+    if (token !== runToken) return;
+    Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'simulated_network_error'}});
+    renderPage(); return;
+  }
+  const t0 = performance.now();
+  try {
+    const res = await fetch('/api/evaluate', {method:'POST', headers:Object.assign({'content-type':'application/json'}, S.toggles.ubotDown ? {'x-uh-ai':'off'} : {}), body:JSON.stringify(S.request)});
+    const body = await res.json().catch(() => null);
+    if (token !== runToken) return;
+    Object.assign(S, {ms:Math.round(performance.now() - t0), httpStatus:res.status, response:body});
+    if (res.ok && body && body.assessment){ S.result = toView(body); S.phase = 'result'; S.animateBars = true; S.errorInfo = null; }
+    else { S.phase = 'error'; S.errorInfo = body && body.error ? body.error : {code:'http_' + res.status}; }
+  } catch (err) {
+    if (token !== runToken) return;
+    Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'network_error'}});
+  }
   renderPage();
 }
 function act(a){
   const r = S.result; if (!r) return;
   if (a === 'verify'){ S.verifyOpen = true; renderCP(); const v = $('#verify'); if (v) v.scrollIntoView({block:'nearest', behavior: reduced ? 'auto' : 'smooth'}); return; }
   if (a === 'reduce'){
-    const f = r.financial; if (!f.max_safe_amount) return;
+    const f = r.financial; if (!f.max_safe_amount || S.flow !== 'utag') return;
     const from = Number(S.amount);
-    S.amount = String(S.flow === 'utag' ? f.max_safe_amount : Math.floor(f.max_safe_amount / RATES[S.asset] * 100) / 100);
+    S.amount = String(f.max_safe_amount); S.edited = true;
     runCheck(); S.reducedFrom = from; return;
   }
   S.outcome = {type: a === 'proceed' ? 'sent' : a === 'postpone' ? 'postponed' : 'cancelled'};
@@ -1019,8 +962,8 @@ function renderStrip(){
     ${Object.entries(SCEN).map(([id, s]) => `<button type="button" class="dchip t${id}" data-scen="${id}" aria-pressed="${S.scenario === id && S.page === 'pay'}" title="${esc(s.title)}"><b>${id}</b>${s.short}</button>`).join('')}
     <details class="stage" ${S.stageOpen ? 'open' : ''}><summary>${ic('sliders')}Stage controls${on ? ` <span class="on">${on}</span>` : ''}</summary>
       <div class="pop">
-        <label class="toggle"><input type="checkbox" data-toggle="neterr" ${S.toggles.neterr ? 'checked' : ''}>Network error</label>
-        <label class="toggle"><input type="checkbox" data-toggle="ubotDown" ${S.toggles.ubotDown ? 'checked' : ''}>U-Bot unavailable</label>
+        <label class="toggle"><input type="checkbox" data-toggle="neterr" ${S.toggles.neterr ? 'checked' : ''}>Simulate network error</label>
+        <label class="toggle"><input type="checkbox" data-toggle="ubotDown" ${S.toggles.ubotDown ? 'checked' : ''}>AI explanation off</label>
         <label class="toggle"><input type="checkbox" data-toggle="incomplete" ${S.toggles.incomplete ? 'checked' : ''}>Host context incomplete</label>
         <button type="button" class="ghost" data-act="reset" style="margin-top:4px">Reset demo</button>
       </div></details>
@@ -1050,7 +993,7 @@ function activityList(filter, emptyTitle){
   const list = S.activity.filter(filter);
   if (!list.length) return `<div class="empty-st"><h3>${emptyTitle || 'No activity yet.'}</h3><p>Start by making your first transaction! Try a Safe-to-Pay demo above.</p></div>`;
   return list.map(a => `<div class="arow"><div class="aic">${ic(a.type === 'sent' ? 'sendNE' : a.type === 'postponed' ? 'clock' : 'x')}</div>
-      <div><b>${a.type === 'sent' ? 'Simulated payment' : a.type === 'postponed' ? 'Postponed' : 'Cancelled'} · ${esc(a.to)}</b><div class="hint">Scenario ${a.scen || 'custom'} · Money ${FIN[a.status].label}${a.trust !== 'not_run' ? ' · Recipient ' + TRUST[a.trust].label : ''}</div></div>
+      <div><b>${a.type === 'sent' ? 'Simulated payment' : a.type === 'postponed' ? 'Postponed' : 'Cancelled'} · ${esc(a.to)}</b><div class="hint">Scenario ${a.scen || 'custom'} · Money ${FIN[a.status].label}${' · Recipient ' + TRUST[a.trust].label}</div></div>
       <div class="amt num">${a.type === 'sent' ? '−' + a.amt : '<span class="hint">not sent</span>'}</div></div>`).join('');
 }
 function chart(){
@@ -1072,10 +1015,11 @@ function dashboard(){
     <div class="welcome"><h1>Welcome!</h1><p>Mint (fictional)</p></div>
     <div class="card card-in" style="margin-top:14px">
       <div class="card-h"><h2>Total Balance</h2><div class="tools"><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh">${ic('refresh')}</button><button class="tool lbl" type="button" data-act="eye" aria-pressed="${S.hideBal}">${ic(S.hideBal ? 'eyeOff' : 'eye')}${S.hideBal ? 'Show' : 'Hide'}</button></div></div>
-      <div class="amt-lg num">${money('≈ ' + fmt(PROFILE.balance + CRYPTO_THB))}</div>
+      <div class="amt-lg num">${money(fmt(PROFILE.balance))} <span class="hint" style="font-size:18px">+ ${money(fmtC(PROFILE.usdc, 'USDC'))}</span></div>
+      <div class="hint">Different currencies are shown separately; no exchange rate is applied in this demo.</div>
       <div class="divider"></div>
       <div class="split2">
-        <div><div class="lbl">Crypto Wallet</div><div class="val num">${money('≈ ' + fmt(CRYPTO_THB))}</div></div>
+        <div><div class="lbl">Crypto Wallet</div><div class="val num">${money(fmtC(PROFILE.usdc, 'USDC'))}</div></div>
         <div><div class="lbl">Spending Wallet</div><div class="val num">${money(fmt(PROFILE.balance))}</div>
           <div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div></div>
       </div>
@@ -1104,8 +1048,8 @@ function wallets(){
       <button type="button" data-wtab="spending" aria-pressed="${sp}">Spending Wallet</button></div></div>
     <div class="card card-in">
       <div class="card-h"><h2>${sp ? 'Spending Balance' : 'Crypto Balance'}</h2><div class="tools"><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh">${ic('refresh')}</button><button class="tool lbl" type="button" data-act="eye" aria-pressed="${S.hideBal}">${ic(S.hideBal ? 'eyeOff' : 'eye')}${S.hideBal ? 'Show' : 'Hide'}</button></div></div>
-      <div class="amt-lg num">${money(sp ? fmt(PROFILE.balance) : '≈ ' + fmt(CRYPTO_THB))}</div>
-      ${sp ? `<div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div>` : `<div class="hint">Fixture rates: 1 USDT ≈ ฿33.33 · 1 ETH ≈ ฿80,000</div>`}
+      <div class="amt-lg num">${money(sp ? fmt(PROFILE.balance) : fmtC(PROFILE.usdc, 'USDC'))}</div>
+      ${sp ? `<div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div>` : `<div class="hint">Shown in USDC. No exchange rate is applied in this demo.</div>`}
     </div>
     <div class="pillrow c4">
       <button class="pbtn t-recv" type="button" data-oos="Receive"><span class="pi">${ic('recv')}</span>Receive</button>
@@ -1118,9 +1062,9 @@ function wallets(){
         <div class="eyebrow" style="margin:18px 0 8px">Must keep · due before payday in ${PROFILE.nextIncome} days</div>
         <ul class="list">${[...PROFILE.essentials, ...PROFILE.debts].sort((a, b) => a.due_in_days - b.due_in_days).map(c => `<li class="citem"><span>${c.label} <b class="num">${money(fmt(c.amount))}</b></span><span class="st hint" style="font-weight:500">Due in ${c.due_in_days} days</span></li>`).join('')}</ul></div>`
     : `<div class="sec-h"><h2>Holdings</h2></div>
-      <div class="card">${[['USDT', PROFILE.usdt, '#1A7F55', 'Tether · fictional holding'], ['ETH', PROFILE.eth, '#4A5BC4', 'Ether · fictional holding']].map(([a, n, c, d]) => `
+      <div class="card">${[['USDC', PROFILE.usdc, '#2775CA', 'USD Coin · fictional holding']].map(([a, n, c, d]) => `
         <div class="holding"><div class="coin" style="background:${c}">${a.slice(0, 1)}</div><div><b style="font-weight:500">${a}</b><div class="hint">${d}</div></div>
-        <div class="amt num"><b>${money(fmtC(n, a))}</b><span class="hint">${money('≈ ' + fmt(n * RATES[a]))}</span></div></div>`).join('')}</div>`}
+        <div class="amt num"><b>${money(fmtC(n, a))}</b></div></div>`).join('')}</div>`}
     <div class="sec-h"><h2>Recent ${sp ? 'Spending' : 'Crypto'} Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
     <div class="card">${activityList(a => a.flow === (sp ? 'utag' : 'crypto'))}</div>
   </div>`;
@@ -1186,7 +1130,7 @@ function stepDest(){
     <div><label class="fl" for="f-address">Destination address <span class="hint">(fictional)</span></label><input class="field" id="f-address" data-field="address" value="${esc(S.address)}" placeholder="Paste address" autocomplete="off" style="font-family:var(--f-mono);font-size:14.5px"></div>
     <div class="grid2">
       <div><label class="fl" for="f-network">Network</label><select class="field" id="f-network" data-field="network"><option value="" ${!S.network ? 'selected' : ''}>Choose…</option>${Object.entries(NETWORKS).map(([k, v]) => `<option value="${k}" ${S.network === k ? 'selected' : ''}>${v.label}${v.used ? '' : ' · new'}</option>`).join('')}</select></div>
-      <div><label class="fl" for="f-asset">Asset</label><select class="field" id="f-asset" data-field="asset"><option ${S.asset === 'USDT' ? 'selected' : ''}>USDT</option><option ${S.asset === 'ETH' ? 'selected' : ''}>ETH</option></select></div>
+      <div><label class="fl" for="f-asset">Asset</label><select class="field" id="f-asset" data-field="asset"><option selected>USDC</option></select></div>
     </div>
     <div><label class="fl" for="f-message">Message that came with the request <span class="hint">(scenario fixture)</span></label><textarea class="field" id="f-message" data-field="message" placeholder="None">${esc(S.message)}</textarea></div>
     ${errLine('e-recipient', S.address && e)}
@@ -1198,7 +1142,7 @@ function amountMsg(){
   if (e && String(S.amount) !== '') return `<div class="err">${ic('info')}<span>${e}</span></div>`;
   if (S.flow === 'utag') return `<div class="hint num">Balance ${fmt(PROFILE.balance)} · <b style="color:var(--safe)">safe-to-spend ${fmt(STS0)}</b></div>`;
   const n = Number(S.amount);
-  return `<div class="hint num">You hold ${fmtC(S.asset === 'USDT' ? PROFILE.usdt : PROFILE.eth, S.asset)}${n > 0 && !e ? ` · ≈ ${fmt(n * RATES[S.asset])} at fixture rate` : ''}</div>`;
+  return `<div class="hint num">You hold ${fmtC(PROFILE.usdc, S.asset)}${n > 0 && !e ? ' · no THB conversion is applied' : ''}</div>`;
 }
 function stepAmount(){
   const u = S.flow === 'utag', e = amountError();
@@ -1231,7 +1175,7 @@ function stepWallet(){
   const ok = S.ack1 && S.ack2;
   return flowShell(`<div class="card fcard fgrid">
     <div class="srow"><span>To</span><b>${esc(S.label || 'Unnamed')} · <span style="font-family:var(--f-mono)">${esc(trunc(S.address))}</span></b></div>
-    <div class="srow"><span>Amount</span><b class="num">${fmtC(Number(S.amount) || 0, S.asset)} <span class="hint">≈ ${fmt((Number(S.amount) || 0) * RATES[S.asset])}</span></b></div>
+    <div class="srow"><span>Amount</span><b class="num">${fmtC(Number(S.amount) || 0, S.asset)}</b></div>
     <div class="srow"><span>Network</span><b>${NETWORKS[S.network] ? NETWORKS[S.network].label : '—'}</b></div>
     <div id="hostcheck">${hostCheckHTML()}</div>
     <div class="note">${ic('shieldC')}<span>Next, Safe-to-Pay checks the money impact and the recipient. That’s separate from the wallet check above.</span></div>
@@ -1250,7 +1194,7 @@ function summaryCard(){
     <div class="card-h"><h3>Review payment</h3><span class="tag" style="margin-left:auto">U-Topia</span></div>
     <div class="srow"><span>To</span><b>${esc(u ? normTag(S.recipient) : (S.label || 'Unnamed'))}${u ? '' : `<br><span style="font-family:var(--f-mono);font-size:13px">${esc(trunc(S.address))}</span>`}</b></div>
     <div class="srow"><span>Amount</span><span class="big num">${amt}</span></div>
-    ${u ? '' : `<div class="srow"><span>≈ in Baht</span><b class="num">${fmt(Number(S.amount) * RATES[S.asset])}</b></div><div class="srow"><span>Network</span><b>${NETWORKS[S.network].label}</b></div>`}
+    ${u ? '' : `<div class="srow"><span>Network</span><b>${NETWORKS[S.network].label}</b></div>`}
     <div class="srow"><span>From</span><b>${u ? 'Spending Wallet' : 'Crypto Wallet'}</b></div>
     ${u ? '' : `<div class="srow"><span>Wallet check</span><b style="color:var(--blue)">${ic('check')} Acknowledged</b></div>`}
     ${S.phase !== 'outcome' ? `<button class="linkbtn" type="button" data-act="editAmount" style="justify-self:start">Change amount</button>` : ''}
@@ -1273,9 +1217,10 @@ function renderCP(){
       <div class="skel" aria-hidden="true"><div class="sk" style="width:30%"></div><div class="sk" style="height:38px"></div><div class="sk" style="width:60%"></div></div></div>`;
   else if (S.phase === 'error') body = `<div class="statebox" role="alert">
       <div class="sic" style="background:var(--review-bg);color:var(--review)">${ic('wifiOff')}</div>
-      <h3>We couldn’t reach the Safe-to-Pay check</h3>
+      <h3>${S.httpStatus === 429 ? 'Too many checks in a short time' : S.httpStatus ? 'The Safe-to-Pay check couldn’t finish' : 'We couldn’t reach the Safe-to-Pay check'}</h3>
       <p>Your payment hasn’t been sent and nothing has changed. Try again in a moment.</p>
-      ${S.toggles.neterr ? `<p class="hint">Stage control “Network error” is on. Switch it off, then retry.</p>` : ''}
+      ${S.errorInfo ? `<p class="hint mono">${S.httpStatus ? 'HTTP ' + S.httpStatus + ' · ' : ''}${esc(S.errorInfo.code || 'error')}</p>` : ''}
+      ${S.toggles.neterr ? `<p class="hint">Stage control “Simulate network error” is on. Switch it off, then retry.</p>` : ''}
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button><button class="btn btn-out" type="button" data-act="editAmount">Back to amount</button></div></div>`;
   else if (S.phase === 'result'){ body = resultView(); actions = actionBar(); }
   else if (S.phase === 'outcome') body = outcomeView();
@@ -1299,17 +1244,16 @@ function animateBars(){
 }
 function verdictText(r){
   const f = r.financial, t = r.trust, risky = t.status === 'high' || t.status === 'review';
-  const u = S.request.transaction.flow === 'utag_transfer';
-  const amtStr = u ? fmt(f.amount_thb) : `${fmtC(S.request.transaction.amount_crypto, S.request.transaction.asset)}`;
-  if (f.missing_fields) return {h:'We can’t finish the money check. Some details are missing.', s:'Nothing was guessed. You can still decide.'};
+  const u = S.flow === 'utag';
+  const amtStr = u ? fmt(f.amount) : fmtC(Number(S.amount), S.asset);
+  if (f.missing_fields) return {h: f.missing_fields.includes('exchangeRate') ? 'We can’t compare this crypto amount with your Baht bills.' : 'We can’t finish the money check. Some details are missing.', s:'Nothing was converted or guessed. You can still decide.'};
   if (risky && f.status === 'safe') return {h:'You can afford this. The recipient needs a closer look first.', s:`Money is fine. ${t.indicators.length} risk signals about the recipient.`};
   if (risky) return {h:'This would leave you short for bills, and the recipient needs a closer look.', s:`${fmt(f.shortfall_vs_must_keep)} short of must keep · ${t.indicators.length} recipient signals.`};
   if (f.status === 'high_risk'){
-    const hit = f.affected_commitments.filter(a => a.state !== 'covered');
-    return {h:`You can pay ${amtStr}, but it would leave <span class="hl">${fmt(f.shortfall_vs_must_keep)} less</span> than you need for ${hit.some(h => h.id === 'rent') ? 'rent and bills' : 'your bills'} before payday.`,
+    return {h:`You can pay ${amtStr}, but it would leave <span class="hl">${fmt(f.shortfall_vs_must_keep)} less</span> than you need for your bills before payday.`,
       s:`Balance ${fmt(f.balance_before)} covers it. Safe-to-spend ${fmt(f.safe_to_spend_before)} doesn’t.`};
   }
-  if (f.status === 'review') return {h:`You can pay this. It uses ${fmt(f.protected_buffer - f.buffer_remaining)} of your protected buffer.`, s:`Bills stay covered. Buffer left: ${fmt(f.buffer_remaining)} of ${fmt(f.protected_buffer)}.`};
+  if (f.status === 'review') return {h:`You can pay this. It uses ${fmt(f.buffer_used)} of your protected buffer.`, s:`Bills stay covered. Buffer left: ${fmt(f.buffer_remaining)} of ${fmt(f.protected_buffer)}.`};
   return {h:'This fits within your safe-to-spend.', s:''};
 }
 function splitBars(f){
@@ -1342,16 +1286,17 @@ function splitBars(f){
   </div>`;
 }
 function finPanel(r){
-  const f = r.financial, tx = S.request.transaction, u = tx.flow === 'utag_transfer';
-  const amtStr = u ? fmt(f.amount_thb) : `${fmtC(tx.amount_crypto, tx.asset)} (≈ ${fmt(f.amount_thb)})`;
+  const f = r.financial, u = S.flow === 'utag';
+  const amtStr = u ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset);
   if (f.missing_fields){
+    const fx = f.missing_fields.includes('exchangeRate');
     return `<section class="panel fin" aria-labelledby="fin-h">
       <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Money impact</h2>${badge(FIN.review, false)}</div>
-      <div class="missing"><b style="color:var(--review);display:flex;gap:6px;align-items:center">${ic('list')}The wallet didn’t share these details</b>
-        <ul style="margin:0;padding-left:18px">${f.missing_fields.map(m => `<li><code>${m}</code></li>`).join('')}</ul>
-        <span>We didn’t guess any of them. Must keep and safe-to-spend stay blank until the wallet sends them.</span></div>
+      <div class="missing"><b style="color:var(--review);display:flex;gap:6px;align-items:center">${ic('list')}${fx ? 'No exchange rate is available' : 'The wallet didn’t share these details'}</b>
+        <ul style="margin:0;padding-left:18px">${f.missing_fields.map(m => `<li><code>${esc(m)}</code></li>`).join('')}</ul>
+        <span>${f.reasons.map(esc).join(' ')}</span></div>
       <div class="compare">
-        <div class="cmp ok"><span class="q">Balance · can I pay?</span><span class="v num">${fmt(f.balance_before)}</span><span class="a">${ic('check')}Covers ${amtStr}</span></div>
+        <div class="cmp ok"><span class="q">${u ? 'Balance' : 'Crypto wallet'} · can I pay?</span><span class="v num">${u ? fmt(PROFILE.balance) : fmtC(PROFILE.usdc, 'USDC')}</span><span class="a">${ic('check')}Covers ${amtStr}</span></div>
         <span class="neq" aria-hidden="true">≠</span>
         <div class="cmp sts na"><span class="q">Safe-to-spend · is it safe?</span><span class="v num">—</span><span class="a">${ic('q')}Can’t tell yet</span></div>
       </div></section>`;
@@ -1360,13 +1305,12 @@ function finPanel(r){
   const tileB = st === 'high_risk' ? `<div class="cmp sts bad"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('oct')}${fmt(f.shortfall_vs_must_keep)} short</span></div>`
     : st === 'review' ? `<div class="cmp sts warn"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('tri')}Uses your buffer</span></div>`
     : `<div class="cmp sts ok"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('check')}${fmt(f.safe_to_spend_after)} left after</span></div>`;
-  const hit = f.affected_commitments.filter(a => a.state !== 'covered');
-  const bufUsed = f.protected_buffer - f.buffer_remaining;
-  const chips = hit.map(a => `<span class="hitchip">${ic('oct')}${a.label} · ${a.state === 'partly_covered' ? fmt(a.short) + ' short' : 'not covered'}</span>`);
+  const bufUsed = f.buffer_used;
+  const chips = f.affected.includes('mandatory_obligations') ? [`<span class="hitchip">${ic('oct')}Must keep · ${fmt(f.shortfall_vs_must_keep)} short</span>`] : [];
   if (bufUsed > 0) chips.push(`<span class="hitchip ${f.buffer_remaining ? 'warn' : ''}">${ic(f.buffer_remaining ? 'tri' : 'oct')}Buffer · ${f.buffer_remaining ? fmt(bufUsed) + ' used' : 'fully used'}</span>`);
   const red = S.reducedFrom != null && S.reducedFrom !== Number(S.amount);
   return `<section class="panel fin st-${st}" aria-labelledby="fin-h">
-    ${red ? `<div class="banner">${ic('down')}Amount reduced from ${u ? fmt(S.reducedFrom) : fmtC(S.reducedFrom, tx.asset)} to ${amtStr}</div>` : ''}
+    ${red ? `<div class="banner">${ic('down')}Amount reduced from ${fmt(S.reducedFrom)} to ${amtStr}</div>` : ''}
     <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Money impact</h2></div>
     <div class="compare">
       <div class="cmp ok"><span class="q">Balance</span><span class="v num">${fmt(f.balance_before)}</span><span class="a">${ic('check')}Covers it</span></div>
@@ -1375,14 +1319,14 @@ function finPanel(r){
     </div>
     ${splitBars(f)}
     ${chips.length ? `<div><div class="eyebrow" style="margin-bottom:6px">Affected before payday</div><div class="chips">${chips.join('')}</div></div>`
-      : `<div class="okline">${ic('checkCircle')}All ${f.affected_commitments.length} bills and your buffer stay covered</div>`}
+      : `<div class="okline">${ic('checkCircle')}All ${PROFILE.essentials.length + PROFILE.debts.length} bills and your buffer stay covered</div>`}
   </section>`;
 }
 function detailsExtra(r){
   const f = r.financial; if (f.missing_fields) return '';
-  const items = f.affected_commitments.map(a => `<li class="citem c-${a.state}"><span>${a.label} <b class="num">${fmt(a.amount)}</b></span><span class="st">${a.state === 'covered' ? ic('check') + 'Covered' : a.state === 'partly_covered' ? ic('oct') + fmt(a.short) + ' short' : ic('oct') + 'Not covered'}</span><span class="meta">Due in ${a.due_in_days} days</span></li>`).join('');
-  return `<div class="two"><div><div class="eyebrow" style="margin-bottom:6px">Bills before payday · due-date order</div><ul class="list">${items}</ul></div>
-    <div><div class="eyebrow" style="margin-bottom:6px">Reasons</div><ul class="reasons">${f.reasons.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+  const items = [...PROFILE.essentials, ...PROFILE.debts].sort((a, b) => a.due_in_days - b.due_in_days).map(a => `<li class="citem"><span>${a.label} <b class="num">${fmt(a.amount)}</b></span><span class="meta">Due in ${a.due_in_days} days</span></li>`).join('');
+  return `<div class="two"><div><div class="eyebrow" style="margin-bottom:6px">Bills before payday (must keep ${fmt(f.must_keep)})</div><ul class="list">${items}</ul></div>
+    <div><div class="eyebrow" style="margin-bottom:6px">Reasons</div><ul class="reasons">${f.reasons.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
 }
 function highlightMsg(msg){
   let h = esc(msg);
@@ -1391,44 +1335,49 @@ function highlightMsg(msg){
 }
 function trustPanel(r){
   const t = r.trust;
-  if (t.status === 'not_run') return `<section class="panel trust collapsed" aria-label="Recipient check">${ic('userC')}<p><b style="font-weight:600">No recipient check needed.</b> ${esc(t.reason)}</p>${badge(TRUST.not_run, false)}</section>`;
-  const rc = S.request.recipient_context;
+  if (t.status === 'low' && t.indicators.length === 0) return `<section class="panel trust collapsed" aria-label="Recipient check">${ic('userC')}<p><b style="font-weight:600">No recipient risk signals.</b> ${esc(t.reason)}</p>${badge(TRUST.low, false)}</section>`;
+  const rc = S.flow === 'crypto' && S.message ? {label:S.label, message_text:S.message} : null;
   return `<section class="panel trust st-${t.status}" aria-labelledby="trust-h">
     <div class="panel-h"><h2 id="trust-h">${ic('userC')}Recipient check <span class="hint" style="font-weight:500">· separate from money</span></h2>${badge(TRUST[t.status], false)}</div>
     ${t.reason ? `<p style="margin:0;color:var(--ink-2)">${esc(t.reason)}</p>` : ''}
-    <div class="chips" aria-label="Signals found">${t.indicators.map(k => `<span class="ind ${t.status === 'unknown' || t.status === 'low' ? 'n' : ''}">${ic(t.status === 'unknown' ? 'info' : 'tri')}${IND_LABEL[k]}</span>`).join('')}</div>
+    <div class="chips" aria-label="Signals found">${t.indicators.map(k => `<span class="ind ${t.status === 'unknown' || t.status === 'low' ? 'n' : ''}">${ic(t.status === 'unknown' ? 'info' : 'tri')}${indLabel(k)}</span>`).join('')}</div>
+    ${t.evidence.length ? `<p class="hint" style="margin:0">Source of these signals: ${[...new Set(t.evidence.map(x => x.provenance.replace('_', ' ')))].map(esc).join(', ')} data${t.evidence.some(x => x.provenance === 'simulated') ? ' (fictional scenario fixture, not verified)' : ''}.</p>` : ''}
     ${rc && rc.message_text ? `<blockquote class="quote"><span class="eyebrow" style="display:block;margin-bottom:4px">Message from ${esc(rc.label || 'recipient')}</span>“${highlightMsg(rc.message_text)}”</blockquote>` : ''}
     <div class="disclaimer">${ic('info')}<span>These are risk indicators, not proof that the recipient is a scammer.</span></div>
   </section>`;
 }
 function ubotCard(r){
-  const e = r.explanation, fb = e.source === 'fallback';
+  const e = r.explanation, fb = e.source === 'fallback', mode = r.ai.mode;
+  const why = mode === 'disabled' ? 'Live AI is switched off for this demo.' : mode === 'client_opt_out' ? 'AI explanation is turned off in stage controls.'
+    : mode === 'budget_exhausted' ? 'The hourly AI budget is used up.' : r.ai.route === 'none' ? 'No AI call was needed for this result.'
+    : r.ai.grounding && r.ai.grounding.violations.length ? 'The AI explanation was rejected because it was not grounded in the assessment.' : 'The AI provider was unavailable.';
   return `<section class="ubot" aria-labelledby="ub-h">
-    <div class="panel-h"><h3 id="ub-h">${ic('bot')}U-Bot says</h3><span class="src ${fb ? 'fb' : ''}">${fb ? ic('info') + 'Fallback explanation' : 'U-Bot'}</span></div>
+    <div class="panel-h"><h3 id="ub-h">${ic('bot')}Explanation</h3><span class="src ${fb ? 'fb' : ''}">${fb ? ic('info') + 'Rules-engine explanation' : 'Qwen3.5-9B · checked'}</span></div>
     <p>${esc(e.text)}</p>
-    ${fb ? `<div class="hint">U-Bot is unavailable right now. The result, reasons and actions come from the rules engine and are unchanged.</div>` : ''}
+    ${fb ? `<div class="hint">${why} The result, reasons and actions come from the deterministic engine and are unchanged.</div>` : '<div class="hint">AI wording only. It cannot change the amounts or the status.</div>'}
   </section>`;
 }
 function detailsBlock(r){
   const f = r.financial, t = r.trust;
-  const calc = f.missing_fields ? `<p style="margin:0">Not calculated: missing ${f.missing_fields.map(m => `<span class="mono">${m}</span>`).join(', ')}.</p>` : `<div class="calc-wrap"><table class="calc num"><tbody>
+  const calc = f.missing_fields ? `<p style="margin:0">Not calculated: missing ${f.missing_fields.map(m => `<span class="mono">${esc(m)}</span>`).join(', ')}.</p>` : `<div class="calc-wrap"><table class="calc num"><tbody>
       <tr><td>Must keep</td><td class="f">essentials ${fmt(f.essential_due)} + debt & BNPL ${fmt(f.debt_bnpl_due)}</td><td class="r">${fmt(f.must_keep)}</td></tr>
       <tr><td>Protected buffer</td><td class="f">wallet setting</td><td class="r">${fmt(f.protected_buffer)}</td></tr>
       <tr><td>Safe-to-spend before</td><td class="f">max(0, ${fmt(f.balance_before)} − ${fmt(f.must_keep)} − ${fmt(f.protected_buffer)})</td><td class="r">${fmt(f.safe_to_spend_before)}</td></tr>
-      <tr><td>Balance after</td><td class="f">${fmt(f.balance_before)} − ${fmt(f.amount_thb)}</td><td class="r">${fmt(f.balance_after)}</td></tr>
-      <tr><td>Safe-to-spend after</td><td class="f">max(0, ${fmt(f.balance_after)} − ${fmt(f.must_keep)} − ${fmt(f.protected_buffer)})</td><td class="r">${fmt(f.safe_to_spend_after)}</td></tr>
+      <tr><td>Balance after</td><td class="f">${fmt(f.balance_before)} − ${fmt(f.amount)}</td><td class="r">${fmt(f.balance_after)}</td></tr>
+      <tr><td>Safe-to-spend after</td><td class="f">${fmt(f.balance_after)} − ${fmt(f.must_keep)} − ${fmt(f.protected_buffer)} (negative = shortfall)</td><td class="r">${fmt(f.safe_to_spend_after)}</td></tr>
       <tr><td>Status rule</td><td class="f">${f.status === 'safe' ? `${fmt(f.balance_after)} ≥ ${fmt(f.must_keep + f.protected_buffer)}` : f.status === 'review' ? `${fmt(f.must_keep)} ≤ ${fmt(f.balance_after)} < ${fmt(f.must_keep + f.protected_buffer)}` : `${fmt(f.balance_after)} < ${fmt(f.must_keep)}`}</td><td class="r">${FIN[f.status].label}</td></tr>
     </tbody></table></div>
     <p class="mono" style="margin:0">Safe: after ≥ must keep + buffer · Review: after ≥ must keep and &lt; must keep + buffer · High Risk: after &lt; must keep</p>`;
   return `<details class="details"><summary>${ic('list')}Show details <span class="hint">· calculation, reason codes, model</span>${ic('chev', 'chev')}</summary>
     <div class="inner">${detailsExtra(r)}${calc}
       <div class="kv mono">
-        <span>engine</span><span>${r.engine_version}</span>
-        <span>recommended</span><span>${r.recommended_actions.join(', ')}</span>
-        ${t.indicators ? `<span>reason codes</span><span>${t.indicators.join(', ')}</span>` : ''}
-        ${t.probability != null ? `<span>model probability</span><span>${t.probability.toFixed(2)}</span><span>model</span><span>${t.model_version}</span>` : ''}
-        <span>explanation.source</span><span>${r.explanation.source}</span>
-        <span>request_id</span><span>${r.request_id}</span>
+        <span>engine</span><span>${esc(r.engine_version)}</span>
+        <span>financial codes</span><span>${f.reason_codes.map(esc).join(', ')}</span>
+        <span>recommended</span><span>${r.recommended_actions.map(esc).join(', ')}</span>
+        <span>trust indicators</span><span>${t.indicators.length ? t.indicators.map(esc).join(', ') : 'none'}</span>
+        ${t.probability != null ? `<span>model risk score</span><span>${t.probability.toFixed(2)} (ranking score, not a fraud probability)</span><span>model</span><span>${esc(t.model_version)}</span>` : ''}
+        <span>explanation.source</span><span>${esc(r.explanation.source)}</span>
+        <span>ai.mode · route</span><span>${esc(r.ai.mode)} · ${esc(r.ai.route)}</span>
       </div></div></details>`;
 }
 function verifyPanel(){
@@ -1450,9 +1399,9 @@ function resultView(){
 }
 function actionBar(){
   const r = S.result, rec = r.recommended_actions, f = r.financial, u = S.flow === 'utag';
-  const canReduce = f.max_safe_amount != null && f.max_safe_amount > 0 && f.amount_thb > f.max_safe_amount;
-  const canVerify = r.trust.status !== 'not_run';
-  const maxLbl = f.max_safe_amount == null ? '' : u ? fmt(f.max_safe_amount) : fmtC(Math.floor(f.max_safe_amount / RATES[S.asset] * 100) / 100, S.asset);
+  const canReduce = u && f.max_safe_amount != null && f.max_safe_amount > 0 && f.amount > f.max_safe_amount;
+  const canVerify = !(r.trust.status === 'low' && r.trust.indicators.length === 0);
+  const maxLbl = f.max_safe_amount == null ? '' : fmt(f.max_safe_amount);
   const proceedSub = f.missing_fields ? 'Money impact unknown' : f.status === 'high_risk' ? `Bills end up ${fmt(f.shortfall_vs_must_keep)} short` : f.status === 'review' ? `Buffer drops to ${fmt(f.buffer_remaining)}` : `Safe-to-spend → ${fmt(f.safe_to_spend_after)}`;
   const A = {
     proceed:{act:'proceed', label:'Proceed', sub:proceedSub, icon:'arrow', tone:'proceed', ok:true},
@@ -1473,26 +1422,27 @@ function actionBar(){
 function outcomeView(){
   const r = S.result, f = r.financial, o = S.outcome, sent = o.type === 'sent', u = S.flow === 'utag';
   const H = {
-    sent:{icon:'checkCircle', color:'var(--blue)', bg:'var(--blue-bg)', title:'Simulated payment sent', sub:`${u ? fmt(f.amount_thb) : fmtC(Number(S.amount), S.asset) + ' (≈ ' + fmt(f.amount_thb) + ')'} to ${esc(u ? normTag(S.recipient) : (S.label || trunc(S.address)))}. No real money was moved.`},
+    sent:{icon:'checkCircle', color:'var(--blue)', bg:'var(--blue-bg)', title:'Simulated payment sent', sub:`${u ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset)} to ${esc(u ? normTag(S.recipient) : (S.label || trunc(S.address)))}. No real money was moved.`},
     postponed:{icon:'clock', color:'var(--hs)', bg:'var(--hs-bg)', title:'Postponed until after payday', sub:`Nothing was sent. A reminder in ${PROFILE.nextIncome} days would appear here (simulated, nothing scheduled).`},
     cancelled:{icon:'x', color:'var(--ink-2)', bg:'var(--soft)', title:'Cancelled. Nothing was sent.', sub:'Your balance is unchanged.'}
   }[o.type];
-  const list = f.missing_fields ? [] : (sent ? f.affected_commitments : f.affected_commitments.map(a => ({...a, state:'covered'})));
+  const mkShort = sent && !f.missing_fields && f.affected.includes('mandatory_obligations');
+  const list = f.missing_fields ? [] : [{label:'Must keep (bills, debt & BNPL)', amount:f.must_keep, state: mkShort ? 'not_covered' : 'covered', short: mkShort ? f.shortfall_vs_must_keep : 0}];
   const kept = list.filter(a => a.state === 'covered'), hit = list.filter(a => a.state !== 'covered');
   const bufLeft = f.missing_fields ? null : sent ? f.buffer_remaining : f.protected_buffer;
   const changed = sent
-    ? `<div class="ogrid num"><div><div class="eyebrow">Balance</div><div class="ba"><span class="from">${fmt(f.balance_before)}</span>${ic('arrow')}<span class="to">${fmt(f.balance_after)}</span></div></div>
+    ? f.missing_fields ? `<p style="margin:0">${fmtC(Number(S.amount), S.asset)} left your crypto wallet (simulated). The effect on your Baht bills couldn’t be calculated without an exchange rate.</p>` : `<div class="ogrid num"><div><div class="eyebrow">Balance</div><div class="ba"><span class="from">${fmt(f.balance_before)}</span>${ic('arrow')}<span class="to">${fmt(f.balance_after)}</span></div></div>
        <div><div class="eyebrow">Safe-to-spend</div><div class="ba">${f.safe_to_spend_before == null ? '<span class="to" style="color:var(--muted);font-size:19px">Not calculated</span>' : `<span class="from">${fmt(f.safe_to_spend_before)}</span>${ic('arrow')}<span class="to">${fmt(f.safe_to_spend_after)}</span>`}</div></div></div>`
-    : `<p style="margin:0">Nothing changed. Balance stays ${fmt(f.balance_before)}${f.safe_to_spend_before != null ? `, safe-to-spend stays ${fmt(f.safe_to_spend_before)}` : ''}.</p>`;
-  const keptHTML = f.missing_fields ? '<p class="hint" style="margin:0">Couldn’t be checked: obligations were missing from the wallet context.</p>'
+    : `<p style="margin:0">Nothing changed. Balance stays ${u ? fmt(PROFILE.balance) : fmtC(PROFILE.usdc, 'USDC')}${f.safe_to_spend_before != null ? `, safe-to-spend stays ${fmt(f.safe_to_spend_before)}` : ''}.</p>`;
+  const keptHTML = f.missing_fields ? `<p class="hint" style="margin:0">Couldn’t be checked: ${f.missing_fields.includes('exchangeRate') ? 'no exchange rate between the crypto amount and your Baht bills' : 'obligations were missing from the wallet context'}.</p>`
     : `<ul class="list">${kept.map(a => `<li class="citem c-covered"><span>${a.label} <b class="num">${fmt(a.amount)}</b></span><span class="st">${ic('check')}Covered</span></li>`).join('')}
        ${bufLeft === f.protected_buffer ? `<li class="citem c-covered"><span>Protected buffer <b class="num">${fmt(f.protected_buffer)}</b></span><span class="st">${ic('check')}Intact</span></li>` : ''}</ul>
        ${kept.length === 0 && bufLeft !== f.protected_buffer ? '<p class="hint" style="margin:0">No commitments fully covered.</p>' : ''}`;
   const done = S.checks.filter(Boolean).length;
   const open = [];
-  hit.forEach(a => open.push(`<li class="citem c-${a.state}"><span>${a.label} <b class="num">${fmt(a.amount)}</b></span><span class="st">${ic('oct')}${a.state === 'partly_covered' ? fmt(a.short) + ' short' : 'Not covered'}</span></li>`));
+  hit.forEach(a => open.push(`<li class="citem c-${a.state}"><span>${a.label} <b class="num">${fmt(a.amount)}</b></span><span class="st">${ic('oct')}${fmt(a.short)} short</span></li>`));
   if (bufLeft != null && bufLeft < f.protected_buffer) open.push(`<li class="citem ${bufLeft === 0 ? 'c-not_covered' : 'c-buf-used'}"><span>Protected buffer</span><span class="st">${bufLeft === 0 ? ic('oct') + 'Fully used' : ic('tri') + fmt(bufLeft) + ' left'}</span></li>`);
-  if (r.trust.status !== 'not_run'){
+  if (!(r.trust.status === 'low' && r.trust.indicators.length === 0)){
     if (!S.verifyOpen || done < CHECKLIST.length) open.push(`<li class="citem c-buf-used"><span>Recipient verification</span><span class="st">${ic('tri')}${S.verifyOpen && done ? `${done} of ${CHECKLIST.length} checks` : 'Not verified'}</span></li>`);
     else open.push(`<li class="citem c-buf-used"><span>Recipient signals</span><span class="st">${ic('info')}Checklist done, signals remain</span></li>`);
   }
@@ -1508,44 +1458,46 @@ function outcomeView(){
 }
 
 /* ---------- inspector ---------- */
-function findProv(path){ const p = path.split('.'); for (let i = p.length; i > 0; i--){ const k = p.slice(0, i).join('.'); if (PROV[k]) return PROV[k]; } return null; }
 function jsonLines(v, path, ind, key, last, out, prov){
   const k = key !== null ? `<span class="j-k">"${esc(key)}"</span><span class="j-p">: </span>` : '';
   const comma = last ? '' : '<span class="j-p">,</span>';
-  const p = prov ? findProv(path) : null;
+  const p = prov && v && typeof v === 'object' && PV[v.provenance] ? v.provenance : null;
   if (v && typeof v === 'object'){
     const arr = Array.isArray(v), ent = arr ? v.map((x, i) => [i, x]) : Object.entries(v);
     if (!ent.length){ out.push({ind, html:k + `<span class="j-p">${arr ? '[]' : '{}'}</span>` + comma, p, chip:true}); return; }
-    out.push({ind, html:k + `<span class="j-p">${arr ? '[' : '{'}</span>`, p, chip: prov && !!PROV[path]});
+    out.push({ind, html:k + `<span class="j-p">${arr ? '[' : '{'}</span>`, p, chip: !!p});
     ent.forEach(([kk, x], i) => jsonLines(x, path ? path + '.' + kk : String(kk), ind + 1, arr ? null : kk, i === ent.length - 1, out, prov));
     out.push({ind, html:`<span class="j-p">${arr ? ']' : '}'}</span>` + comma, p});
   } else {
     const val = typeof v === 'string' ? `<span class="j-s">"${esc(v)}"</span>` : typeof v === 'number' ? `<span class="j-n">${v}</span>` : `<span class="j-b">${v}</span>`;
-    out.push({ind, html:k + val + comma, p, chip: prov && !/\.\d+\./.test(path + '.')});
+    out.push({ind, html:k + val + comma, p:null, chip:false});
   }
 }
-const PV = {host:{t:'HOST', c:'var(--p-host)', l:'Host wallet context'}, input:{t:'INPUT', c:'var(--p-input)', l:'User transaction input'}, fixture:{t:'FIXTURE', c:'var(--p-fixture)', l:'Scenario fixture data'}};
+const PV = {host_provided:{t:'HOST', c:'var(--p-host)', l:'Host wallet'}, user_provided:{t:'USER', c:'var(--p-input)', l:'Typed by the user'},
+  simulated:{t:'SIM', c:'var(--p-fixture)', l:'Simulated fixture, not verified'}, unavailable:{t:'N/A', c:'var(--muted)', l:'Not supplied'},
+  derived:{t:'DERIVED', c:'var(--p-host)', l:'Derived'}, llm_extracted:{t:'LLM', c:'var(--p-input)', l:'LLM-extracted'}};
 function codeBlock(obj, prov){
   const lines = []; jsonLines(obj, '', 0, null, true, lines, prov);
   return `<div class="code" tabindex="0" aria-label="${prov ? 'Request' : 'Response'} JSON">${lines.map(l => { const pv = l.p ? PV[l.p] : null;
     return `<div class="ln" style="${pv ? '--pc:' + pv.c : ''}"><span class="g">${pv && l.chip ? `<span class="pv" style="--pc:${pv.c}">${pv.t}</span>` : ''}</span><span class="cd" style="padding-left:${l.ind * 2}ch">${l.html}</span></div>`; }).join('')}</div>`;
 }
 function provSummary(req){
-  const g = {host:[], input:[], fixture:[]};
+  const g = {};
   const walk = (o, path) => Object.entries(o).forEach(([k, v]) => { const p = path ? path + '.' + k : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) walk(v, p); else { const x = findProv(p); if (x) g[x].push(k); } });
+    if (v && typeof v === 'object' && PV[v.provenance]) (g[v.provenance] = g[v.provenance] || []).push(p);
+    else if (v && typeof v === 'object') walk(v, p); });
   walk(req, '');
-  return `<div class="prov-sum">${Object.entries(g).map(([k, list]) => `<div style="border-color:${PV[k].c}"><b>${PV[k].t} · ${PV[k].l} (${list.length})</b><code>${list.join(', ') || '—'}</code></div>`).join('')}</div>`;
+  return `<div class="prov-sum">${Object.entries(g).map(([k, list]) => `<div style="border-color:${PV[k].c}"><b>${PV[k].t} · ${PV[k].l} (${list.length})</b><code>${list.map(esc).join(', ')}</code></div>`).join('')}</div>`;
 }
 function renderInspector(){
   const el = $('#inspector'); if (!el) return;
   const r = S.result, req = S.request;
   const meta = req ? `<div class="insp-meta"><span>POST /api/evaluate</span>
-      ${S.phase === 'loading' ? '<span>pending…</span>' : S.phase === 'error' ? '<span class="bad">network error · no response</span>' : r ? `<span class="ok">200 OK</span><span>${S.ms} ms</span><span>explanation.source: "${r.explanation.source}"</span><span>${r.engine_version}</span>` : ''}</div>` : '';
+      ${S.phase === 'loading' ? '<span>pending…</span>' : S.httpStatus ? `<span class="${S.httpStatus === 200 ? 'ok' : 'bad'}">HTTP ${S.httpStatus}</span>${S.ms != null ? `<span>${S.ms} ms</span>` : ''}${r ? `<span>explanation.source: "${esc(r.explanation.source)}"</span><span>ai.mode: "${esc(r.ai.mode)}"</span>` : ''}` : S.phase === 'error' ? `<span class="bad">${S.errorInfo && S.errorInfo.code === 'simulated_network_error' ? 'simulated network error · no request sent' : 'network error · no response'}</span>` : ''}</div>` : '';
   let content;
   if (!req) content = '<div class="empty">No request yet.</div>';
   else if (S.inspTab === 'req') content = `<div class="prov-legend"><span>Where each field came from:</span>${Object.values(PV).map(p => `<span class="pv" style="--pc:${p.c}">${p.t}</span><span>${p.l}</span>`).join('')}</div>${provSummary(req)}${codeBlock(req, true)}`;
-  else content = r ? codeBlock(r, false) : `<div class="empty">${S.phase === 'error' ? 'No response: the request failed before reaching the engine.' : 'Waiting for response…'}</div>`;
+  else content = S.response ? codeBlock(S.response, false) : `<div class="empty">${S.phase === 'error' ? 'No response: the request failed before reaching the engine.' : 'Waiting for response…'}</div>`;
   el.innerHTML = `<button class="insp-toggle" type="button" data-act="insp" aria-expanded="${S.inspOpen}" aria-controls="insp-body">${ic('code')}<b>Integration inspector</b><span class="ep">POST /api/evaluate</span><span class="hint">For technical judges: request, response, field provenance</span>${ic('chev', 'chev')}</button>
     <div class="insp-body" id="insp-body" ${S.inspOpen ? '' : 'hidden'}>${meta}
       <div class="tabs" role="tablist"><button role="tab" type="button" data-tab="req" aria-selected="${S.inspTab === 'req'}">Request JSON</button><button role="tab" type="button" data-tab="res" aria-selected="${S.inspTab === 'res'}">Response JSON</button></div>
@@ -1641,8 +1593,8 @@ document.addEventListener('keydown', e => {
   if (S.sheetOpen && mobile()){ S.sheetOpen = false; renderCP(); }
 });
 
-/* ---------- U-Bot chat: rule-based, numbers come only from the engine fixtures and results ---------- */
-const CHAT = {open:false, log:[{who:'bot', t:'Hi, I’m U-Bot. Ask me about Safe-to-Pay, safe-to-spend, or how this demo works.'}]};
+/* ---------- Demo helper chat: rule-based, quotes only the profile and API results ---------- */
+const CHAT = {open:false, log:[{who:'bot', t:'Hi, I’m the demo helper. Ask me about Safe-to-Pay, safe-to-spend, or how this demo works. I’m rule-based, not an AI.'}]};
 const stripTags = s => s.replace(/<[^>]+>/g, '');
 const ACT_LABEL = {proceed:'Proceed', reduce_amount:'Reduce the amount', verify_recipient:'Verify the recipient', postpone:'Postpone until payday', cancel:'Cancel'};
 function botAnswer(q){
@@ -1651,8 +1603,8 @@ function botAnswer(q){
   if (has('real money','is this real','fake','เงินจริง','ของจริง')) return 'No. This is a simulation with fictional data. No real money is moved and nothing connects to a real account.';
   if (has('block','stop me','prevent','บล็อก','ห้าม')) return 'U-HANDSHAKE never blocks a payment. It shows the impact and suggests options. Proceed is always available. You decide.';
   if (has('scam','trust','recipient','signal','มิจ','โกง','หลอก')){
-    if (r && r.trust.indicators) return `The recipient check found ${r.trust.indicators.length} signal${r.trust.indicators.length === 1 ? '' : 's'}: ${r.trust.indicators.map(k => IND_LABEL[k]).join(', ')}. These are risk indicators, not proof that the recipient is a scammer.`;
-    return 'The recipient check looks for signals like a new recipient, urgency, guaranteed returns or secrecy. They are risk indicators, not proof. Saved contacts you’ve paid before don’t need a check.';
+    if (r && r.trust.indicators) return `The recipient check found ${r.trust.indicators.length} signal${r.trust.indicators.length === 1 ? '' : 's'}: ${r.trust.indicators.map(indLabel).join(', ')}. These are risk indicators, not proof that the recipient is a scammer.`;
+    return 'The recipient check looks for signals like a new recipient, urgency, guaranteed returns or secrecy. They are risk indicators, not proof.';
   }
   if (has('must keep','obligation','bill','rent','ค่าเช่า','บิล')) return `Must keep = essential bills ${fmt(sum(PROFILE.essentials))} (${PROFILE.essentials.map(e => e.label.toLowerCase() + ' ' + fmt(e.amount)).join(', ')}) + debt & BNPL ${fmt(sum(PROFILE.debts))} = ${fmt(MUST_KEEP)}.`;
   if (has('buffer','กันชน','สำรอง')) return `The protected buffer is ${fmt(PROFILE.buffer)} kept aside for surprises. Safe-to-spend never counts it.`;
@@ -1662,7 +1614,7 @@ function botAnswer(q){
     return 'Statuses follow fixed rules. Safe: balance after ≥ must keep + buffer. Review: covers must keep but uses the buffer. High Risk: drops below must keep.';
   }
   if (has('what should','do now','option','suggest','ควรทำ','แนะนำ','ทำยังไง')){
-    if (r){ const k = r.recommended_actions[0]; const extra = k === 'reduce_amount' ? ` Paying ${fmt(r.financial.max_safe_amount)} keeps every bill and your buffer covered.` : ''; return `Suggested: ${ACT_LABEL[k]}.${extra} You can still choose any option, including Proceed.`; }
+    if (r){ const k = r.recommended_actions[0]; const extra = k === 'reduce_amount' && r.financial.max_safe_amount != null ? ` Paying ${fmt(r.financial.max_safe_amount)} keeps every bill and your buffer covered.` : ''; return `Suggested: ${ACT_LABEL[k]}.${extra} You can still choose any option, including Proceed.`; }
     return 'Start a payment first. Tap B (Main demo) in the strip at the top to see a full Safe-to-Pay check.';
   }
   if (has('start','demo','scenario','how do','เริ่ม','ใช้งาน')) return 'Tap a scenario in the strip at the top. A is a safe purchase, B is the main demo (balance is enough, safe-to-spend is not), C is a suspicious crypto transfer. Each stops at the Safe-to-Pay check before you confirm.';
@@ -1677,7 +1629,7 @@ function renderChatLog(){
 function setChat(open){ CHAT.open = open; $('#chat').hidden = !open; $('#chatFab').setAttribute('aria-expanded', open); if (open){ renderChatLog(); $('#chat-q').focus(); } }
 async function ask(q){
   q = q.trim(); if (!q) return;
-  CHAT.log.push({who:'me', t:q}, {who:'bot typing', t:'U-Bot is typing…'}); renderChatLog();
+  CHAT.log.push({who:'me', t:q}, {who:'bot typing', t:'Typing…'}); renderChatLog();
   await sleep(reduced ? 100 : 450);
   CHAT.log.pop(); CHAT.log.push({who:'bot', t:botAnswer(q)}); renderChatLog();
 }

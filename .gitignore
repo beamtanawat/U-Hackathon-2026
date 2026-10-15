@@ -14,3 +14,4 @@ next-env.d.ts
 test-results/
 playwright-report/
 *.tsbuildinfo
+.playwright-browsers/
