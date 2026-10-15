@@ -1,0 +1,10 @@
+.worktrees/
+.superpowers/
+node_modules/
+coverage/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+
