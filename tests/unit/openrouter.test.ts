@@ -8,7 +8,7 @@ const request: ProviderRequest = {
   system: "Review only supplied evidence.",
   context: {
     financialStatus: "review", financialReasonCodes: ["buffer_reduced"],
-    trustStatus: "high", trustIndicators: [{ id: "signal-urgency", kind: "urgency", provenance: "user-provided" }],
+    trustStatus: "high", trustIndicators: [{ id: "signal-urgency", kind: "urgency", provenance: "user_provided" }],
     missingFields: [], walletType: "crypto", transferMode: "on_chain", asset: "USDC", network: "avalanche", recipientKnown: false, recipientProvenance: "simulated",
   },
 };

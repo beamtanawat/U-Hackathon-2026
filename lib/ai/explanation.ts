@@ -1,5 +1,6 @@
 import { compareAnalyses } from "./comparison";
 import { fallbackExplanation } from "./fallback";
+import { checkGrounding } from "./grounding";
 import { QWEN_SYSTEM_PROMPT } from "./prompt";
 import { parseQwenAnalysis } from "./schema";
 import type { AiDecisionSupport, AiRoute, AuthoritativeAssessment, JevDecision, JevProvider, JevVerificationRequest, ProviderContext, ProviderRequest, ProviderStatus, QwenAnalysis, QwenProvider, TransactionContext } from "./types";
@@ -75,8 +76,10 @@ export async function runAiAnalysis(
     }, options.jevTimeoutMs ?? JEV_TIMEOUT_MS);
   }
   const comparison = compareAnalyses(authoritativeAssessment, qwen.output, jev.output, { qwen: qwen.status, jev: jev.status });
-  const explanation = qwen.output && comparison.unsupportedClaims.length === 0
+  const violations = qwen.output ? checkGrounding(qwen.output.explanation, authoritativeAssessment) : [];
+  const accepted = qwen.output !== null && comparison.unsupportedClaims.length === 0 && violations.length === 0;
+  const explanation = accepted && qwen.output
     ? { ...qwen.output.explanation, source: "qwen" as const, review: { status: (comparison.suggestedEscalation ? "suggested_escalation" : "consistent") as "suggested_escalation" | "consistent" } }
     : fallbackExplanation(authoritativeAssessment, qwen.status === "not_run" ? "not_run" : "unavailable");
-  return { authoritativeAssessment, explanation, qwenReview: qwen.output?.review ?? null, jevDecision: jev.output, comparison };
+  return { authoritativeAssessment, explanation, grounding: { accepted, violations }, qwenReview: qwen.output?.review ?? null, jevDecision: jev.output, comparison };
 }

@@ -1,6 +1,8 @@
 export type FinancialStatus = "safe" | "review" | "high_risk";
 export type TrustStatus = "low" | "review" | "high" | "unknown";
-export type Provenance = "host-provided" | "user-provided" | "derived" | "simulated" | "unavailable";
+import type { Provenance } from "../domain/types";
+
+export type { Provenance };
 export type ProviderStatus = "completed" | "not_run" | "unavailable";
 export type AiRoute = "none" | "qwen" | "qwen_jev";
 
@@ -19,9 +21,11 @@ export interface EvidenceIndicator {
 export interface AuthoritativeAssessment {
   financial: {
     status: FinancialStatus;
-    safeToSpendBefore: number;
-    safeToSpendAfter: number;
-    transactionAmount: number;
+    // null when the deterministic engine could not assess (missing context or
+    // no exchange rate); never estimated by the AI layer.
+    safeToSpendBefore: number | null;
+    safeToSpendAfter: number | null;
+    transactionAmount: number | null;
     reasons: AssessmentReason[];
     missingFields: string[];
   };
@@ -33,9 +37,9 @@ export interface AuthoritativeAssessment {
 }
 
 export interface TransactionContext {
-  walletType: "spending" | "crypto";
-  transferMode: "u_tag" | "on_chain";
-  asset: string;
+  walletType: "spending" | "crypto" | null;
+  transferMode: "u_tag" | "on_chain" | null;
+  asset: string | null;
   network: string | null;
   recipient: {
     kind: "u_tag" | "wallet";
@@ -57,7 +61,7 @@ export interface ProviderContext {
   missingFields: string[];
   walletType: TransactionContext["walletType"];
   transferMode: TransactionContext["transferMode"];
-  asset: string;
+  asset: string | null;
   network: string | null;
   recipientKnown: boolean | null;
   recipientProvenance: Provenance;
@@ -167,9 +171,16 @@ export interface ComparisonResult {
   jevVerification: "not_run" | "supports_review" | "does_not_support_review" | "unavailable";
 }
 
+export interface GroundingResult {
+  /** True when Qwen prose passed every deterministic grounding rule. */
+  accepted: boolean;
+  violations: string[];
+}
+
 export interface AiDecisionSupport {
   authoritativeAssessment: AuthoritativeAssessment;
   explanation: Explanation;
+  grounding: GroundingResult;
   qwenReview: QwenReview | null;
   jevDecision: JevDecision | null;
   comparison: ComparisonResult;

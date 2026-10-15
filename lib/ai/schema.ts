@@ -1,6 +1,7 @@
+import { provenanceSchema } from "../domain/schemas";
 import type { AuthoritativeAssessment, ExplanationOutput, ExplanationReason, MissingContextQuestion, Provenance, QwenAnalysis, QwenIndicator, QwenReview, SuggestedIndicator } from "./types";
 
-const PROVENANCE = new Set<Provenance>(["host-provided", "user-provided", "derived", "simulated", "unavailable"]);
+const PROVENANCE = new Set<Provenance>(provenanceSchema.options);
 const CATEGORIES = new Set<ExplanationReason["category"]>(["financial", "trust", "missing_context"]);
 
 function record(value: unknown, label: string): Record<string, unknown> {
@@ -34,7 +35,8 @@ export function assertAuthoritativeAssessment(value: unknown): asserts value is 
   exactKeys(financial, ["status", "safeToSpendBefore", "safeToSpendAfter", "transactionAmount", "reasons", "missingFields"], "assessment.financial");
   if (financial.status !== "safe" && financial.status !== "review" && financial.status !== "high_risk") throw new Error("invalid financial status");
   for (const field of ["safeToSpendBefore", "safeToSpendAfter", "transactionAmount"] as const) {
-    if (typeof financial[field] !== "number" || !Number.isFinite(financial[field])) throw new Error(`invalid financial ${field}`);
+    const value = financial[field];
+    if (value !== null && (typeof value !== "number" || !Number.isFinite(value))) throw new Error(`invalid financial ${field}`);
   }
   if (!Array.isArray(financial.reasons)) throw new Error("financial reasons must be an array");
   for (const [index, item] of financial.reasons.entries()) {

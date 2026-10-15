@@ -1,3 +1,4 @@
+import { provenanceSchema } from "../domain/schemas";
 import type { ProviderRequest, QwenProvider, UsageEvent, UsageReporter } from "./types";
 
 const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
@@ -20,7 +21,7 @@ const REVIEW_SCHEMA = {
   type: "object", additionalProperties: false,
   properties: {
     model: { type: "string" }, provider: { const: "openrouter" }, reviewStatus: { const: "completed" },
-    indicators: { type: "array", items: { type: "object", additionalProperties: false, properties: { type: { type: "string" }, evidenceId: { type: "string" }, evidence: { type: "string" }, provenance: { enum: ["host-provided", "user-provided", "derived", "simulated", "unavailable"] } }, required: ["type", "evidenceId", "evidence", "provenance"] } },
+    indicators: { type: "array", items: { type: "object", additionalProperties: false, properties: { type: { type: "string" }, evidenceId: { type: "string" }, evidence: { type: "string" }, provenance: { enum: provenanceSchema.options } }, required: ["type", "evidenceId", "evidence", "provenance"] } },
     missingContext: { type: "array", items: { type: "string" } }, contradictions: { type: "array", items: { type: "string" } },
     suggestedEscalation: { type: "boolean" }, reasoningSummary: { type: "string" },
   },

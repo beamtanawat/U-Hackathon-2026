@@ -14,7 +14,9 @@ export function fallbackExplanation(assessment: AuthoritativeAssessment, reviewS
   }
   const fields = [...new Set([...assessment.financial.missingFields, ...assessment.trust.missingFields])];
   const missingContextQuestions: MissingContextQuestion[] = fields.map((field) => ({ field, question: QUESTION_COPY[field] ?? `Can you provide the missing ${field} context before deciding?` }));
-  const summary = assessment.financial.status === "safe"
+  const summary = assessment.financial.missingFields.length > 0
+    ? "Affordability could not be fully checked because some financial context is missing, so the result is marked Review. No values were estimated."
+    : assessment.financial.status === "safe"
     ? "The authoritative assessment says required commitments remain covered after this transaction."
     : assessment.financial.status === "review"
       ? "The authoritative assessment recommends review because this transaction may affect protected money or goals."

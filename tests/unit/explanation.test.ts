@@ -19,8 +19,8 @@ const suspiciousAssessment: AuthoritativeAssessment = {
   trust: {
     status: "high",
     indicators: [
-      { id: "signal-urgency", kind: "urgency", evidence: "The supplied message asks for immediate payment.", provenance: "user-provided" },
-      { id: "signal-return", kind: "guaranteed_return", evidence: "The supplied message promises a guaranteed return.", provenance: "user-provided" },
+      { id: "signal-urgency", kind: "urgency", evidence: "The supplied message asks for immediate payment.", provenance: "user_provided" },
+      { id: "signal-return", kind: "guaranteed_return", evidence: "The supplied message promises a guaranteed return.", provenance: "user_provided" },
     ],
     missingFields: [],
   },
@@ -45,7 +45,7 @@ const explanation = {
 
 const review = {
   model: "qwen/qwen3.5-9b", provider: "openrouter", reviewStatus: "completed",
-  indicators: [{ type: "urgency", evidenceId: "signal-urgency", evidence: "Urgency was supplied.", provenance: "user-provided" }],
+  indicators: [{ type: "urgency", evidenceId: "signal-urgency", evidence: "Urgency was supplied.", provenance: "user_provided" }],
   missingContext: [], contradictions: [], suggestedEscalation: true,
   reasoningSummary: "Supplied urgency supports review.",
 };
@@ -64,7 +64,7 @@ test("uses validated Qwen analysis with canonical attribution", async () => {
 
 test("preserves evidence-backed indicators without changing authoritative status", async () => {
   const result = await runAiAnalysis({ assessment: suspiciousAssessment, transaction }, { qwenProvider: qwenWith({ explanation, review }) });
-  assert.deepEqual(result.comparison.qwenSupportedIndicators, [{ type: "urgency", evidenceId: "signal-urgency", provenance: "user-provided" }]);
+  assert.deepEqual(result.comparison.qwenSupportedIndicators, [{ type: "urgency", evidenceId: "signal-urgency", provenance: "user_provided" }]);
   assert.equal(result.comparison.suggestedEscalation, true);
   assert.equal(result.authoritativeAssessment.trust.status, "high");
 });
@@ -75,7 +75,7 @@ test("records differing supported Qwen findings without changing authoritative t
       explanation,
       review: {
         ...review,
-        indicators: [{ type: "guaranteed_return", evidenceId: "signal-return", evidence: "A guaranteed return was supplied.", provenance: "user-provided" }],
+        indicators: [{ type: "guaranteed_return", evidenceId: "signal-return", evidence: "A guaranteed return was supplied.", provenance: "user_provided" }],
       },
     }),
   });
@@ -182,7 +182,7 @@ test("excludes identifiers, addresses, balances, raw messages, and engine prose 
   const uTag = {
     ...transaction,
     transferMode: "u_tag" as const,
-    recipient: { kind: "u_tag" as const, identifier: "@private-recipient", known: true, provenance: "user-provided" as const },
+    recipient: { kind: "u_tag" as const, identifier: "@private-recipient", known: true, provenance: "user_provided" as const },
   };
   for (const request of [buildQwenRequest(sensitive, injected), buildQwenRequest(sensitive, uTag)]) {
     const serialized = JSON.stringify(request);
