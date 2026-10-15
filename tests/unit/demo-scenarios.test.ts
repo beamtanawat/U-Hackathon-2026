@@ -18,6 +18,7 @@ const demoScenarioSchema = z
     id: z.string().min(1),
     title: z.string().min(1),
     demoGoal: z.string().min(1),
+    assumptions: z.array(z.string().min(1)).min(1),
     request: evaluationRequestSchema,
     expectedAssessment: safetyAssessmentSchema,
   })
@@ -46,9 +47,19 @@ describe("judge demo scenarios", () => {
     expect(trust.status).toBe(scenario.expectedAssessment.trust.status);
     expect(trust.indicators).toEqual(scenario.expectedAssessment.trust.indicators);
     expect(trust.modelVersion).toBe(scenario.expectedAssessment.trust.modelVersion);
+    // Every supplied fixture value is labeled simulated, never verified history.
+    for (const field of [scenario.request.availableBalance, scenario.request.recentMedianAmount, scenario.request.recipient.previousTransactionCount]) {
+      expect(field.provenance).toBe("simulated");
+    }
     expect(trust.riskScore).toBeCloseTo(
       scenario.expectedAssessment.trust.riskScore ?? 0,
       12,
     );
+  });
+
+  it("keeps financial and trust risk independent in Scenario B", () => {
+    const scenario = demoScenarioSchema.parse(scenarioB);
+    expect(evaluateSafeToPay(scenario.request).status).toBe("high_risk");
+    expect(assessTrust(scenario.request).status).toBe("low");
   });
 });

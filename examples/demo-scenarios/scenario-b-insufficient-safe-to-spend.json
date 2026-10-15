@@ -3,6 +3,12 @@
   "id": "scenario-b-insufficient-safe-to-spend",
   "title": "Balance is enough, Safe-to-Spend is not",
   "demoGoal": "The 18,500 THB balance covers a 12,900 THB phone, but paying leaves 5,600 THB against 10,000 THB of obligations due before payday: High Risk.",
+  "assumptions": [
+    "All values are fictional demo data with provenance \"simulated\"; none is verified user history.",
+    "Profile (balance 18,500 THB; essentials 7,200; debt/BNPL 2,800; protected buffer 3,000) is taken from Ete's prototype PROFILE so every layer shows one user.",
+    "recentMedianAmount 2,500 THB is an assumed simulated baseline, not observed history. With a baseline below about 2,300 THB the unusual-amount feature would move trust to Review or High; the financial High Risk result does not depend on it.",
+    "Recipient @phone-store with 1 previous transfer is a simulated contact."
+  ],
   "request": {
     "scenarioId": "balance-enough-safe-to-spend-not-enough",
     "walletType": {

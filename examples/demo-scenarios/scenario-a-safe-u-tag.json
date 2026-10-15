@@ -3,6 +3,12 @@
   "id": "scenario-a-safe-u-tag",
   "title": "Safe U-Tag purchase",
   "demoGoal": "A routine payment to a known contact stays within Safe-to-Spend; no AI call is needed.",
+  "assumptions": [
+    "All values are fictional demo data with provenance \"simulated\"; none is verified user history.",
+    "Profile (balance 18,500 THB; essentials 7,200; debt/BNPL 2,800; protected buffer 3,000) is taken from Ete's prototype PROFILE so every layer shows one user.",
+    "recentMedianAmount 2,500 THB is an assumed simulated baseline, not observed history; it only feeds the trust model's unusual-amount feature.",
+    "Recipient @coffee-lab with 6 previous transfers is a simulated contact."
+  ],
   "request": {
     "scenarioId": "safe-u-tag",
     "walletType": {
