@@ -9,8 +9,14 @@ const scenarioC = fixture("scenario-c-suspicious-crypto.json");
 
 const isEvaluate = (request: Request) => request.url().endsWith("/api/evaluate") && request.method() === "POST";
 
+async function dismissOnboarding(page: Page) {
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  if (await dialog.isVisible()) await dialog.getByRole("button", { name: "Skip" }).click();
+}
+
 async function runCheck(page: Page, scenario: "A" | "B" | "C") {
   await page.goto("/");
+  await dismissOnboarding(page);
   await page.locator(`[data-scen="${scenario}"]`).first().click();
   if (scenario === "C") {
     await page.locator("#f-ack1").check();
@@ -23,6 +29,92 @@ async function runCheck(page: Page, scenario: "A" | "B" | "C") {
   ]);
   return { request, response };
 }
+
+test("onboarding appears on a clean first visit and Close dismisses it", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Close introduction" }).click();
+  await expect(dialog).toBeHidden();
+});
+
+test("onboarding Skip persists across reloads", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await dialog.getByRole("button", { name: "Skip" }).click();
+  await page.reload();
+  await expect(dialog).toBeHidden();
+});
+
+test("onboarding Back and Next lead Get Started to the Pay chooser", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await dialog.getByRole("button", { name: "Next" }).click();
+  await expect(dialog).toContainText("Know what's really available");
+  await dialog.getByRole("button", { name: "Back" }).click();
+  await expect(dialog).toContainText("Meet Safe-to-Pay");
+  await dialog.getByRole("button", { name: "Next" }).click();
+  await dialog.getByRole("button", { name: "Next" }).click();
+  await expect(dialog).toContainText("Check. Understand. Decide.");
+  await dialog.getByRole("button", { name: "Get Started" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Pay", exact: true })).toBeVisible();
+});
+
+test("How it works reopens onboarding without clearing the active scenario", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  await page.locator('[data-scen="B"]').click();
+  await expect(page.locator("#f-amount")).toHaveValue("12900");
+  const opener = page.getByRole("button", { name: "How it works" }).first();
+  await opener.click();
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Close introduction" }).click();
+  await expect(page.locator("#f-amount")).toHaveValue("12900");
+});
+
+test("onboarding Escape restores focus to How it works", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  const opener = page.getByRole("button", { name: "How it works" }).first();
+  await opener.click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Meet Safe-to-Pay" })).toBeHidden();
+  await expect(opener).toBeFocused();
+});
+
+test("onboarding traps keyboard focus inside the dialog", async ({ page }) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await page.keyboard.press("Shift+Tab");
+  expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press("Tab");
+  expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
+});
+
+test("onboarding survives a storage failure", async ({ page }) => {
+  await page.addInitScript(() => {
+    Storage.prototype.getItem = () => { throw new Error("storage unavailable"); };
+    Storage.prototype.setItem = () => { throw new Error("storage unavailable"); };
+  });
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Skip" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Welcome!" })).toBeVisible();
+});
+
+test("Scenario B works after onboarding dismissal", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("dialog", { name: "Meet Safe-to-Pay" }).getByRole("button", { name: "Skip" }).click();
+  await page.locator('[data-scen="B"]').click();
+  const responsePromise = page.waitForResponse((response) => isEvaluate(response.request()));
+  await page.locator("#nextbtn").click();
+  expect((await responsePromise).status()).toBe(200);
+  await expect(page.locator("#cp .statusrow")).toContainText("High Risk");
+});
 
 test("Scenario B: the real API decides High Risk, the user reduces, then proceeds (simulated)", async ({ page }) => {
   const consoleErrors: string[] = [];
