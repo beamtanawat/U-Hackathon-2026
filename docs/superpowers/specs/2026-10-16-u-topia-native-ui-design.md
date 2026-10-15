@@ -1,7 +1,7 @@
 # U-Topia Native Safe-to-Pay UI Design
 
-Date: 2026-10-16  
-Branch: `feature/ui-clarity-onboarding`  
+Date: 2026-10-16
+Branch: `feature/ui-clarity-onboarding`
 Baseline: `origin/integration/safe-to-pay-mvp` at `7f26603`
 
 ## Goal

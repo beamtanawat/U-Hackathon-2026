@@ -51,7 +51,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .enter{animation:rise .24s var(--ease) both}
 
 /* ---------- preview notice + header ---------- */
-.simbar{position:sticky;top:0;z-index:70;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.simbar{position:relative;z-index:1;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
 .simbar b{font-weight:700}
 .hdr{padding:12px 28px 0;display:flex;align-items:center;gap:12px}
 .logo{display:flex;align-items:center;gap:8px;font-weight:500;font-size:21px;color:var(--navy)}
@@ -495,7 +495,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .hitchip.warn{background:var(--review-bg);border-color:var(--review-line);color:var(--review)}
 .okline{display:flex;gap:8px;align-items:center;font-weight:600;color:var(--safe);font-size:15px;padding:10px 12px;border-radius:12px;background:var(--safe-bg)}
 /* action bar: one clear suggested action, coloured secondary actions */
-.actions2{position:sticky;bottom:0;z-index:3;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(255,255,255,0),#fff 18%);display:grid;gap:8px;border-radius:0 0 26px 26px}
+.actions2{position:static;padding:0;display:grid;gap:8px}
 .primary-act{display:flex;align-items:center;gap:14px;width:100%;min-height:66px;padding:12px 18px;border:0;border-radius:18px;background:#0B5FD6;color:#fff;text-align:left;box-shadow:0 12px 26px rgba(11,95,214,.34);transition:background .15s,transform .15s}
 .primary-act:hover{background:#0950B8}
 .primary-act:active{transform:scale(.99)}
@@ -652,7 +652,7 @@ body.onboarding-open{overflow:hidden}
   .pa-txt b{font-size:17px}
   .sec-acts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sact small{display:none}
-  .chat-fab{right:16px;bottom:18px}
+  .chat-fab{position:static;margin:0 auto 20px;width:max-content}
   .chat{left:8px;right:8px;width:auto;bottom:14px;height:calc(100dvh - 150px)}
   body.sheet-open .chat-fab{display:none}
 }
@@ -712,7 +712,8 @@ label.fl{font-size:15.5px}
 @media (max-width:899px){
   body{font-size:16.5px}
   .pillnav button{font-size:13px}
-  .textsize .ts-l,.user .avatar,.user .iconbtn.sq{display:none}
+  .textsize,.user .iconbtn.sq{display:none}
+  .user{gap:6px}
   .textsize button{min-width:38px}
   .flow-top h1{font-size:23px}
   .welcome h1,.ptitle,.pay-head h1{font-size:29px}
@@ -1356,7 +1357,7 @@ function renderCP(){
       ${S.errorInfo ? `<p class="hint mono">${S.httpStatus ? 'HTTP ' + S.httpStatus + ' · ' : ''}${esc(S.errorInfo.code || 'error')}</p>` : ''}
       ${S.toggles.neterr ? `<p class="hint">Stage control “Simulate network error” is on. Switch it off, then retry.</p>` : ''}
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button><button class="btn btn-out" type="button" data-act="editAmount">Back to amount</button></div></div>`;
-  else if (S.phase === 'result'){ body = resultView(); actions = actionBar(); }
+  else if (S.phase === 'result') body = resultView();
   else if (S.phase === 'outcome') body = outcomeView();
   cp.innerHTML = `<div class="cp-head"><span class="grabber" aria-hidden="true"></span>
       <span class="cp-title">${ic('shieldC')}Safe-to-Pay check</span>
@@ -1509,8 +1510,8 @@ function detailsBlock(r){
       <tr><td>Status rule</td><td class="f">${f.status === 'safe' ? `${fmt(f.balance_after)} ≥ ${fmt(f.must_keep + f.protected_buffer)}` : f.status === 'review' ? `${fmt(f.must_keep)} ≤ ${fmt(f.balance_after)} < ${fmt(f.must_keep + f.protected_buffer)}` : `${fmt(f.balance_after)} < ${fmt(f.must_keep)}`}</td><td class="r">${FIN[f.status].label}</td></tr>
     </tbody></table></div>
     <p class="mono" style="margin:0">Safe: after ≥ must keep + buffer · Review: after ≥ must keep and &lt; must keep + buffer · High Risk: after &lt; must keep</p>`;
-  return `<details class="details"><summary>${ic('list')}Technical details <span class="hint">· calculation, reason codes, model</span>${ic('chev', 'chev')}</summary>
-    <div class="inner">${detailsExtra(r)}${calc}
+  return `<details class="details"><summary>${ic('list')}Technical details <span class="hint">· explanation, calculation, reason codes, model</span>${ic('chev', 'chev')}</summary>
+    <div class="inner">${ubotCard(r)}${detailsExtra(r)}${calc}
       <div class="kv mono">
         <span>engine</span><span>${esc(r.engine_version)}</span>
         <span>financial codes</span><span>${f.reason_codes.map(esc).join(', ')}</span>
@@ -1536,7 +1537,7 @@ function resultView(){
       <h2 class="vtext">${v.h}</h2>
       ${v.s ? `<p class="vsub">${v.s}</p>` : ''}
     </section>
-    ${finPanel(r)}${trustPanel(r)}${ubotCard(r)}${S.verifyOpen ? verifyPanel() : ''}${detailsBlock(r)}`;
+    ${finPanel(r)}${actionBar()}${trustPanel(r)}${S.verifyOpen ? verifyPanel() : ''}${detailsBlock(r)}`;
 }
 function actionBar(){
   const r = S.result, rec = r.recommended_actions, f = r.financial, u = S.flow === 'utag';

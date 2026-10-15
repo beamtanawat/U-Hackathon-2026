@@ -264,6 +264,36 @@ test("checkpoint pulse respects reduced motion", async ({ page }) => {
   expect(await cp.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
 });
 
+test("checkpoint actions do not overlap financial or recipient content", async ({ page }) => {
+  await runCheck(page, "B");
+  const financial = await page.locator("#cp .fin").boundingBox();
+  const actions = await page.locator("#cp .actions2").boundingBox();
+  const recipient = await page.locator("#cp .trust").boundingBox();
+  expect(financial && actions && actions.y >= financial.y + financial.height - 1).toBe(true);
+  expect(actions && recipient && recipient.y >= actions.y + actions.height - 1).toBe(true);
+});
+
+test("visual regression mobile header and Help avoid wallet content", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/");
+  await expect(page.locator(".user .avatar")).toBeVisible();
+  await expect(page.locator(".textsize")).toBeHidden();
+  const logo = await page.locator(".logo").boundingBox();
+  expect(logo && logo.height < 45).toBe(true);
+  const help = await page.locator("#chatFab").boundingBox();
+  const discovery = await page.locator('[data-testid="safe-spend-discovery"]').boundingBox();
+  const overlaps = help && discovery && help.x < discovery.x + discovery.width && help.x + help.width > discovery.x && help.y < discovery.y + discovery.height && help.y + help.height > discovery.y;
+  expect(overlaps).toBe(false);
+});
+
+test("visual regression simulation notice leaves the viewport on scroll", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.goto("/");
+  await page.evaluate(() => window.scrollTo(0, 900));
+  expect(await page.locator(".simbar").evaluate((node) => node.getBoundingClientRect().bottom <= 0)).toBe(true);
+});
+
 test("API failures are shown honestly instead of a fabricated result", async ({ page }) => {
   await page.route("**/api/evaluate", (route) => route.fulfill({ status: 429, contentType: "application/json", body: JSON.stringify({ error: { code: "rate_limited", message: "Too many" } }) }));
   await runCheck(page, "B");

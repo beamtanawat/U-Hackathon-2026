@@ -234,4 +234,3 @@ Run: `git diff --name-only 7f26603...HEAD` and `git status --short`
 Expected: backend paths are untouched; committed code changes are limited to the approved frontend/tests/docs; screenshot artifacts remain untracked or ignored; no push, merge, or deployment occurred.
 
 Commit if Task 4 produced verified fixes: `fix: polish responsive Safe-to-Pay experience`
-
