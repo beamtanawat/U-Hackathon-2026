@@ -65,9 +65,9 @@ function jevProvider(onCall: () => void = () => undefined): JevProvider {
 
 test("selects deterministic risk routes", () => {
   assert.equal(selectAiRoute(normal), "none");
-  assert.equal(selectAiRoute(contextual), "qwen");
-  assert.equal(selectAiRoute(uncertain), "qwen_jev");
-  assert.equal(selectAiRoute({ ...contextual, trust: { ...contextual.trust, indicators: [{ id: "u", kind: "urgency", evidence: "Supplied urgency.", provenance: "unavailable" }] } }), "qwen_jev");
+  assert.equal(selectAiRoute(contextual), "jev_qwen");
+  assert.equal(selectAiRoute(uncertain), "jev_qwen");
+  assert.equal(selectAiRoute({ ...contextual, trust: { ...contextual.trust, indicators: [{ id: "u", kind: "urgency", evidence: "Supplied urgency.", provenance: "unavailable" }] } }), "jev_qwen");
 });
 
 test("normal transactions make no external AI calls", async () => {
@@ -82,36 +82,38 @@ test("normal transactions make no external AI calls", async () => {
   assert.deepEqual(result.comparison.providerStatus, { qwen: "not_run", jev: "not_run" });
 });
 
-test("contextual transactions make one Qwen call with accurate attribution", async () => {
+test("contextual transactions run Jev primary before Qwen secondary", async () => {
   let qwenCalls = 0;
   let jevCalls = 0;
+  const order: string[] = [];
   const result = await runAiAnalysis({ assessment: contextual, transaction }, {
-    qwenProvider: qwenProvider(() => { qwenCalls += 1; }),
-    jevProvider: jevProvider(() => { jevCalls += 1; }),
+    qwenProvider: qwenProvider(() => { qwenCalls += 1; order.push("qwen"); }),
+    jevProvider: jevProvider(() => { jevCalls += 1; order.push("jev"); }),
   });
 
   assert.equal(qwenCalls, 1);
-  assert.equal(jevCalls, 0);
+  assert.equal(jevCalls, 1);
+  assert.deepEqual(order, ["jev", "qwen"]);
   assert.equal(result.explanation.source, "qwen");
   assert.equal(result.qwenReview?.model, "qwen/qwen3.5-9b");
-  assert.equal(result.jevDecision, null);
-  assert.deepEqual(result.comparison.providerStatus, { qwen: "completed", jev: "not_run" });
+  assert.equal(result.jevDecision?.model, "typesafe/jev-1.14");
+  assert.deepEqual(result.comparison.providerStatus, { qwen: "completed", jev: "completed" });
 });
 
-test("uncertain evidence makes at most two ordered calls and conditionally runs Jev", async () => {
+test("uncertain evidence uses the same primary-secondary order", async () => {
   const order: string[] = [];
   const result = await runAiAnalysis({ assessment: uncertain, transaction }, {
     qwenProvider: qwenProvider(() => { order.push("qwen"); }),
     jevProvider: jevProvider(() => { order.push("jev"); }),
   });
 
-  assert.deepEqual(order, ["qwen", "jev"]);
+  assert.deepEqual(order, ["jev", "qwen"]);
   assert.equal(result.explanation.source, "qwen");
   assert.equal(result.jevDecision?.model, "typesafe/jev-1.14");
   assert.deepEqual(result.comparison.providerStatus, { qwen: "completed", jev: "completed" });
 });
 
-test("does not call Jev when Qwen fails", async () => {
+test("keeps the Jev primary decision when Qwen fails", async () => {
   let jevCalls = 0;
   const failingQwen: QwenProvider = { async analyze() { throw new Error("Qwen unavailable"); } };
   const result = await runAiAnalysis({ assessment: uncertain, transaction }, {
@@ -119,13 +121,14 @@ test("does not call Jev when Qwen fails", async () => {
     jevProvider: jevProvider(() => { jevCalls += 1; }),
   });
 
-  assert.equal(jevCalls, 0);
+  assert.equal(jevCalls, 1);
   assert.equal(result.explanation.source, "fallback");
+  assert.equal(result.jevDecision?.model, "typesafe/jev-1.14");
   assert.deepEqual(result.authoritativeAssessment, uncertain);
-  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "not_run" });
+  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "completed" });
 });
 
-test("Jev failure does not discard valid Qwen analysis", async () => {
+test("Jev failure does not prevent the Qwen secondary explanation", async () => {
   const failingJev: JevProvider = { async verify() { throw new Error("Jev unavailable"); } };
   const result = await runAiAnalysis({ assessment: uncertain, transaction }, {
     qwenProvider: qwenProvider(),

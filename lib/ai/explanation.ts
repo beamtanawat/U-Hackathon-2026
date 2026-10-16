@@ -25,11 +25,8 @@ export function buildQwenRequest(assessment: AuthoritativeAssessment, transactio
 }
 
 export function selectAiRoute(assessment: AuthoritativeAssessment): AiRoute {
-  const missing = assessment.financial.missingFields.length > 0 || assessment.trust.missingFields.length > 0;
-  const unavailableEvidence = assessment.trust.indicators.some((indicator) => indicator.provenance === "unavailable");
-  if (assessment.trust.status === "unknown" || missing || unavailableEvidence) return "qwen_jev";
   if (assessment.financial.status === "safe" && assessment.trust.status === "low" && assessment.trust.indicators.length === 0) return "none";
-  return "qwen";
+  return "jev_qwen";
 }
 
 async function withinTimeout<T>(operation: (signal: AbortSignal) => Promise<T>, timeoutMs: number): Promise<T> {
@@ -66,15 +63,11 @@ export async function runAiAnalysis(
   const authoritativeAssessment = structuredClone(input.assessment);
   const route = selectAiRoute(authoritativeAssessment);
   const request = buildQwenRequest(authoritativeAssessment, input.transaction);
-  const qwen = await runQwen(options.qwenProvider, request, options.qwenTimeoutMs ?? QWEN_TIMEOUT_MS, route);
   let jev: { output: JevDecision | null; status: ProviderStatus } = { output: null, status: "not_run" };
-  if (route === "qwen_jev" && qwen.output) {
-    jev = await runJev(options.jevProvider, {
-      context: request.context,
-      qwenSuggestedEscalation: qwen.output.review.suggestedEscalation,
-      qwenIndicators: qwen.output.review.indicators.map(({ type, evidenceId, provenance }) => ({ type, evidenceId, provenance })),
-    }, options.jevTimeoutMs ?? JEV_TIMEOUT_MS);
+  if (route === "jev_qwen") {
+    jev = await runJev(options.jevProvider, { context: request.context }, options.jevTimeoutMs ?? JEV_TIMEOUT_MS);
   }
+  const qwen = await runQwen(options.qwenProvider, request, options.qwenTimeoutMs ?? QWEN_TIMEOUT_MS, route);
   const comparison = compareAnalyses(authoritativeAssessment, qwen.output, jev.output, { qwen: qwen.status, jev: jev.status });
   const violations = qwen.output ? checkGrounding(qwen.output.explanation, authoritativeAssessment) : [];
   const accepted = qwen.output !== null && comparison.unsupportedClaims.length === 0 && violations.length === 0;

@@ -11,7 +11,7 @@ import { buildBreakdown, recommendActions, toAuthoritativeAssessment, toTransact
 import { aiEnabledByEnv, clientKey, createAiBudget, createRateLimiter, readJsonBody, RequestError, type AiMode } from "./guards";
 
 export const ENGINE_VERSION = "safe-to-pay-rules v1 + scam-context-v1";
-const ROUTE_CALLS = { none: 0, qwen: 1, qwen_jev: 2 } as const;
+const ROUTE_CALLS = { none: 0, jev_qwen: 2 } as const;
 
 export interface FinancialEngine {
   financial(request: EvaluationRequest): FinancialAssessment;
@@ -45,7 +45,7 @@ export function createEvaluateHandler(dependencies: EvaluateDependencies = {}): 
   const limiter = createRateLimiter({ ...(dependencies.rateLimit ?? { limit: 20, windowMs: 60_000 }), now: dependencies.now });
   const budget = createAiBudget({ maxCallsPerHour: dependencies.maxAiCallsPerHour ?? (Number(env.AI_MAX_CALLS_PER_HOUR) || 20), now: dependencies.now });
   const injected = dependencies.qwenProvider !== undefined || dependencies.jevProvider !== undefined;
-  const aiConfigured = injected ? dependencies.qwenProvider !== undefined : aiEnabledByEnv(env);
+  const aiConfigured = injected ? dependencies.qwenProvider !== undefined || dependencies.jevProvider !== undefined : aiEnabledByEnv(env);
   // Providers are built per request so each response reports only its own usage.
   const providersFor = (onUsage: UsageReporter): { qwenProvider?: QwenProvider; jevProvider?: JevProvider } => injected
     ? { qwenProvider: dependencies.qwenProvider, jevProvider: dependencies.jevProvider }

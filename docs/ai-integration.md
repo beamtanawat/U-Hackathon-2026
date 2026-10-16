@@ -1,13 +1,13 @@
-# AI Integration: Qwen3.5-9B + Jev 1.14 (Beam)
+# Simulated U-Bot Pipeline: Jev 1.14 + Qwen3.5-9B (Beam)
 
 The AI layer explains and double-checks the engine's assessment. It never decides: financial and trust statuses come only from Archay's deterministic engines (`docs/financial-engine-integration.md`), and the AI output is returned beside them under `ai` (`docs/frontend-ai-integration.md`).
 
-There is **no U-Bot runtime dependency**. Both models are called through OpenRouter:
+U-Bot has no API available for this hackathon. The demo therefore labels this layer **U-Bot Simulation** and discloses the actual OpenRouter providers. It must not be presented as an official or live U-Bot integration.
 
 | Role | Model (pinned in code) | OpenRouter API | Limits |
 | --- | --- | --- | --- |
-| Primary: explanation + evidence review | `qwen/qwen3.5-9b` | `POST /api/v1/chat/completions` | 350 completion tokens, 12 s timeout, `temperature: 0`, strict JSON schema |
-| Secondary: typed review decision | `typesafe/jev-1.14` | `POST /api/alpha/decisions` | 5 s timeout |
+| Primary: typed review decision | `typesafe/jev-1.14` | `POST /api/alpha/decisions` | 5 s timeout |
+| Secondary: explanation + evidence review | `qwen/qwen3.5-9b` | `POST /api/v1/chat/completions` | 350 completion tokens, 12 s timeout, `temperature: 0`, strict JSON schema |
 
 Code: `lib/ai/openrouter.ts` (Qwen), `lib/ai/jev.ts` (Jev), `lib/ai/explanation.ts` (routing and orchestration), `lib/ai/grounding.ts`, `lib/ai/comparison.ts`, `lib/ai/fallback.ts`, `lib/ai/prompt.ts`, `lib/ai/schema.ts`.
 
@@ -43,14 +43,13 @@ The route uses only the authoritative assessment, and is reported as `ai.route` 
 | `ai.route` | Condition | Paid calls |
 | --- | --- | --- |
 | `none` | financial `safe`, trust `low`, no trust indicators, no missing fields | 0 |
-| `qwen_jev` | trust `unknown`, any missing field, or an indicator with `unavailable` provenance | Qwen, then Jev only if Qwen returned valid output (max 2) |
-| `qwen` | everything else | 1 |
+| `jev_qwen` | any result needing AI support | Jev primary, then Qwen secondary (max 2) |
 
-Demo scenarios: A → `none`, B → `qwen`, C → `qwen_jev` (exchange rate missing).
+Demo scenarios: A → `none`; B and C → `jev_qwen`.
 
 ## What the models see
 
-Providers receive only a sanitized `ProviderContext`: financial status and reason codes, trust status, indicator `id`/`kind`/`provenance`, missing-field names, wallet type, transfer mode, asset, network, whether the recipient is known and its provenance. **No balances, amounts, recipient identifiers, wallet addresses, messages or engine prose.** Jev additionally receives Qwen's escalation suggestion and indicator references (`type`, `evidenceId`, `provenance`).
+Both providers receive only a sanitized `ProviderContext`: financial status and reason codes, trust status, indicator `id`/`kind`/`provenance`, missing-field names, wallet type, transfer mode, asset, network, whether the recipient is known and its provenance. **No balances, amounts, recipient identifiers, wallet addresses, messages or engine prose.** Jev runs independently before Qwen and never depends on Qwen output.
 
 The Qwen system prompt (`lib/ai/prompt.ts`) forbids inferring facts without a supplied evidence ID, recalculating money, changing a status, calling a transaction safe, or guaranteeing an outcome.
 
@@ -72,7 +71,7 @@ Qwen output is shown (`ai.explanation.source: "qwen"`) only if all of these pass
 
 ## Jev 1.14
 
-Jev answers one typed question, `needs_review` (probability in [0, 1]), about the sanitized state. The result is accepted only with model `typesafe/jev-1.14` (or a versioned `typesafe/jev-1.14-*` response), `decisionStatus: "completed"`, a probability in [0, 1], and `suggestedEscalation === (reviewProbability >= 0.5)`. It is reported as `ai.jevDecision` and `ai.comparison.jevVerification` (`supports_review` / `does_not_support_review` / `unavailable` / `not_run`). Jev is advisory: it never changes the assessment or the explanation source.
+Jev is the primary simulated U-Bot reviewer. It answers one typed question, `needs_review` (probability in [0, 1]), about the sanitized state before Qwen runs. The result is accepted only with model `typesafe/jev-1.14` (or a versioned `typesafe/jev-1.14-*` response), `decisionStatus: "completed"`, a probability in [0, 1], and `suggestedEscalation === (reviewProbability >= 0.5)`. It is reported as `ai.jevDecision` and `ai.comparison.jevVerification` (`supports_review` / `does_not_support_review` / `unavailable` / `not_run`). Jev remains advisory and never changes the authoritative assessment.
 
 ## Failure behavior
 

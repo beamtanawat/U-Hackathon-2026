@@ -17,8 +17,6 @@ const request: JevVerificationRequest = {
     recipientKnown: false,
     recipientProvenance: "simulated",
   },
-  qwenSuggestedEscalation: true,
-  qwenIndicators: [],
 };
 
 test("uses the Jev 1.14 Decisions API and records privacy-safe usage", async () => {

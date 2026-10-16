@@ -40,7 +40,7 @@ export function compareAnalyses(
     unsupportedClaims,
     missingEvidence: unsupportedClaims.map((claim) => claim.evidenceId),
     contradictions: qwen?.review.contradictions ?? [],
-    suggestedEscalation: explanationSupported.size > 0 || reviewSupported.size > 0,
+    suggestedEscalation: Boolean(jev?.suggestedEscalation) || explanationSupported.size > 0 || reviewSupported.size > 0,
     jevVerification: providerStatus.jev === "unavailable" ? "unavailable" : !jev ? "not_run" : jev.suggestedEscalation ? "supports_review" : "does_not_support_review",
   };
 }

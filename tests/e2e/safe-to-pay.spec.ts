@@ -42,8 +42,9 @@ test("Scenario B: the real API decides High Risk, the user reduces, then proceed
   await expect(cp.locator(".statusrow")).toContainText("Low");
   await expect(cp.locator(".vtext")).toContainText("฿4,400 less");
   await expect(cp).toContainText("฿5,500");
-  await expect(cp).toContainText("Rules-engine explanation");
-  await expect(page.locator("body")).not.toContainText("U-Bot");
+  await expect(cp).toContainText("Rules-engine fallback");
+  await expect(cp).toContainText("U-Bot Simulation");
+  await expect(cp).toContainText("Jev Primary · Qwen Secondary · No official U-Bot API");
   await page.screenshot({ path: "test-results/scenario-b-1-high-risk.png", animations: "disabled" });
 
   // Suggested action: pay the engine's maximum safe amount; the API re-evaluates it.
