@@ -74,13 +74,13 @@ Accessibility requirements:
 
 ## Safe-to-Pay checkpoint
 
-The checkpoint uses a centered U-Topia payment-review layout. Information order is:
+The checkpoint uses a centered U-Topia payment-review layout. Following the approved simplification, information order is:
 
-1. Financial verdict.
-2. One-sentence plain-language explanation.
-3. Balance, Safe to Spend, Payment, and post-payment impact.
-4. Recommended action.
-5. A separate recipient/trust result.
+1. Payment amount and recipient.
+2. Maximum safe payment and a single purple meter showing safe-to-spend remaining after payment relative to that amount. The meter fills once over 650ms, with no movement for reduced-motion users. Overspending leaves the meter empty and is stated numerically; a missing exchange rate shows an unavailable amount without a meter.
+3. Financial verdict, one-sentence impact, and balance after payment.
+4. Collapsed `View impact details` with balance comparison and Before/After partitions.
+5. Recommended action and neutral secondary actions. High recipient risk appears before these actions; low risk stays below.
 6. Collapsed `Technical details` for judge inspection.
 
 The financial and trust results remain independent. Status meaning is expressed through text and icons as well as color.
@@ -112,6 +112,8 @@ Back from the checkpoint returns to the current transaction's preceding amount o
 - Show Financial Review when an exchange rate is unavailable and do not invent a conversion.
 - Show recipient/trust High Risk separately, using only provided evidence.
 - Keep Verify Recipient, Postpone, and Cancel discoverable.
+- When the recipient checklist is complete, make its action neutral white and label it `Review checklist`, with a check icon. Promote Proceed to the blue primary action with a short purple focus outline, label it `Continue despite risks`, and state `Checklist completed. Risk signals remain.` Completion does not change the assessment or recommend sending.
+- Proceed with High recipient risk opens the Confirm step before any simulated payment. Back preserves the checklist, Cancel exits to Pay, and only `Confirm simulated payment` creates the simulated outcome.
 - Label recipient history as simulated and avoid claims of verified fraud or guaranteed safety.
 
 ## Technical boundaries
