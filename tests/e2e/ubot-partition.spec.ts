@@ -12,13 +12,13 @@ async function say(page: Page, text: string) {
 const overlap = (a: { x: number; y: number; width: number; height: number } | null, b: typeof a) =>
   !!a && !!b && a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 
-test("U-Bot head sits on the right edge, mid-screen, and opens and closes by mouse and keyboard", async ({ page }) => {
+test("U-Bot head sits in the bottom-right corner and opens and closes by mouse and keyboard", async ({ page }) => {
   await skipTour(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const head = page.getByRole("button", { name: "Open U-Bot Simulation assistant" });
   const box = await head.boundingBox();
-  expect(box && box.x + box.width > 1440 - 120 && box.y > 900 * 0.3 && box.y + box.height < 900 * 0.7).toBe(true);
+  expect(box && box.x + box.width > 1440 - 60 && box.y + box.height > 900 - 60).toBe(true);
   await head.click();
   await expect(page.getByRole("region", { name: "U-Bot Simulation assistant" })).toBeVisible();
   await expect(head).toHaveAttribute("aria-expanded", "true");
