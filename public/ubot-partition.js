@@ -18,8 +18,8 @@
   var EXAMPLES = ["Set my emergency buffer to 4,000 baht", "Reserve 2,000 baht more for bills", "Undo", "Reset partition"];
 
   var CATEGORY = {
-    buffer: /\b(emergency\s+)?buffer\b|กันชน|เงินสำรอง/,
-    bills: /\bbills?\b|\brent\b|\butilit(y|ies)\b|ค่าบิล|บิล/,
+    buffer: /\b(emergency\s+)?buffer\b|กันชน|เงินสำรอง|เงินฉุกเฉิน/,
+    bills: /\bbills?\b|\brent\b|\butilit(y|ies)\b|ค่าบิล|บิล|ค่าเช่า|ค่าน้ำ|ค่าไฟ/,
   };
   var READ_ONLY = {
     debt: /\bdebt\b|\bbnpl\b|\bloan\b|\bcard\b|หนี้/,
@@ -42,15 +42,20 @@
    *   {kind:"clarify", message:string, examples:string[]} |
    *   {kind:"change", category:"buffer"|"bills", op:"set"|"increase"|"decrease", amount:number}}
    */
+  // Thai digits (๐-๙) from speech-to-text become Arabic digits before parsing.
+  function normaliseDigits(text) { return text.replace(/[๐-๙]/g, function (d) { return String(d.charCodeAt(0) - 0x0E50); }); }
+  // "to N" in English or "เป็น N" in Thai sets a target value.
+  var TO_TARGET = /\bto\s+[฿]?\s*\d|เป็น\s*[฿]?\s*\d/;
+
   function parseCommand(input) {
-    var text = String(input || "").toLowerCase().trim();
+    var text = normaliseDigits(String(input || "").toLowerCase().trim());
     if (!text) return { kind: "none" };
     if (/^(undo|undo (that|last change)|ย้อนกลับ)\.?$/.test(text)) return { kind: "undo" };
     if (/\breset\b.*\b(partition|buffer|bills|wallet)\b|^reset\.?$|รีเซ็ต/.test(text)) return { kind: "reset" };
 
     var category = CATEGORY.buffer.test(text) ? "buffer" : CATEGORY.bills.test(text) ? "bills" : null;
     var nums = numbers(text);
-    var hasVerb = INCREASE.test(text) || DECREASE.test(text) || SET.test(text) || /\bto\s+[฿]?\d/.test(text);
+    var hasVerb = INCREASE.test(text) || DECREASE.test(text) || SET.test(text) || TO_TARGET.test(text);
     var readOnly = Object.keys(READ_ONLY).filter(function (k) { return READ_ONLY[k].test(text); });
 
     // Plain questions ("what is my buffer?") are not partition commands.
@@ -70,7 +75,7 @@
     if (!Number.isInteger(amount)) return clarify("Please use a whole baht amount.");
 
     var up = INCREASE.test(text), down = DECREASE.test(text);
-    var toTarget = /\bto\s+[฿]?\s*\d/.test(text) || (SET.test(text) && !up && !down);
+    var toTarget = TO_TARGET.test(text) || (SET.test(text) && !up && !down);
     var op = toTarget ? "set" : up && !down ? "increase" : down && !up ? "decrease" : null;
     if (!op) return clarify("Should I set, increase, or decrease it?");
     return { kind: "change", category: category, op: op, amount: amount };

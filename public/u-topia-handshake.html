@@ -585,6 +585,13 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .chat-in input{flex:1;min-width:0;min-height:46px;border:1px solid #CCD2DD;border-radius:999px;padding:0 16px;font-size:15px}
 .chat-in input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
 .chat-in button{width:46px;height:46px;border-radius:50%;border:0;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
+.chat-in .mic{background:#fff;color:var(--hs);border:1px solid var(--hs-line)}
+.chat-in .mic:disabled{opacity:.55}
+.chat-in .mic.rec{background:var(--risk);color:#fff;border-color:var(--risk);animation:micpulse 1.2s ease-in-out infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(212,48,48,.35)}50%{box-shadow:0 0 0 6px rgba(212,48,48,0)}}
+.mic-status{font-size:13px;color:var(--ink-2);padding:0 16px 8px}
+.mic-status:empty{display:none}
+.mic-status.err{color:var(--risk)}
 
 
 .foot{max-width:1080px;margin:0 auto;padding:0 24px 36px;font-size:12.5px;color:var(--muted);display:flex;gap:6px 20px;flex-wrap:wrap;justify-content:center;text-align:center}
@@ -844,7 +851,8 @@ body.sheet-open .stepbody.enter{animation:none}
   <div class="chat-note">Simulation · not financial advice</div>
   <div class="chat-log" id="chat-log" aria-live="polite"></div>
   <div class="chat-sugg" id="chat-sugg"></div>
-  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask, or try “Set my buffer to 4,000 baht”" aria-label="Message U-Bot" autocomplete="off"><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
+  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask, or try “Set my buffer to 4,000 baht”" aria-label="Message U-Bot" autocomplete="off"><button type="button" class="mic" id="mic-btn" aria-label="Speak to U-Bot" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
+  <div class="mic-status" id="mic-status" role="status" aria-live="polite"></div>
 </section>
 
 <script src="/ubot-partition.js"></script>
@@ -2099,6 +2107,67 @@ $('#chat').addEventListener('click', async e => {
   await applyPartition(card.next, `Done. Emergency buffer ${fmt(card.next.buffer)}, bills reserve ${fmt(partProfile().baseBills + card.next.extraBills)}. Simulation only; no real wallet changed.`);
   renderChatLog();
 });
+/* ---------- Voice input: push-to-talk ElevenLabs STT via /api/transcribe ----------
+   Records only after a click and mic permission, stops at 15 s, sends one request
+   at a time, and only fills the input: the user still reviews and presses Send. */
+const VOICE = {enabled:false, state:'idle', rec:null, stream:null, chunks:[], timer:0, mime:'', last:0};
+const MIC_ICON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>', STOP_ICON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>';
+function voiceStatus(text, err){ const el = $('#mic-status'); el.textContent = text || ''; el.classList.toggle('err', !!err); }
+function voiceUI(){
+  const b = $('#mic-btn'); if (!b) return;
+  b.hidden = !VOICE.enabled;
+  const rec = VOICE.state === 'recording';
+  b.classList.toggle('rec', rec);
+  b.disabled = VOICE.state === 'processing';
+  b.innerHTML = rec ? STOP_ICON : MIC_ICON;
+  b.setAttribute('aria-label', rec ? 'Stop recording' : 'Speak to U-Bot');
+}
+function pickMime(){
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  return ['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+}
+function stopTracks(){ if (VOICE.stream) VOICE.stream.getTracks().forEach(t => t.stop()); VOICE.stream = null; }
+async function startRecording(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){ voiceStatus('Voice input isn’t supported in this browser. You can type instead.', true); return; }
+  if (Date.now() - VOICE.last < 3000){ voiceStatus('Please wait a moment before recording again.', true); return; }
+  try { VOICE.stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch (e) { voiceStatus('Microphone access was blocked. You can type instead.', true); return; }
+  VOICE.mime = pickMime();
+  try { VOICE.rec = VOICE.mime ? new MediaRecorder(VOICE.stream, {mimeType:VOICE.mime}) : new MediaRecorder(VOICE.stream); }
+  catch (e) { stopTracks(); voiceStatus('Voice input isn’t supported in this browser. You can type instead.', true); return; }
+  VOICE.chunks = [];
+  VOICE.rec.ondataavailable = e => { if (e.data && e.data.size) VOICE.chunks.push(e.data); };
+  VOICE.rec.onstop = () => transcribe();
+  VOICE.rec.start();
+  VOICE.state = 'recording'; voiceUI(); voiceStatus('Recording… press Stop when you’re done (max 15 s).');
+  VOICE.timer = setTimeout(() => { if (VOICE.state === 'recording') stopRecording(); }, 15000);
+}
+function stopRecording(){
+  clearTimeout(VOICE.timer);
+  if (VOICE.rec && VOICE.rec.state !== 'inactive') VOICE.rec.stop(); else transcribe();
+}
+async function transcribe(){
+  stopTracks();
+  const type = (VOICE.rec && VOICE.rec.mimeType) || VOICE.mime || 'audio/webm';
+  const blob = new Blob(VOICE.chunks, {type: type.split(';')[0]});
+  VOICE.rec = null; VOICE.chunks = [];
+  if (blob.size < 1000){ VOICE.state = 'idle'; voiceUI(); voiceStatus('Didn’t catch that. Try again.', true); return; }
+  VOICE.state = 'processing'; voiceUI(); voiceStatus('Transcribing…'); VOICE.last = Date.now();
+  const form = new FormData(); form.append('audio', blob, 'recording');
+  let text = '', err = 'Voice input is unavailable. You can type instead.';
+  try {
+    const res = await fetch('/api/transcribe', {method:'POST', body:form});
+    const body = await res.json().catch(() => null);
+    if (res.ok && body && typeof body.text === 'string') text = body.text;
+    else if (body && body.error && body.error.message) err = body.error.message;
+  } catch (e) {}
+  VOICE.state = 'idle'; voiceUI();
+  if (!text){ voiceStatus(err, true); return; }
+  const input = $('#chat-q'); input.value = text; input.focus();
+  voiceStatus('Check the text, then press Send.');
+}
+$('#mic-btn').addEventListener('click', () => { if (VOICE.state === 'recording') stopRecording(); else if (VOICE.state === 'idle') startRecording(); });
+if (location.protocol !== 'file:') fetch('/api/transcribe').then(r => r.ok ? r.json() : null).then(b => { VOICE.enabled = !!(b && b.enabled); voiceUI(); }).catch(() => {});
 $('#chat-form').addEventListener('submit', e => { e.preventDefault(); const i = $('#chat-q'); ask(i.value); i.value = ''; });
 
 renderAll();
