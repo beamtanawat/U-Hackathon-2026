@@ -108,6 +108,24 @@ describe("GET /api/token-context (Tokenomist, server-side)", () => {
     }
   });
 
+  it("treats HTTP 200 with an empty data array and no credit metadata as not_covered, re-checked at most daily", async () => {
+    let t = 0;
+    const fetchImpl = respond(200, { status: true, metadata: { queryDate: "2026-10-16T05:00:00Z" }, data: [] });
+    const handler = createTokenContextHandler({ env: live, fetchImpl, now: () => t });
+    expect((await (await handler(get())).json()).status).toBe("not_covered");
+    t += 20 * 3_600_000;
+    expect((await (await handler(get())).json()).status).toBe("not_covered");
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    t += 5 * 3_600_000;
+    await handler(get());
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores returned tokens whose symbol does not match the request", async () => {
+    const other = { ...okBody, data: [{ ...okBody.data[0], id: "other", symbol: "OTHER" }] };
+    expect((await (await createTokenContextHandler({ env: live, fetchImpl: respond(200, other) })(get())).json()).status).toBe("not_covered");
+  });
+
   it("enforces the daily call budget", async () => {
     let t = 0;
     const fetchImpl = respond(200, okBody);

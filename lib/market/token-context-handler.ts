@@ -10,11 +10,19 @@ import { fetchTokenList, TokenomistError, type TokenContext } from "./tokenomist
  * calls until the reset time, and no price or FX value is ever returned.
  */
 
-/** Demo holdings → candidate Tokenomist slugs (pinned after the coverage check). */
+/**
+ * Demo holdings → candidate Tokenomist slugs. Coverage check on 2026-10-16:
+ * the Token List call returned HTTP 200 with an empty data array for
+ * "usd-coin,usdc", and tokenomist.ai/usd-coin and /usdc are 404 while a known
+ * slug (/0x) resolves. USDC (a stablecoin with no vesting) is not tracked, so
+ * the endpoint answers "not_covered" and the UI shows nothing.
+ */
 export const DEMO_TOKENS: Record<string, string[]> = { USDC: ["usd-coin", "usdc"] };
 
 const HOUR = 3_600_000;
 export const TOKEN_CONTEXT_TTL_MS = 6 * HOUR;
+/** A token Tokenomist does not track is re-checked at most daily to save credits. */
+export const NOT_COVERED_TTL_MS = 24 * HOUR;
 const ERROR_COOLDOWN_MS = 5 * 60_000;
 
 type Status = "ok" | "not_covered" | "disabled" | "stale" | "unavailable";
@@ -64,7 +72,7 @@ export function createTokenContextHandler(dependencies: TokenContextDependencies
 
     const t = now();
     const cached = cache.get(symbol);
-    if (cached && t - cached.fetchedAt < TOKEN_CONTEXT_TTL_MS) return fromEntry(cached.value ? "ok" : "not_covered", symbol, cached, 21_600);
+    if (cached && t - cached.fetchedAt < (cached.value ? TOKEN_CONTEXT_TTL_MS : NOT_COVERED_TTL_MS)) return fromEntry(cached.value ? "ok" : "not_covered", symbol, cached, 21_600);
 
     if (t < pausedUntil) {
       return cached ? fromEntry("stale", symbol, cached, 0) : respond("unavailable", symbol, { reason: pauseReason });
