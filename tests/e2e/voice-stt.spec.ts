@@ -27,12 +27,21 @@ async function mockStt(page: Page, reply: { status: number; body: unknown }) {
   return posts;
 }
 
-test("voice input is hidden while STT is disabled (default)", async ({ page }) => {
+test("voice input stays discoverable but cannot call STT while disabled", async ({ page }) => {
   await fakeMic(page);
+  const methods: string[] = [];
+  await page.route("**/api/transcribe", (route) => {
+    methods.push(route.request().method());
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ enabled: false, maxSeconds: 15 }) });
+  });
   await page.goto("/");
   await page.locator("#chatFab").click();
   await expect(page.locator("#chat-q")).toBeVisible();
-  await expect(page.locator("#mic-btn")).toBeHidden();
+  const mic = page.getByRole("button", { name: "Voice input unavailable" });
+  await expect(mic).toBeVisible();
+  await expect(mic).toBeDisabled();
+  await expect(page.locator("#mic-status")).toContainText("isn’t active");
+  expect(methods).toEqual(["GET"]);
 });
 
 test("push-to-talk fills the input; nothing is sent or changed until the user sends and confirms", async ({ page }) => {
@@ -104,4 +113,22 @@ test("an STT failure shows the server message and leaves the input empty", async
   await page.getByRole("button", { name: "Stop recording" }).click();
   await expect(page.locator("#mic-status")).toContainText("Voice input is busy");
   await expect(page.locator("#chat-q")).toHaveValue("");
+});
+
+test("microphone and Send stay inside the U-Bot panel without overlap on desktop and mobile", async ({ page }) => {
+  await fakeMic(page);
+  await mockStt(page, { status: 200, body: { text: "unused" } });
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.locator("#chatFab").click();
+    const chat = await page.locator("#chat").boundingBox();
+    const mic = await page.locator("#mic-btn").boundingBox();
+    const send = await page.locator('#chat-form button[type="submit"]').boundingBox();
+    expect(chat && mic && send).toBeTruthy();
+    expect(mic!.x + mic!.width).toBeLessThanOrEqual(send!.x);
+    expect(mic!.x).toBeGreaterThanOrEqual(chat!.x);
+    expect(send!.x + send!.width).toBeLessThanOrEqual(chat!.x + chat!.width);
+    await page.locator("#chat").screenshot({ path: `test-results/voice-${viewport.width}.png`, animations: "disabled" });
+  }
 });
