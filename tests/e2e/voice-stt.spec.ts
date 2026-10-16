@@ -58,16 +58,29 @@ test("push-to-talk fills the input; nothing is sent or changed until the user se
   expect(await page.evaluate(() => sessionStorage.getItem("uh-partition-v1"))).toBeNull();
 });
 
-test("a Thai transcription goes through the same U-Bot command flow", async ({ page }) => {
+test("a Thai transcription goes through preview, Confirm and the API re-check", async ({ page }) => {
   await fakeMic(page);
   await mockStt(page, { status: 200, body: { text: "ตั้งเงินสำรองฉุกเฉินเป็น 4000 บาท", language: "tha" } });
   await page.goto("/");
+  await page.locator('[data-scen="B"]').click();
+  await page.locator("#nextbtn").click();
+  await expect(page.locator("#cp .statusrow")).toContainText("High Risk");
   await page.locator("#chatFab").click();
   await page.getByRole("button", { name: "Speak to U-Bot" }).click();
   await page.getByRole("button", { name: "Stop recording" }).click();
   await expect(page.locator("#chat-q")).toHaveValue("ตั้งเงินสำรองฉุกเฉินเป็น 4000 บาท");
   await page.locator("#chat-q").press("Enter");
-  await expect(page.getByTestId("partition-preview").last()).toContainText("฿4,000");
+  const card = page.getByTestId("partition-preview").last();
+  await expect(card).toContainText("฿3,000");
+  await expect(card).toContainText("฿4,000");
+  expect(await page.evaluate(() => sessionStorage.getItem("uh-partition-v1"))).toBeNull();
+  const [request, response] = await Promise.all([
+    page.waitForRequest((r) => r.url().endsWith("/api/evaluate") && r.method() === "POST"),
+    page.waitForResponse((r) => r.url().endsWith("/api/evaluate") && r.request().method() === "POST"),
+    card.getByRole("button", { name: "Confirm change" }).click(),
+  ]);
+  expect(request.postDataJSON().protectedBuffer).toEqual({ value: 4000, provenance: "user_provided" });
+  expect((await response.json()).breakdown.protectedBuffer).toBe(4000);
 });
 
 test("errors are short, and typing still works", async ({ page }) => {

@@ -1347,12 +1347,18 @@ function loadTokenContext(){
   TOKEN_CTX.state = 'loading';
   fetch('/api/token-context?symbol=USDC').then(r => r.ok ? r.json() : null).catch(() => null).then(body => {
     TOKEN_CTX.state = 'done'; TOKEN_CTX.data = body && (body.status === 'ok' || body.status === 'stale') && body.token ? body : null;
-    if (TOKEN_CTX.data && S.page === 'wallets' && S.walletTab === 'crypto') renderPage();
+    TOKEN_CTX.status = body && !TOKEN_CTX.data && (body.status === 'not_covered' || body.status === 'unavailable') ? body.status : null;
+    if ((TOKEN_CTX.data || TOKEN_CTX.status) && S.page === 'wallets' && S.walletTab === 'crypto') renderPage();
   });
 }
 function tokenContextLine(){
   loadTokenContext();
-  const d = TOKEN_CTX.data; if (!d) return '';
+  const d = TOKEN_CTX.data;
+  if (!d) {
+    if (!TOKEN_CTX.status) return '';
+    const msg = TOKEN_CTX.status === 'not_covered' ? 'Tokenomist doesn’t track USDC, so no token context is shown.' : 'Token context from Tokenomist is unavailable right now.';
+    return `<p class="est-note" data-testid="token-context" data-status="${TOKEN_CTX.status}" style="margin:0;padding:0 18px 16px">${msg}</p>`;
+  }
   const n = v => v == null ? '—' : Number(v).toLocaleString('en-US', {maximumFractionDigits:0});
   const when = d.token.lastUpdated ? new Date(d.token.lastUpdated).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : null;
   return `<p class="est-note" data-testid="token-context" style="margin:0;padding:0 18px 16px">Token context · Tokenomist${d.status === 'stale' ? ' (cached)' : ''}: circulating supply ${n(d.token.circulatingSupply)} ${esc(d.token.symbol)}${when ? ` · updated ${esc(when)}` : ''}. Tokenomics only, not a price.</p>`;
