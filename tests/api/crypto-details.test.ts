@@ -140,4 +140,38 @@ describe("GET /api/crypto-details (mocked CoinGecko + Tokenomist)", () => {
       expect(fetchImpl).toHaveBeenCalledTimes(2);
     });
   });
+
+  it("public tier calls the keyless API without any key header", async () => {
+    const fetchImpl = vi.fn(async (input: string | URL | Request, init?: RequestInit) => { void input; void init; return Response.json(market); });
+    const response = await createCryptoDetailsHandler({ env: { COINGECKO_MODE: "live", COINGECKO_API_TIER: "public" }, fetchImpl })(request());
+    const body = await response.json();
+    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url.startsWith("https://api.coingecko.com/api/v3/coins/markets?")).toBe(true);
+    expect(init.headers).toEqual({ accept: "application/json" });
+    expect(body.tokens.ARB.market).toMatchObject({ status: "ok", priceUsd: 0.82, sparkline7d: [0.76, 0.79, 0.82] });
+    expect(response.headers.get("cache-control")).toContain("s-maxage=300");
+  });
+
+  it("does not let the CDN cache a failed price lookup", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetchImpl = vi.fn(async () => Response.json({}, { status: 401 }));
+    const response = await createCryptoDetailsHandler({ env: { COINGECKO_MODE: "live", COINGECKO_API_TIER: "public" }, fetchImpl })(request());
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    warn.mockRestore();
+  });
+
+  it("falls back once to the keyless public API when the key is rejected", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(Response.json({}, { status: 401 }))
+      .mockResolvedValueOnce(Response.json(market));
+    const body = await (await createCryptoDetailsHandler({ env: { COINGECKO_MODE: "live", COINGECKO_API_KEY: PRICE_KEY, COINGECKO_API_TIER: "pro" }, fetchImpl })(request())).json();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    const [url, init] = fetchImpl.mock.calls[1] as unknown as [string, RequestInit];
+    expect(url.startsWith("https://api.coingecko.com/api/v3/")).toBe(true);
+    expect(init.headers).toEqual({ accept: "application/json" });
+    expect(body.tokens.ARB.market).toMatchObject({ status: "ok", priceUsd: 0.82 });
+    expect(warn.mock.calls.flat().join(" ")).not.toContain(PRICE_KEY);
+    warn.mockRestore();
+  });
 });
