@@ -300,7 +300,7 @@ This integration preserved the project's core rule: optional services may degrad
 
 ## Contributors
 
-- [**Archay**](https://github.com/arcdoesntexist) — deterministic financial engine and explainable recipient-risk model
+- [**Archay**](https://github.com/arcdoesntexist) — project manager, deterministic financial engine and explainable recipient-risk model
 - [**Ete**](https://github.com/Ate21538) — U-Topia reference frontend and user experience
 - [**Beam**](https://github.com/beamtanawat) — guarded AI pipeline, U-Bot Simulation, and external-service integration
 - [**Bream**](https://github.com/kodchakorn18) — business direction, product framing, and pitch alignment
