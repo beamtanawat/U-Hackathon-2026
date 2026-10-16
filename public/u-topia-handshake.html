@@ -1332,6 +1332,23 @@ function dashboard(){
 }
 
 /* ---------- wallets ---------- */
+/* Tokenomist token context (server-side; off unless enabled). Fetched once per page load, never polled. */
+const TOKEN_CTX = {state:'idle', data:null};
+function loadTokenContext(){
+  if (TOKEN_CTX.state !== 'idle' || location.protocol === 'file:') return;
+  TOKEN_CTX.state = 'loading';
+  fetch('/api/token-context?symbol=USDC').then(r => r.ok ? r.json() : null).catch(() => null).then(body => {
+    TOKEN_CTX.state = 'done'; TOKEN_CTX.data = body && (body.status === 'ok' || body.status === 'stale') && body.token ? body : null;
+    if (TOKEN_CTX.data && S.page === 'wallets' && S.walletTab === 'crypto') renderPage();
+  });
+}
+function tokenContextLine(){
+  loadTokenContext();
+  const d = TOKEN_CTX.data; if (!d) return '';
+  const n = v => v == null ? '—' : Number(v).toLocaleString('en-US', {maximumFractionDigits:0});
+  const when = d.token.lastUpdated ? new Date(d.token.lastUpdated).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : null;
+  return `<p class="est-note" data-testid="token-context" style="margin:0;padding:0 18px 16px">Token context · Tokenomist${d.status === 'stale' ? ' (cached)' : ''}: circulating supply ${n(d.token.circulatingSupply)} ${esc(d.token.symbol)}${when ? ` · updated ${esc(when)}` : ''}. Tokenomics only, not a price.</p>`;
+}
 function wallets(){
   const sp = S.walletTab === 'spending';
   return `<div class="content">
@@ -1358,7 +1375,7 @@ function wallets(){
       <div class="card" data-tour="crypto">${[['USDC', PROFILE.usdc, '#2775CA', 'USD Coin · fictional holding']].map(([a, n, c, d]) => `
         <div class="holding"><div class="coin" style="background:${c}">${a.slice(0, 1)}</div><div><b style="font-weight:500">${a}</b><div class="hint">${d}</div></div>
         <div class="amt num"><b>${money(fmtC(n, a))}</b></div></div>`).join('')}
-        <p class="est-note" style="margin:0;padding:0 18px 16px">Fictional holding. Without a live price, crypto is not counted in Safe-to-Spend.</p></div>`}
+        <p class="est-note" style="margin:0;padding:0 18px 16px">Fictional holding. Without a live price, crypto is not counted in Safe-to-Spend.</p>${tokenContextLine()}</div>`}
     <div class="sec-h"><h2>Recent ${sp ? 'Spending' : 'Crypto'} Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
     <div class="card">${activityList(a => a.flow === (sp ? 'utag' : 'crypto'))}</div>
   </div>`;
