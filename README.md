@@ -13,7 +13,7 @@ The prototype is presented as a **U-Topia Reference Integration Preview**. It co
 
 ## Hackathon Context
 
-U-HANDSHAKE was built for **U-Hackathon 2026** as a judge-ready demonstration of how a financial safety layer could be embedded into a wallet or banking experience. The team used U-Topia as the reference host interface and focused the prototype on three hackathon goals: a clear real-world problem, an integration-ready workflow, and an experience that judges can understand through repeatable scenarios.
+U-HANDSHAKE was built for **U-Hackathon 2026 during a 24-hour hackathon** as a judge-ready demonstration of how a financial safety layer could be embedded into a wallet or banking experience. The team used U-Topia as the reference host interface and focused the prototype on three hackathon goals: a clear real-world problem, an integration-ready workflow, and an experience that judges can understand through repeatable scenarios.
 
 The project combines the event's AI and partner-service opportunities without placing critical financial decisions in a black box. Deterministic calculations remain authoritative, while the U-Bot Simulation, voice input, and market context help explain risk and guide the user before a transaction is confirmed.
 
@@ -282,12 +282,11 @@ More detailed contracts are documented in:
 
 ## Integration Milestones
 
-The final hackathon build was assembled through reviewed pull requests. Two late-stage integrations completed the production-facing experience:
+The final hackathon build was assembled through reviewed pull requests. One late-stage integration completed the production-facing experience:
 
 - [**PR #10 — Live crypto prices, token-unlock details, and production voice coverage**](https://github.com/beamtanawat/U-Hackathon-2026/pull/10): added the unified `/api/crypto-details` route, batched CoinGecko market data, Tokenomist unlock context, independent provider fallbacks, wallet detail panels, and expanded API and end-to-end coverage for token details and ElevenLabs voice behavior.
-- [**PR #11 — CoinGecko Demo/Pro tier support and safe diagnostics**](https://github.com/beamtanawat/U-Hackathon-2026/pull/11): introduced the explicit `COINGECKO_API_TIER=demo|pro` configuration so each key uses the correct host and header. It also classified authentication, rate-limit, timeout, upstream, response, and configuration failures without logging keys or returning raw provider responses.
 
-Together, these changes made the demo deployable with either CoinGecko plan while preserving the project's core rule: optional integrations may degrade, but Safe-to-Pay must keep working and must never invent financial data.
+This integration preserved the project's core rule: optional services may degrade, but Safe-to-Pay must keep working and must never invent financial data.
 
 ## Safety and Scope
 
