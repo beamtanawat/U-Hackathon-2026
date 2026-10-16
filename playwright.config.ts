@@ -21,6 +21,6 @@ export default defineConfig({
     timeout: 240_000,
     reuseExistingServer: false,
     // Paid AI is impossible in E2E: no key and AI_MODE off.
-    env: { AI_MODE: "off", OPENROUTER_API_KEY: "", NEXT_TELEMETRY_DISABLED: "1" },
+    env: { AI_MODE: "off", OPENROUTER_API_KEY: "", TOKENOMIST_MODE: "off", TOKENOMIST_API_KEY: "", ELEVENLABS_STT_MODE: "off", ELEVENLABS_API_KEY: "", NEXT_TELEMETRY_DISABLED: "1" },
   },
 });

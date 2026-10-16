@@ -32,6 +32,21 @@ describe("U-Bot partition commands", () => {
     expect(api.parseCommand(text)).toEqual({ kind: "change", ...expected });
   });
 
+  it.each([
+    ["ตั้งเงินสำรองฉุกเฉินเป็น 4000 บาท", { category: "buffer", op: "set", amount: 4000 }],
+    ["ตั้งเงินสำรองฉุกเฉินเป็น ๔๐๐๐ บาท", { category: "buffer", op: "set", amount: 4000 }],
+    ["เพิ่มเงินสำรอง 500 บาท", { category: "buffer", op: "increase", amount: 500 }],
+    ["ลดเงินสำรอง 1,000 บาท", { category: "buffer", op: "decrease", amount: 1000 }],
+    ["กันเงินค่าบิลเพิ่ม 2000 บาท", { category: "bills", op: "increase", amount: 2000 }],
+    ["Set my emergency buffer to 4000 baht.", { category: "buffer", op: "set", amount: 4000 }],
+  ])("parses spoken command %s", (text, expected) => {
+    expect(api.parseCommand(text)).toEqual({ kind: "change", ...expected });
+  });
+
+  it("asks for an amount when a Thai command has none", () => {
+    expect(api.parseCommand("ตั้งเงินสำรองฉุกเฉิน").kind).toBe("clarify");
+  });
+
   it("leaves ordinary questions to the Q&A helper", () => {
     for (const q of ["What is the buffer?", "Is this real money?", "What is safe-to-spend?", "How is must keep calculated?"]) {
       expect(api.parseCommand(q).kind).toBe("none");
