@@ -8,7 +8,7 @@
 /* Layout mirrors the U-Topia web app screenshots: logo + user row, floating pill nav with orange active item,
    a narrow centred column (~680px) of soft-shadowed rounded cards, pill outline action buttons.
    A compact demo strip sits above the content. Pay flow widens only at the Safe-to-Pay step (summary | checkpoint).
-   Under 900px: bottom tab bar, checkpoint becomes a bottom sheet. */
+   Under 900px: compact top navigation, checkpoint becomes a bottom sheet. */
 :root{
   color-scheme:light;
   --bg:#FFFFFF; --soft:#F4F6F9; --line:#E3E6EC; --line-2:#EEF0F4;
@@ -51,12 +51,13 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .enter{animation:rise .24s var(--ease) both}
 
 /* ---------- preview notice + header ---------- */
-.simbar{position:sticky;top:0;z-index:70;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.simbar{position:relative;z-index:1;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
 .simbar b{font-weight:700}
 .hdr{padding:12px 28px 0;display:flex;align-items:center;gap:12px}
 .logo{display:flex;align-items:center;gap:8px;font-weight:500;font-size:21px;color:var(--navy)}
 .logo-mark{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:19px}
 .preview-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-2);border:1.5px dashed #A7AFC0;border-radius:999px;padding:3px 10px;white-space:nowrap;background:#fff}
+button.preview-chip{cursor:pointer}
 .user{margin-left:auto;display:flex;align-items:center;gap:10px;text-align:right}
 .user b{display:block;font-weight:500;font-size:14.5px;line-height:1.2}
 .user small{color:var(--muted);font-size:12.5px}
@@ -73,7 +74,7 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .pillnav button:hover:not([aria-current="page"]){background:var(--soft)}
 
 /* ---------- demo strip ---------- */
-.demostrip{max-width:1080px;margin:12px auto 0;padding:0 24px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;scroll-padding-inline:16px}
+.demostrip{max-width:1080px;margin:12px auto 0;padding:8px 21px;border:3px solid var(--hs-line);border-radius:20px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;scroll-padding-inline:16px}
 .demostrip .lbl{font-size:12.5px;font-weight:600;color:var(--muted);margin-right:2px;display:inline-flex;gap:5px;align-items:center}
 .demostrip .lbl .ic{color:var(--hs)}
 .dchip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;min-height:40px;font-size:13.5px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap;flex:none;scroll-snap-align:start}
@@ -145,6 +146,11 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .welcome p{margin:2px 0 0;font-size:16px}
 .sts-mini{margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
 .sts-mini b{color:var(--safe);font-weight:600}
+.sts-discovery{margin-top:9px;padding:10px 12px;border:3px solid var(--hs-line);border-radius:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sts-discovery .feature{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 8px;min-width:0}
+.sts-discovery .feature small{grid-column:1 / -1;color:var(--muted);font-size:12.5px}
+.sts-discovery .feature b{color:var(--safe);font-size:17px}
+.sts-discovery .linkbtn{margin-left:auto}
 .segsel{display:inline-flex;padding:4px;border-radius:999px;background:var(--soft);gap:2px}
 .segsel button{border:0;background:transparent;border-radius:999px;padding:5px 16px;min-height:36px;font-size:14px;color:var(--ink-2)}
 .segsel button[aria-pressed="true"]{background:var(--grad);color:#fff;font-weight:600}
@@ -289,7 +295,13 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .reopen{display:none}
 
 /* ---------- checkpoint ---------- */
-.cp{border-radius:26px;border:1px solid var(--line);border-top:4px solid var(--hs);background:#fff;box-shadow:0 12px 32px rgba(15,23,41,.08);min-width:0}
+.cp{border-radius:26px;border:3px solid var(--hs-line);background:#fff;box-shadow:0 12px 32px rgba(15,23,41,.08),0 0 0 1px rgba(90,62,208,.04);min-width:0}
+@keyframes featurePulse{
+  0%{box-shadow:0 12px 32px rgba(15,23,41,.08),0 0 0 0 rgba(118,78,255,0)}
+  38%{box-shadow:0 14px 38px rgba(15,23,41,.10),0 0 0 4px rgba(132,84,255,.48),0 0 30px rgba(132,84,255,.28)}
+  100%{box-shadow:0 12px 32px rgba(15,23,41,.08),0 0 0 1px rgba(90,62,208,.10)}
+}
+.cp.feature-pulse{animation:featurePulse 1.35s var(--ease) 1}
 .cp-head{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;background:#fff;border-radius:22px 22px 0 0}
 .cp-title{font-weight:600;font-size:17px;display:flex;align-items:center;gap:7px}
 .cp-title .ic{color:var(--hs)}
@@ -316,6 +328,10 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .cmp.sts{background:#fff;border:2px solid var(--zone-sts)}
 .cmp.sts.bad{border-color:var(--risk);background:var(--risk-bg)}
 .compare .neq{font-size:26px}
+.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.impact-grid > div{border:1px solid var(--line);border-radius:14px;padding:11px 13px;background:#fff;display:grid;gap:2px}
+.impact-grid span{font-size:13px;color:var(--muted);font-weight:600}
+.impact-grid b{font-size:20px;font-weight:600}
 .split{display:grid;gap:9px}
 .bars{position:relative;display:grid;gap:8px}
 .bar-row{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center}
@@ -479,7 +495,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .hitchip.warn{background:var(--review-bg);border-color:var(--review-line);color:var(--review)}
 .okline{display:flex;gap:8px;align-items:center;font-weight:600;color:var(--safe);font-size:15px;padding:10px 12px;border-radius:12px;background:var(--safe-bg)}
 /* action bar: one clear suggested action, coloured secondary actions */
-.actions2{position:sticky;bottom:0;z-index:3;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(255,255,255,0),#fff 18%);display:grid;gap:8px;border-radius:0 0 26px 26px}
+.actions2{position:static;padding:0;display:grid;gap:8px}
 .primary-act{display:flex;align-items:center;gap:14px;width:100%;min-height:66px;padding:12px 18px;border:0;border-radius:18px;background:#0B5FD6;color:#fff;text-align:left;box-shadow:0 12px 26px rgba(11,95,214,.34);transition:background .15s,transform .15s}
 .primary-act:hover{background:#0950B8}
 .primary-act:active{transform:scale(.99)}
@@ -531,6 +547,48 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .backdrop{display:none}
 
+/* ---------- first-time introduction ---------- */
+body.onboarding-open{overflow:hidden}
+.onboarding-layer{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:24px}
+.onboarding-shade{position:absolute;inset:0;background:rgba(15,23,41,.52);animation:fade .18s ease both}
+.onboarding-dialog{position:relative;width:min(520px,100%);max-height:min(720px,calc(100dvh - 48px));overflow:auto;background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:0 28px 70px rgba(15,23,41,.28);padding:26px;display:grid;gap:20px;overscroll-behavior:contain;animation:rise .22s var(--ease) both}
+.onboarding-close{position:absolute;right:16px;top:16px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--ink-2)}
+.onboarding-hero{width:58px;height:58px;border-radius:18px;background:var(--hs-bg);border:1px solid var(--hs-line);color:var(--hs);display:grid;place-items:center}
+.onboarding-hero .ic{width:28px;height:28px}
+.onboarding-copy{padding-right:42px}
+.onboarding-copy h2{font-size:28px;line-height:1.15}
+.onboarding-copy p{margin:8px 0 0;color:var(--ink-2);font-size:16px}
+.onboarding-demo{border:1px solid var(--line);border-radius:20px;background:var(--soft);padding:16px}
+.onboarding-balance{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.onboarding-balance div{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:2px}
+.onboarding-balance div:last-child{border-color:var(--hs-line)}
+.onboarding-balance span{font-size:13px;color:var(--muted)}
+.onboarding-balance b{font-size:22px}
+.onboarding-balance div:last-child b{color:var(--hs)}
+.onboarding-flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.onboarding-flow span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:600}
+.onboarding-flow .arrow{border:0;background:transparent;padding:0;color:var(--hs)}
+.onboarding-progress{display:flex;justify-content:center;gap:7px}
+.onboarding-progress span{width:8px;height:8px;border-radius:999px;background:#D8DCE4}
+.onboarding-progress span.active{width:24px;background:var(--hs)}
+.onboarding-actions{display:flex;align-items:center;gap:10px}
+.onboarding-actions .skip{border:0;background:transparent;color:var(--muted);min-height:44px;padding:0 10px;font-weight:600}
+.onboarding-actions .spacer{flex:1}
+.onboarding-actions .btn{min-width:112px}
+
+@media (max-width:520px){
+  .onboarding-layer{padding:12px;align-items:end}
+  .onboarding-dialog{width:100%;max-height:calc(100dvh - 24px);border-radius:26px;padding:22px 18px calc(18px + env(safe-area-inset-bottom,0px));gap:17px}
+  .onboarding-copy h2{font-size:25px}
+  .onboarding-balance{grid-template-columns:1fr}
+  .onboarding-balance > strong{text-align:center}
+  .onboarding-actions{display:grid;grid-template-columns:auto 1fr}
+  .onboarding-actions .skip{grid-row:1;grid-column:1}
+  .onboarding-actions .spacer{display:none}
+  .onboarding-actions .back{grid-row:1;grid-column:2;justify-self:end}
+  .onboarding-actions .next{grid-column:1 / -1;width:100%}
+}
+
 @media (max-width:1000px){
   .checkgrid{grid-template-columns:1fr}
   .summary{position:static}
@@ -542,17 +600,19 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
   .hdr .preview-chip,.user .who{display:none}
   .logo{font-size:19px}.logo-mark{width:34px;height:34px;font-size:17px}
   .iconbtn,.avatar{width:38px;height:38px}
-  .navwrap{position:fixed;left:0;right:0;bottom:0;z-index:50;border:0;padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
-  .pillnav{width:100%;justify-content:space-around;box-shadow:none;border:0;padding:0;gap:0}
-  .pillnav button{flex-direction:column;gap:1px;font-size:11.5px;padding:6px 4px;min-height:52px;min-width:0;flex:1}
-  body{padding-bottom:78px}
+  .navwrap{position:static;border-bottom:1px solid var(--line);padding:8px 12px 10px;background:#fff}
+  .pillnav{width:100%;justify-content:space-around;box-shadow:0 5px 16px rgba(15,23,41,.06);padding:4px;gap:1px}
+  .pillnav button{flex-direction:column;gap:1px;font-size:11.5px;padding:6px 2px;min-height:52px;min-width:0;flex:1}
+  body{padding-bottom:env(safe-area-inset-bottom,0px)}
   .content,.demostrip,.foot{padding-inline:16px}
   .simbar{font-size:12px;padding-inline:12px}
   .sec-h{flex-wrap:wrap}
-  .demostrip{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;scroll-snap-type:x proximity}
+  .demostrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;overflow:visible}
   .demostrip .lbl{display:none}
-  .stage{margin-left:0;flex:none;scroll-snap-align:start}
-  .stage .pop{position:fixed;left:16px;right:16px;top:auto;bottom:90px;width:auto}
+  .dchip{width:100%;min-width:0;justify-content:center;white-space:normal;text-align:center;padding-inline:5px;line-height:1.2}
+  .stage{grid-column:1 / -1;margin-left:0;width:100%}
+  .stage > summary{width:100%;justify-content:center}
+  .stage .pop{position:absolute;left:0;right:0;top:52px;bottom:auto;width:auto}
   .pillrow.c4{grid-template-columns:repeat(2,1fr)}
   .pillrow.c3 .pbtn{font-size:14px}
   .bx-pair{grid-template-columns:1fr;gap:6px}
@@ -578,11 +638,12 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
   .backdrop.open{opacity:1;pointer-events:auto}
   .compare{grid-template-columns:1fr;gap:5px}
   .compare .neq{justify-self:center;font-size:20px}
+  .impact-grid{grid-template-columns:1fr 1fr}
   .prov-sum,.ogrid{grid-template-columns:1fr}
   .reopen{display:flex!important}
   .bar-row{grid-template-columns:44px minmax(0,1fr)}
   .need,.bar-cap{margin-left:54px}
-  .toast{bottom:92px}
+  .toast{bottom:24px}
 }
 @media (max-width:440px){ .grid2{grid-template-columns:1fr} .split2 .val{font-size:15.5px} }
 @media (max-width:899px){
@@ -591,8 +652,8 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
   .pa-txt b{font-size:17px}
   .sec-acts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sact small{display:none}
-  .chat-fab{right:16px;bottom:88px}
-  .chat{left:8px;right:8px;width:auto;bottom:84px;height:calc(100dvh - 190px)}
+  .chat-fab{position:static;margin:0 auto 20px;width:max-content}
+  .chat{left:8px;right:8px;width:auto;bottom:14px;height:calc(100dvh - 150px)}
   body.sheet-open .chat-fab{display:none}
 }
 /* ---------- easy-for-everyone pass: larger type, stronger contrast, no light weights, bigger targets ---------- */
@@ -651,20 +712,54 @@ label.fl{font-size:15.5px}
 @media (max-width:899px){
   body{font-size:16.5px}
   .pillnav button{font-size:13px}
-  .textsize .ts-l,.user .avatar,.user .iconbtn.sq{display:none}
+  .textsize,.user .iconbtn.sq{display:none}
+  .user{gap:6px}
   .textsize button{min-width:38px}
   .flow-top h1{font-size:23px}
   .welcome h1,.ptitle,.pay-head h1{font-size:29px}
   .cp{max-height:calc(92dvh / var(--zoom,1))}
   .chat{height:calc((100dvh - 190px) / var(--zoom,1));width:auto}
 }
+.payment-check{display:grid;gap:16px}
+.payment-focus{display:grid;gap:4px;text-align:center;padding:8px 0 16px;color:var(--ink-2)}
+.payment-focus strong{font-size:clamp(34px,4vw,46px);line-height:1.2;letter-spacing:-.025em;color:var(--ink)}
+.payment-focus b{font-weight:600;color:var(--ink)}
+.safe-budget{padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.safe-budget-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.safe-budget-heading>span{font-weight:600}
+.safe-budget-heading small{display:block;font-size:13px;font-weight:400;color:var(--ink-2);margin-top:3px}
+.safe-budget-heading strong{font-size:clamp(24px,3vw,32px);color:var(--hs);white-space:nowrap}
+.spend-meter{height:12px;background:var(--soft);border-radius:999px;overflow:hidden;margin-top:16px}
+.spend-meter>span{display:block;height:100%;background:var(--hs);border-radius:inherit;transform-origin:left;animation:spendFill .65s cubic-bezier(.16,1,.3,1) both}
+@keyframes spendFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.budget-caption{font-size:14px;color:var(--ink-2);margin:8px 0 0}
+.decision-status{justify-content:space-between;gap:8px}
+.recipient-status{font-size:13px;color:var(--ink-2)}
+.decision-copy.vtext{font-size:17px;line-height:1.5;font-weight:500;margin:0;text-wrap:pretty}
+.balance-line{display:flex;justify-content:space-between;gap:12px;color:var(--ink-2);font-size:14px}
+.balance-line b{color:var(--ink)}
+.impact-details>summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;font-weight:600;font-size:14px;list-style:none}
+.impact-details>summary::-webkit-details-marker{display:none}
+.impact-details[open]>summary{margin-bottom:12px}
+.impact-details[open]>summary .chev{transform:rotate(180deg)}
+#cp .sact{background:#fff;border:1px solid var(--line);color:var(--ink);box-shadow:none}
+#cp .sact .si{background:var(--soft);color:var(--ink-2)}
+#cp .pa-flag{display:none}
+#cp .primary-act{box-shadow:none}
+#cp .primary-act.risk-ready{outline:3px solid var(--hs-line);outline-offset:3px;animation:riskReady .65s cubic-bezier(.16,1,.3,1) both}
+@keyframes riskReady{from{transform:scale(.985);outline-color:transparent}to{transform:scale(1);outline-color:var(--hs-line)}}
+.risk-confirm{display:grid;gap:16px}
+.risk-confirm h2{font-size:24px;line-height:1.3}
+.risk-confirm p{margin:0;color:var(--ink-2)}
+body.sheet-open .stepbody.enter{animation:none}
+@media(max-width:380px){.safe-budget-heading{align-items:flex-start;flex-direction:column;gap:8px}}
 </style>
 </head>
 <body>
 <div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>U-HANDSHAKE decision-safety integration</b> · U-Topia reference preview with fictional data. No real money is moved.</span></div>
 <header class="hdr">
   <div class="logo"><div class="logo-mark" aria-hidden="true">U</div>U-Topia</div>
-  <span class="preview-chip">Reference Integration Preview</span>
+  <button class="preview-chip" type="button" data-act="howItWorks">How it works</button>
   <div class="user">
     <div class="textsize" role="group" aria-label="Text size"><span class="ts-l">Text size</span><button type="button" data-zoom="1" aria-pressed="true" aria-label="Normal text" style="font-size:14px">A</button><button type="button" data-zoom="1.12" aria-pressed="false" aria-label="Large text" style="font-size:17px">A+</button><button type="button" data-zoom="1.25" aria-pressed="false" aria-label="Extra large text" style="font-size:19px">A++</button></div>
     <div class="who"><b>Mint (fictional)</b><small>mint@fictional.test</small></div>
@@ -682,6 +777,13 @@ label.fl{font-size:15.5px}
 </footer>
 <div class="backdrop" id="backdrop" data-act="closeSheet"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="onboarding-layer" id="onboarding" hidden>
+  <div class="onboarding-shade" aria-hidden="true"></div>
+  <section class="onboarding-dialog" role="dialog" aria-modal="true" aria-label="Meet Safe-to-Pay" tabindex="-1">
+    <button class="onboarding-close" id="onboarding-close" type="button" data-onboarding="close" aria-label="Close introduction"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div id="onboarding-content"></div>
+  </section>
+</div>
 <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat"><span class="fi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><span class="lbl">Help</span></button>
 <section class="chat" id="chat" hidden aria-label="Demo helper chat">
   <div class="chat-h"><span class="av"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><div><b>Demo helper</b><small>Rule-based answers about Safe-to-Pay &amp; this demo</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -798,16 +900,84 @@ let S = Object.assign({
   verifyOpen:false, checks:CHECKLIST.map(() => false),
   toggles:{neterr:false, ubotDown:false, incomplete:false},
   sheetOpen:false, inspOpen:false, inspTab:'req', activity:[], animateBars:false,
-  hideBal:false, range:'30d', stageOpen:false
+  animateCheckpoint:false, hideBal:false, range:'30d', stageOpen:false
 }, blank());
 let runToken = 0, lastView = '', toastT;
+
+const ONBOARDING_KEY = 'uh-onboarding-v1';
+const ONBOARDING_STEPS = [
+  {
+    title:'Meet Safe-to-Pay',
+    copy:'An extra check before you pay, right inside your wallet. It helps explain the potential impact of a payment.',
+    visual:`<div class="onboarding-demo"><div class="note">${ic('info')}<span>This is a simulation using fictional data. No real money is moved.</span></div></div>`
+  },
+  {
+    title:"Know what's really available.",
+    copy:'Your wallet balance may include money already needed for bills, debt, or emergency protection.',
+    visual:`<div class="onboarding-demo onboarding-balance"><div><span>Balance</span><b class="num">฿18,500</b></div><strong aria-hidden="true">≠</strong><div><span>Safe to Spend</span><b class="num">฿5,500</b></div></div>`
+  },
+  {
+    title:'Check. Understand. Decide.',
+    copy:'See the impact of a payment, review relevant warnings, and choose what happens next.',
+    visual:`<div class="onboarding-demo onboarding-flow"><span>Pay</span><span class="arrow" aria-hidden="true">→</span><span>Safe-to-Pay</span><span class="arrow" aria-hidden="true">→</span><span>Your decision</span></div>`
+  }
+];
+const onboardingState = {open:false, step:0, opener:null};
+
+function onboardingComplete(){
+  try { return localStorage.getItem(ONBOARDING_KEY) === 'complete'; } catch (e) { return false; }
+}
+function rememberOnboarding(){
+  try { localStorage.setItem(ONBOARDING_KEY, 'complete'); } catch (e) {}
+}
+function renderOnboarding(){
+  const step = ONBOARDING_STEPS[onboardingState.step];
+  const last = onboardingState.step === ONBOARDING_STEPS.length - 1;
+  $('#onboarding-content').innerHTML = `<div class="onboarding-hero">${ic('shieldC')}</div>
+    <div class="onboarding-copy"><h2>${step.title}</h2><p>${step.copy}</p></div>
+    ${step.visual}
+    <div class="onboarding-progress" aria-label="Step ${onboardingState.step + 1} of ${ONBOARDING_STEPS.length}">${ONBOARDING_STEPS.map((_, i) => `<span class="${i === onboardingState.step ? 'active' : ''}" aria-hidden="true"></span>`).join('')}</div>
+    <div class="onboarding-actions">
+      <button class="skip" type="button" data-onboarding="skip">Skip</button>
+      <span class="spacer"></span>
+      ${onboardingState.step ? '<button class="btn btn-out back" type="button" data-onboarding="back">Back</button>' : ''}
+      <button class="btn btn-primary next" type="button" data-onboarding="${last ? 'start' : 'next'}">${last ? 'Get Started' : 'Next'}</button>
+    </div>`;
+}
+function openOnboarding(opener){
+  onboardingState.open = true;
+  onboardingState.step = 0;
+  onboardingState.opener = opener instanceof HTMLElement ? opener : null;
+  renderOnboarding();
+  $('#onboarding').hidden = false;
+  document.body.classList.add('onboarding-open');
+  requestAnimationFrame(() => $('#onboarding-close').focus());
+}
+function closeOnboarding({complete=true, restoreFocus=true} = {}){
+  if (complete) rememberOnboarding();
+  onboardingState.open = false;
+  $('#onboarding').hidden = true;
+  document.body.classList.remove('onboarding-open');
+  const opener = onboardingState.opener;
+  onboardingState.opener = null;
+  if (restoreFocus && opener && opener.isConnected) opener.focus();
+}
+function trapOnboardingFocus(e){
+  if (e.key !== 'Tab') return;
+  const dialog = $('.onboarding-dialog');
+  const controls = [...dialog.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')];
+  if (!controls.length) return;
+  const first = controls[0], last = controls[controls.length - 1];
+  if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+}
 
 function toast(msg){ const t = $('#toast'); t.innerHTML = ic('info') + '<span>' + esc(msg) + '</span>'; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 const money = s => S.hideBal ? '••••••' : s;
 
 function resetRun(){
   runToken++;
-  Object.assign(S, {phase:'idle', request:null, result:null, response:null, httpStatus:null, errorInfo:null, outcome:null, ms:null, reducedFrom:null, verifyOpen:false, checks:CHECKLIST.map(() => false), sheetOpen:false});
+  Object.assign(S, {phase:'idle', request:null, result:null, response:null, httpStatus:null, errorInfo:null, outcome:null, ms:null, reducedFrom:null, verifyOpen:false, checks:CHECKLIST.map(() => false), sheetOpen:false, animateCheckpoint:false});
 }
 function loadScenario(id){
   const sc = SCEN[id];
@@ -917,13 +1087,17 @@ async function runCheck(){
     Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'simulated_network_error'}});
     renderPage(); return;
   }
+  if (location.protocol === 'file:'){
+    Object.assign(S, {phase:'error', ms:null, httpStatus:null, response:null, errorInfo:{code:'api_server_required'}});
+    renderPage(); return;
+  }
   const t0 = performance.now();
   try {
     const res = await fetch('/api/evaluate', {method:'POST', headers:Object.assign({'content-type':'application/json'}, S.toggles.ubotDown ? {'x-uh-ai':'off'} : {}), body:JSON.stringify(S.request)});
     const body = await res.json().catch(() => null);
     if (token !== runToken) return;
     Object.assign(S, {ms:Math.round(performance.now() - t0), httpStatus:res.status, response:body});
-    if (res.ok && body && body.assessment){ S.result = toView(body); S.phase = 'result'; S.animateBars = true; S.errorInfo = null; }
+    if (res.ok && body && body.assessment){ S.result = toView(body); S.phase = 'result'; S.animateBars = true; S.animateCheckpoint = true; S.errorInfo = null; }
     else { S.phase = 'error'; S.errorInfo = body && body.error ? body.error : {code:'http_' + res.status}; }
   } catch (err) {
     if (token !== runToken) return;
@@ -933,6 +1107,10 @@ async function runCheck(){
 }
 function act(a){
   const r = S.result; if (!r) return;
+  if (a === 'proceed' && r.trust.status === 'high'){
+    S.step = 'confirm'; renderPage(); $('#risk-confirm-h').focus(); return;
+  }
+  if (a === 'confirmProceed' && (S.step !== 'confirm' || S.phase !== 'result')) return;
   if (a === 'verify'){ S.verifyOpen = true; renderCP(); const v = $('#verify'); if (v) v.scrollIntoView({block:'nearest', behavior: reduced ? 'auto' : 'smooth'}); return; }
   if (a === 'reduce'){
     const f = r.financial; if (!f.max_safe_amount || S.flow !== 'utag') return;
@@ -940,7 +1118,7 @@ function act(a){
     S.amount = String(f.max_safe_amount); S.edited = true;
     runCheck(); S.reducedFrom = from; return;
   }
-  S.outcome = {type: a === 'proceed' ? 'sent' : a === 'postpone' ? 'postponed' : 'cancelled'};
+  S.outcome = {type: a === 'proceed' || a === 'confirmProceed' ? 'sent' : a === 'postpone' ? 'postponed' : 'cancelled'};
   S.phase = 'outcome';
   const u = S.flow === 'utag';
   S.activity.unshift({type:S.outcome.type, flow:S.flow, to: u ? normTag(S.recipient) : (S.label || trunc(S.address)), amt: u ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset), status:r.financial.status, trust:r.trust.status, scen:S.scenario});
@@ -1021,7 +1199,7 @@ function dashboard(){
       <div class="split2">
         <div><div class="lbl">Crypto Wallet</div><div class="val num">${money(fmtC(PROFILE.usdc, 'USDC'))}</div></div>
         <div><div class="lbl">Spending Wallet</div><div class="val num">${money(fmt(PROFILE.balance))}</div>
-          <div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div></div>
+          <div class="sts-discovery" data-testid="safe-spend-discovery"><div class="feature"><span class="tag hs">${ic('shieldC')}Safe to Spend</span><b class="num">${money(fmt(STS0))}</b><small>After upcoming bills, debt, and buffer</small></div><button class="linkbtn" type="button" data-act="howItWorks">How it works</button></div></div>
       </div>
     </div>
     <div class="pillrow c3">
@@ -1029,8 +1207,6 @@ function dashboard(){
       <button class="pbtn t-swap" type="button" data-oos="Swap"><span class="pi">${ic('swap')}</span>Swap</button>
       <button class="pbtn t-send" type="button" data-go="pay"><span class="pi">${ic('sendNE')}</span>Send</button>
     </div>
-    <div class="sec-h"><h2>Money partition</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
-    <div class="card card-in">${stsBreakdown()}<p class="hint" style="margin:10px 0 0">Next income in ${PROFILE.nextIncome} days · Safe-to-spend = max(0, balance − must keep − buffer)</p></div>
     <div class="sec-h"><h2>Spending Breakdown</h2></div>
     ${chart()}
     <div class="sec-h"><h2>Recent Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
@@ -1210,6 +1386,7 @@ function stepCheck(){
 /* ---------- checkpoint ---------- */
 function renderCP(){
   const cp = $('#cp'); if (!cp) return;
+  const needsServer = S.errorInfo && S.errorInfo.code === 'api_server_required';
   let body = '', actions = '';
   if (S.phase === 'loading') body = `<div class="loadbox" role="status">
       <div class="vtext" style="font-size:22px">Checking this payment…</div>
@@ -1217,12 +1394,12 @@ function renderCP(){
       <div class="skel" aria-hidden="true"><div class="sk" style="width:30%"></div><div class="sk" style="height:38px"></div><div class="sk" style="width:60%"></div></div></div>`;
   else if (S.phase === 'error') body = `<div class="statebox" role="alert">
       <div class="sic" style="background:var(--review-bg);color:var(--review)">${ic('wifiOff')}</div>
-      <h3>${S.httpStatus === 429 ? 'Too many checks in a short time' : S.httpStatus ? 'The Safe-to-Pay check couldn’t finish' : 'We couldn’t reach the Safe-to-Pay check'}</h3>
-      <p>Your payment hasn’t been sent and nothing has changed. Try again in a moment.</p>
+      <h3>${needsServer ? 'Open this demo through the local app server' : S.httpStatus === 429 ? 'Too many checks in a short time' : S.httpStatus ? 'The Safe-to-Pay check couldn’t finish' : 'We couldn’t reach the Safe-to-Pay check'}</h3>
+      <p>${needsServer ? 'This HTML file can show the interface, but Safe-to-Pay needs the app API. Run npm run dev and open the localhost URL shown in the terminal.' : 'Your payment hasn’t been sent and nothing has changed. Try again in a moment.'}</p>
       ${S.errorInfo ? `<p class="hint mono">${S.httpStatus ? 'HTTP ' + S.httpStatus + ' · ' : ''}${esc(S.errorInfo.code || 'error')}</p>` : ''}
       ${S.toggles.neterr ? `<p class="hint">Stage control “Simulate network error” is on. Switch it off, then retry.</p>` : ''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button><button class="btn btn-out" type="button" data-act="editAmount">Back to amount</button></div></div>`;
-  else if (S.phase === 'result'){ body = resultView(); actions = actionBar(); }
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${needsServer ? '' : `<button class="btn btn-primary" type="button" data-act="run">${ic('refresh')}Try again</button>`}<button class="btn ${needsServer ? 'btn-primary' : 'btn-out'}" type="button" data-act="editAmount">Back to amount</button></div></div>`;
+  else if (S.phase === 'result') body = resultView();
   else if (S.phase === 'outcome') body = outcomeView();
   cp.innerHTML = `<div class="cp-head"><span class="grabber" aria-hidden="true"></span>
       <span class="cp-title">${ic('shieldC')}Safe-to-Pay check</span>
@@ -1234,6 +1411,12 @@ function renderCP(){
   cp.classList.toggle('open', open);
   $('#backdrop').classList.toggle('open', open && mobile());
   document.body.classList.toggle('sheet-open', open && mobile());
+  if (S.animateCheckpoint){
+    S.animateCheckpoint = false;
+    cp.classList.remove('feature-pulse');
+    void cp.offsetWidth;
+    cp.classList.add('feature-pulse');
+  }
   if (S.animateBars){ S.animateBars = false; animateBars(); }
 }
 function animateBars(){
@@ -1285,41 +1468,68 @@ function splitBars(f){
     <div class="legend"><span><i class="sw" style="background:var(--zone-mk)"></i>Must keep</span><span><i class="sw" style="background:var(--zone-buf)"></i>Buffer</span><span><i class="sw" style="background:var(--zone-sts)"></i>Safe-to-spend</span><span><i class="sw sw-short"></i>Not covered</span></div>
   </div>`;
 }
-function finPanel(r){
+function financialDetailPanel(r){
   const f = r.financial, u = S.flow === 'utag';
   const amtStr = u ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset);
   if (f.missing_fields){
     const fx = f.missing_fields.includes('exchangeRate');
     return `<section class="panel fin" aria-labelledby="fin-h">
-      <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Money impact</h2>${badge(FIN.review, false)}</div>
+      <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Financial check</h2>${badge(FIN.review, false)}</div>
       <div class="missing"><b style="color:var(--review);display:flex;gap:6px;align-items:center">${ic('list')}${fx ? 'No exchange rate is available' : 'The wallet didn’t share these details'}</b>
         <ul style="margin:0;padding-left:18px">${f.missing_fields.map(m => `<li><code>${esc(m)}</code></li>`).join('')}</ul>
         <span>${f.reasons.map(esc).join(' ')}</span></div>
       <div class="compare">
         <div class="cmp ok"><span class="q">${u ? 'Balance' : 'Crypto wallet'} · can I pay?</span><span class="v num">${u ? fmt(PROFILE.balance) : fmtC(PROFILE.usdc, 'USDC')}</span><span class="a">${ic('check')}Covers ${amtStr}</span></div>
         <span class="neq" aria-hidden="true">≠</span>
-        <div class="cmp sts na"><span class="q">Safe-to-spend · is it safe?</span><span class="v num">—</span><span class="a">${ic('q')}Can’t tell yet</span></div>
+        <div class="cmp sts na"><span class="q">Safe to Spend · is it safe?</span><span class="v num">—</span><span class="a">${ic('q')}Can’t tell yet</span></div>
       </div></section>`;
   }
   const st = f.status;
-  const tileB = st === 'high_risk' ? `<div class="cmp sts bad"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('oct')}${fmt(f.shortfall_vs_must_keep)} short</span></div>`
-    : st === 'review' ? `<div class="cmp sts warn"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('tri')}Uses your buffer</span></div>`
-    : `<div class="cmp sts ok"><span class="q">Safe-to-spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('check')}${fmt(f.safe_to_spend_after)} left after</span></div>`;
+  const tileB = st === 'high_risk' ? `<div class="cmp sts bad"><span class="q">Safe to Spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('oct')}${fmt(f.shortfall_vs_must_keep)} short</span></div>`
+    : st === 'review' ? `<div class="cmp sts warn"><span class="q">Safe to Spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('tri')}Uses your buffer</span></div>`
+    : `<div class="cmp sts ok"><span class="q">Safe to Spend</span><span class="v num">${fmt(f.safe_to_spend_before)}</span><span class="a">${ic('check')}${fmt(f.safe_to_spend_after)} left after</span></div>`;
   const bufUsed = f.buffer_used;
   const chips = f.affected.includes('mandatory_obligations') ? [`<span class="hitchip">${ic('oct')}Must keep · ${fmt(f.shortfall_vs_must_keep)} short</span>`] : [];
   if (bufUsed > 0) chips.push(`<span class="hitchip ${f.buffer_remaining ? 'warn' : ''}">${ic(f.buffer_remaining ? 'tri' : 'oct')}Buffer · ${f.buffer_remaining ? fmt(bufUsed) + ' used' : 'fully used'}</span>`);
   const red = S.reducedFrom != null && S.reducedFrom !== Number(S.amount);
   return `<section class="panel fin st-${st}" aria-labelledby="fin-h">
     ${red ? `<div class="banner">${ic('down')}Amount reduced from ${fmt(S.reducedFrom)} to ${amtStr}</div>` : ''}
-    <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Money impact</h2></div>
+    <div class="panel-h"><h2 id="fin-h">${ic('wallet')}Financial check</h2>${badge(FIN[st], false)}</div>
     <div class="compare">
       <div class="cmp ok"><span class="q">Balance</span><span class="v num">${fmt(f.balance_before)}</span><span class="a">${ic('check')}Covers it</span></div>
       <span class="neq" aria-hidden="true">≠</span>
       ${tileB}
     </div>
+    <div class="impact-grid"><div><span>Payment</span><b class="num">${amtStr}</b></div><div><span>After payment</span><b class="num">${fmt(f.balance_after)}</b></div></div>
     ${splitBars(f)}
     ${chips.length ? `<div><div class="eyebrow" style="margin-bottom:6px">Affected before payday</div><div class="chips">${chips.join('')}</div></div>`
       : `<div class="okline">${ic('checkCircle')}All ${PROFILE.essentials.length + PROFILE.debts.length} bills and your buffer stay covered</div>`}
+  </section>`;
+}
+function finPanel(r){
+  const f = r.financial, missing = !!f.missing_fields;
+  const amount = S.flow === 'utag' ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset);
+  const recipient = S.flow === 'utag' ? normTag(S.recipient) : (S.label || trunc(S.address));
+  const limit = f.max_safe_amount;
+  const hasLimit = !missing && limit != null;
+  const remaining = hasLimit && limit > 0 ? Math.min(100, Math.max(0, f.safe_to_spend_after / limit * 100)) : 0;
+  const over = hasLimit ? Math.max(0, f.amount - limit) : 0;
+  const message = missing ? 'We can’t calculate a safe amount yet.'
+    : f.status === 'high_risk' ? `${fmt(f.shortfall_vs_must_keep)} short for bills before payday.`
+    : f.status === 'review' ? `This payment uses ${fmt(f.buffer_used)} of your protected buffer.`
+    : 'Your bills and protected buffer stay covered.';
+  const detail = financialDetailPanel(r).replaceAll('fin-h', 'impact-h');
+  return `<section class="payment-check" aria-label="Payment safety summary">
+    <div class="payment-focus"><span>You're paying</span><strong class="num">${amount}</strong><span>To <b>${esc(recipient)}</b></span></div>
+    <div class="safe-budget">
+      <div class="safe-budget-heading"><span>Safe to Spend <small>Maximum safe payment now</small></span><strong class="num">${hasLimit ? fmt(limit) : 'Unavailable'}</strong></div>
+      ${hasLimit ? `<div class="spend-meter" role="img" aria-label="${fmt(Math.max(0, f.safe_to_spend_after))} safe to spend remaining out of ${fmt(limit)}${over ? `; payment is ${fmt(over)} over the safe amount` : ''}"><span style="width:${remaining}%"></span></div>
+      <div class="budget-caption">${over ? `${fmt(over)} above your safe amount` : `${fmt(f.safe_to_spend_after)} safe to spend after payment`}</div>` : '<p class="budget-caption">A safe amount needs complete wallet data and an exchange rate.</p>'}
+    </div>
+    <div class="statusrow decision-status">${badge(FIN[f.status], false, 'Money')}<span class="recipient-status">Recipient: ${esc(TRUST[r.trust.status].label)}</span></div>
+    <p class="vtext decision-copy">${message}</p>
+    ${!missing ? `<div class="balance-line"><span>Balance after payment</span><b class="num">${fmt(f.balance_after)}</b></div>` : ''}
+    <details class="impact-details"><summary>View impact details ${ic('chev', 'chev')}</summary>${detail}</details>
   </section>`;
 }
 function detailsExtra(r){
@@ -1368,8 +1578,8 @@ function detailsBlock(r){
       <tr><td>Status rule</td><td class="f">${f.status === 'safe' ? `${fmt(f.balance_after)} ≥ ${fmt(f.must_keep + f.protected_buffer)}` : f.status === 'review' ? `${fmt(f.must_keep)} ≤ ${fmt(f.balance_after)} < ${fmt(f.must_keep + f.protected_buffer)}` : `${fmt(f.balance_after)} < ${fmt(f.must_keep)}`}</td><td class="r">${FIN[f.status].label}</td></tr>
     </tbody></table></div>
     <p class="mono" style="margin:0">Safe: after ≥ must keep + buffer · Review: after ≥ must keep and &lt; must keep + buffer · High Risk: after &lt; must keep</p>`;
-  return `<details class="details"><summary>${ic('list')}Show details <span class="hint">· calculation, reason codes, model</span>${ic('chev', 'chev')}</summary>
-    <div class="inner">${detailsExtra(r)}${calc}
+  return `<details class="details"><summary>${ic('list')}Technical details <span class="hint">· explanation, calculation, reason codes, model</span>${ic('chev', 'chev')}</summary>
+    <div class="inner">${ubotCard(r)}${detailsExtra(r)}${calc}
       <div class="kv mono">
         <span>engine</span><span>${esc(r.engine_version)}</span>
         <span>financial codes</span><span>${f.reason_codes.map(esc).join(', ')}</span>
@@ -1390,33 +1600,46 @@ function verifyPanel(){
   </section>`;
 }
 function resultView(){
-  const r = S.result, v = verdictText(r);
-  return `<section class="vblock" aria-label="Verdict">
-      <div class="statusrow">${badge(FIN[r.financial.status], true, 'Money')}${badge(TRUST[r.trust.status], true, 'Recipient')}</div>
-      <h2 class="vtext">${v.h}</h2>
-      ${v.s ? `<p class="vsub">${v.s}</p>` : ''}
-    </section>
-    ${finPanel(r)}${trustPanel(r)}${ubotCard(r)}${S.verifyOpen ? verifyPanel() : ''}${detailsBlock(r)}`;
+  const r = S.result;
+  if (S.step === 'confirm') return riskConfirmation(r);
+  return `${finPanel(r)}${r.trust.status === 'high' ? trustPanel(r) : ''}${actionBar()}${r.trust.status !== 'high' ? trustPanel(r) : ''}${S.verifyOpen ? verifyPanel() : ''}${detailsBlock(r)}`;
+}
+function riskConfirmation(r){
+  const amount = S.flow === 'utag' ? fmt(Number(S.amount)) : fmtC(Number(S.amount), S.asset);
+  const recipient = S.flow === 'utag' ? normTag(S.recipient) : (S.label || trunc(S.address));
+  return `<section class="risk-confirm" aria-labelledby="risk-confirm-h">
+    <h2 id="risk-confirm-h" tabindex="-1">Confirm despite recipient risks?</h2>
+    <div class="srow"><span>Amount</span><b class="num">${amount}</b></div>
+    <div class="srow"><span>To</span><b>${esc(recipient)}</b></div>
+    <p>Recipient risk remains High. Completing the checklist does not verify the recipient.</p>
+    <p>${r.financial.missing_fields ? 'Money impact is still unknown.' : esc(verdictText(r).s)}</p>
+    <p>Nothing has been sent. This confirmation only simulates a payment.</p>
+    <button class="btn btn-out" type="button" data-act="back">Back to safety check</button>
+    <button class="btn btn-primary" type="button" data-act="confirmProceed">Confirm simulated payment</button>
+    <button class="btn btn-out" type="button" data-act="cancel">Cancel payment</button>
+  </section>`;
 }
 function actionBar(){
   const r = S.result, rec = r.recommended_actions, f = r.financial, u = S.flow === 'utag';
   const canReduce = u && f.max_safe_amount != null && f.max_safe_amount > 0 && f.amount > f.max_safe_amount;
   const canVerify = !(r.trust.status === 'low' && r.trust.indicators.length === 0);
+  const verifiedChecklist = canVerify && S.checks.every(Boolean);
   const maxLbl = f.max_safe_amount == null ? '' : fmt(f.max_safe_amount);
   const proceedSub = f.missing_fields ? 'Money impact unknown' : f.status === 'high_risk' ? `Bills end up ${fmt(f.shortfall_vs_must_keep)} short` : f.status === 'review' ? `Buffer drops to ${fmt(f.buffer_remaining)}` : `Safe-to-spend → ${fmt(f.safe_to_spend_after)}`;
   const A = {
-    proceed:{act:'proceed', label:'Proceed', sub:proceedSub, icon:'arrow', tone:'proceed', ok:true},
+    proceed:{act:'proceed', label:verifiedChecklist && r.trust.status === 'high' ? 'Continue despite risks' : 'Proceed', sub:proceedSub, icon:'arrow', tone:'proceed', ok:true},
     reduce_amount:{act:'reduce', label:`Pay ${maxLbl} instead`, sub:'Bills and buffer stay covered', icon:'down', tone:'reduce', ok:canReduce},
-    verify_recipient:{act:'verify', label:'Verify recipient', sub:'Quick 5-step check', icon:'userC', tone:'verify', ok:canVerify},
+    verify_recipient:{act:'verify', label:verifiedChecklist ? 'Review checklist' : 'Verify recipient', sub:verifiedChecklist ? 'Checklist completed' : 'Quick 5-step check', icon:verifiedChecklist ? 'check' : 'userC', tone:'verify', ok:canVerify},
     postpone:{act:'postpone', label:'Postpone', sub:'Nothing sent until payday', icon:'clock', tone:'postpone', ok:true},
     cancel:{act:'cancel', label:'Cancel', sub:'Nothing is sent', icon:'x', tone:'cancel', ok:true}
   };
   const keys = Object.keys(A).filter(k => A[k].ok);
-  const pk = keys.includes(rec[0]) ? rec[0] : 'proceed', p = A[pk];
+  const pk = verifiedChecklist && r.trust.status === 'high' ? 'proceed' : keys.includes(rec[0]) ? rec[0] : 'proceed', p = A[pk];
   const rank = k => { const i = rec.indexOf(k); return i < 0 ? 9 : i; };
   const rest = keys.filter(k => k !== pk).sort((a, b) => rank(a) - rank(b));
   return `<div class="actions2" role="group" aria-label="Choose what to do">
-    <button type="button" class="primary-act" data-act="${p.act}"><span class="pa-ic">${ic(p.icon)}</span><span class="pa-txt"><span class="pa-flag">Suggested</span><b>${p.label}</b><small>${p.sub}</small></span>${ic('chevR')}</button>
+    ${verifiedChecklist ? '<p class="hint" role="status">Checklist completed. Risk signals remain.</p>' : ''}
+    <button type="button" class="primary-act ${verifiedChecklist && r.trust.status === 'high' ? 'risk-ready' : ''}" data-act="${p.act}"><span class="pa-ic">${ic(p.icon)}</span><span class="pa-txt"><b>${p.label}</b><small>${p.sub}</small></span>${ic('chevR')}</button>
     <div class="sec-acts">${rest.map(k => { const a = A[k]; return `<button type="button" class="sact t-${a.tone} ${rec.includes(k) ? 'alt' : ''}" data-act="${a.act}"><span class="si">${ic(a.icon)}</span><span>${a.label}<small>${a.sub}</small></span></button>`; }).join('')}</div>
   </div>`;
 }
@@ -1511,11 +1734,11 @@ function renderPage(){
   if (S.page === 'dashboard') html = dashboard();
   else if (S.page === 'wallets') html = wallets();
   else if (S.page === 'profile') html = profile();
-  else html = {choose:payChoose, recipient:stepRecipient, dest:stepDest, amount:stepAmount, wallet:stepWallet, check:stepCheck}[S.step]();
+  else html = {choose:payChoose, recipient:stepRecipient, dest:stepDest, amount:stepAmount, wallet:stepWallet, check:stepCheck, confirm:stepCheck}[S.step]();
   $('#page').innerHTML = html;
   const view = S.page + ':' + (S.page === 'pay' ? S.step : S.walletTab);
   if (view !== lastView){ const b = $('#page .stepbody') || $('#page .content'); if (b) b.classList.add('enter'); lastView = view; }
-  if (S.page === 'pay' && S.step === 'check'){ renderCP(); renderInspector(); }
+  if (S.page === 'pay' && (S.step === 'check' || S.step === 'confirm')){ renderCP(); renderInspector(); }
   else { $('#backdrop').classList.remove('open'); document.body.classList.remove('sheet-open'); }
 }
 function renderAll(){ renderNav(); renderStrip(); renderPage(); }
@@ -1523,9 +1746,11 @@ function renderAll(){ renderNav(); renderStrip(); renderPage(); }
 /* ---------- events ---------- */
 function startFlow(flow){ Object.assign(S, blank(), {flow, scenario:null, page:'pay', step: flow === 'utag' ? 'recipient' : 'dest'}); resetRun(); renderAll(); window.scrollTo({top:0}); }
 function stepBack(){
+  const fromConfirmation = S.step === 'confirm';
   if (S.step === 'check'){ resetRun(); S.step = S.flow === 'utag' ? 'amount' : 'wallet'; }
   else { const st = STEPS[S.flow], i = st.indexOf(S.step); S.step = i > 0 ? st[i - 1] : 'choose'; }
   renderAll();
+  if (fromConfirmation) $('#cp [data-act="proceed"]')?.focus();
 }
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-go],[data-scen],[data-startflow],[data-wtab],[data-contact],[data-act],[data-tab],[data-oos],[data-range]');
@@ -1547,13 +1772,15 @@ document.addEventListener('click', e => {
   else if (a === 'back') stepBack();
   else if (a === 'run') runCheck();
   else if (a === 'eye'){ S.hideBal = !S.hideBal; renderPage(); }
+  else if (a === 'howItWorks') openOnboarding(t);
   else if (a === 'editAmount'){ resetRun(); S.step = 'amount'; renderPage(); }
   else if (a === 'reset'){ Object.assign(S, blank(), {scenario:null, page:'dashboard', step:'choose', flow:'utag', activity:[], stageOpen:false}); S.toggles = {neterr:false, ubotDown:false, incomplete:false}; resetRun(); renderAll(); window.scrollTo({top:0}); }
-  else if (a === 'backToResult'){ S.phase = 'result'; S.outcome = null; S.activity.shift(); renderPage(); }
+  else if (a === 'backToResult'){ S.phase = 'result'; S.step = 'check'; S.outcome = null; S.activity.shift(); renderPage(); }
   else if (a === 'closeSheet'){ S.sheetOpen = false; renderCP(); const r = $('.reopen'); if (r) r.focus(); }
   else if (a === 'openSheet'){ S.sheetOpen = true; renderCP(); }
   else if (a === 'insp'){ S.inspOpen = !S.inspOpen; renderInspector(); }
-  else if (['proceed','reduce','verify','postpone','cancel'].includes(a)) act(a);
+  else if (a === 'cancel'){ resetRun(); Object.assign(S, blank(), {page:'pay', step:'choose', flow:'utag', scenario:null}); renderAll(); window.scrollTo({top:0}); }
+  else if (['proceed','confirmProceed','reduce','verify','postpone'].includes(a)) act(a);
 });
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('stage')) S.stageOpen = e.target.open; }, true);
 document.addEventListener('click', e => { const st = document.querySelector('.stage[open]'); if (st && !st.contains(e.target)){ st.open = false; } });
@@ -1588,10 +1815,24 @@ document.addEventListener('change', e => {
   if (el.dataset.check != null){ S.checks[+el.dataset.check] = el.checked; const cp = $('#cp'), y = cp.scrollTop; renderCP(); cp.scrollTop = y; const nx = document.getElementById('chk-' + el.dataset.check); if (nx) nx.focus(); }
 });
 document.addEventListener('keydown', e => {
+  if (onboardingState.open){
+    if (e.key === 'Escape'){ e.preventDefault(); closeOnboarding(); }
+    else trapOnboardingFocus(e);
+    return;
+  }
   if (e.key !== 'Escape') return;
   if (CHAT.open){ setChat(false); $('#chatFab').focus(); return; }
   const st = document.querySelector('.stage[open]'); if (st){ st.open = false; return; }
   if (S.sheetOpen && mobile()){ S.sheetOpen = false; renderCP(); }
+});
+$('#onboarding').addEventListener('click', e => {
+  const control = e.target.closest('[data-onboarding]');
+  if (!control) return;
+  const action = control.dataset.onboarding;
+  if (action === 'next'){ onboardingState.step++; renderOnboarding(); $('.onboarding-dialog .next').focus(); }
+  else if (action === 'back'){ onboardingState.step--; renderOnboarding(); $('.onboarding-dialog .back').focus(); }
+  else if (action === 'start'){ closeOnboarding({restoreFocus:false}); go('pay'); }
+  else closeOnboarding();
 });
 
 /* ---------- Demo helper chat: rule-based, quotes only the profile and API results ---------- */
@@ -1647,6 +1888,7 @@ $('#chat').addEventListener('click', e => { const b = e.target.closest('[data-as
 $('#chat-form').addEventListener('submit', e => { e.preventDefault(); const i = $('#chat-q'); ask(i.value); i.value = ''; });
 
 renderAll();
+if (!onboardingComplete()) openOnboarding(null);
 })();
 </script>
 </body>
