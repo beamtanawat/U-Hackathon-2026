@@ -51,14 +51,14 @@ test("onboarding Skip persists across reloads", async ({ page }) => {
 test("tour Back and Next walk real targets and finish on Scenario B", async ({ page }) => {
   await page.goto("/");
   const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
-  await expect(dialog).toContainText("Step 1 of 8");
+  await expect(dialog).toContainText("Step 1 of 7");
   await dialog.getByRole("button", { name: "Next" }).click();
-  await expect(dialog).toContainText("Your wallet balance");
+  await expect(dialog).toContainText("Your balance");
   await expect(page.locator("#tour-spot")).toBeVisible();
   await dialog.getByRole("button", { name: "Back" }).click();
-  await expect(dialog).toContainText("Welcome to U-Topia with Safe-to-Pay");
-  for (let i = 0; i < 7; i += 1) await dialog.getByRole("button", { name: "Next" }).click();
-  await expect(dialog).toContainText("Step 8 of 8");
+  await expect(dialog).toContainText("Welcome to Safe-to-Pay");
+  for (let i = 0; i < 6; i += 1) await dialog.getByRole("button", { name: "Next" }).click();
+  await expect(dialog).toContainText("Step 7 of 7");
   await dialog.getByRole("button", { name: "Try Scenario B" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.locator("#f-amount")).toHaveValue("12900");

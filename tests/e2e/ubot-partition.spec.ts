@@ -118,7 +118,7 @@ test("tour spotlights real elements, reaches Crypto and U-Bot, and Escape closes
   await page.reload();
   await expect(dialog).toBeHidden();
   await page.getByRole("button", { name: "How it works" }).first().click();
-  await expect(dialog).toContainText("Step 1 of 8");
+  await expect(dialog).toContainText("Step 1 of 7");
 });
 
 test("mobile: U-Bot never covers navigation or the payment button, and hides behind the result sheet", async ({ page }) => {
