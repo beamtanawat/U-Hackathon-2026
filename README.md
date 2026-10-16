@@ -11,6 +11,12 @@ The prototype is presented as a **U-Topia Reference Integration Preview**. It co
 - [Live demo](https://u-hackathon-2026-sepia.vercel.app/)
 - [GitHub repository](https://github.com/beamtanawat/U-Hackathon-2026)
 
+## Hackathon Context
+
+U-HANDSHAKE was built for **U-Hackathon 2026** as a judge-ready demonstration of how a financial safety layer could be embedded into a wallet or banking experience. The team used U-Topia as the reference host interface and focused the prototype on three hackathon goals: a clear real-world problem, an integration-ready workflow, and an experience that judges can understand through repeatable scenarios.
+
+The project combines the event's AI and partner-service opportunities without placing critical financial decisions in a black box. Deterministic calculations remain authoritative, while the U-Bot Simulation, voice input, and market context help explain risk and guide the user before a transaction is confirmed.
+
 ## The Problem
 
 Account balances show what a person *can* pay, not what is *safe* to pay. For people early in their careers, upcoming bills, debt repayments, emergency savings, and financial goals are often fragmented across different services.
@@ -274,6 +280,15 @@ More detailed contracts are documented in:
 - **Explicit confirmation boundaries:** voice, AI suggestions, and partition edits cannot silently alter financial state.
 - **Reference-faithful host integration:** the prototype demonstrates the pre-confirmation insertion point without copying real U-Topia customer data or claiming access to unconfirmed APIs.
 
+## Integration Milestones
+
+The final hackathon build was assembled through reviewed pull requests. Two late-stage integrations completed the production-facing experience:
+
+- [**PR #10 — Live crypto prices, token-unlock details, and production voice coverage**](https://github.com/beamtanawat/U-Hackathon-2026/pull/10): added the unified `/api/crypto-details` route, batched CoinGecko market data, Tokenomist unlock context, independent provider fallbacks, wallet detail panels, and expanded API and end-to-end coverage for token details and ElevenLabs voice behavior.
+- [**PR #11 — CoinGecko Demo/Pro tier support and safe diagnostics**](https://github.com/beamtanawat/U-Hackathon-2026/pull/11): introduced the explicit `COINGECKO_API_TIER=demo|pro` configuration so each key uses the correct host and header. It also classified authentication, rate-limit, timeout, upstream, response, and configuration failures without logging keys or returning raw provider responses.
+
+Together, these changes made the demo deployable with either CoinGecko plan while preserving the project's core rule: optional integrations may degrade, but Safe-to-Pay must keep working and must never invent financial data.
+
 ## Safety and Scope
 
 - This is a hackathon simulation, not financial advice.
@@ -284,14 +299,16 @@ More detailed contracts are documented in:
 - The current prototype is not built on Avalanche.
 - Tokenomist usage must follow the applicable provider plan and licensing terms.
 
+## Contributors
+
+- [**Archay**](https://github.com/arcdoesntexist) — deterministic financial engine and explainable recipient-risk model
+- [**Ete**](https://github.com/Ate21538) — U-Topia reference frontend and user experience
+- [**Beam**](https://github.com/beamtanawat) — guarded AI pipeline, U-Bot Simulation, and external-service integration
+- [**Bream**](https://github.com/kodchakorn18) — business direction, product framing, and pitch alignment
+
 ## Team Workflow
 
-The team used Notion as the project command center for research, requirements, product direction, ownership, and progress updates. Work was developed on separate branches according to each member's focus:
-
-- **Archay:** deterministic financial engine and explainable recipient-risk model
-- **Ete:** U-Topia reference frontend and user experience
-- **Beam:** guarded AI pipeline and U-Bot Simulation
-- **Bream:** business direction, product framing, and pitch alignment
+The team used Notion as the project command center for research, requirements, product direction, ownership, and progress updates. Work was developed on separate branches according to the responsibilities above.
 
 Changes were reviewed and integrated through pull requests before deployment to Vercel.
 
