@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>U-HANDSHAKE in U-Topia</title>
+<title>U-HANDSHAKE · Think Before You Pay</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 /* Layout mirrors the U-Topia web app screenshots: logo + user row, floating pill nav with orange active item,
    a narrow centred column (~680px) of soft-shadowed rounded cards, pill outline action buttons.
@@ -54,8 +55,12 @@ h1,h2,h3{margin:0;letter-spacing:-.01em;font-weight:600}
 .simbar{position:relative;z-index:1;background:#FFF6DF;color:#5E3A00;border-bottom:1px solid #F0D99B;font-size:13px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));display:flex;gap:6px 10px;justify-content:center;align-items:center;flex-wrap:wrap}
 .simbar b{font-weight:700}
 .hdr{padding:12px 28px 0;display:flex;align-items:center;gap:12px}
-.logo{display:flex;align-items:center;gap:8px;font-weight:500;font-size:21px;color:var(--navy)}
-.logo-mark{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:19px}
+.logo{display:flex;align-items:center;gap:9px;color:#0F1238}
+.brand-mark{width:44px;height:44px;flex:none}
+.brand{display:grid;line-height:1.05}
+.brand-name{font-size:20px;font-weight:800;letter-spacing:.01em}
+.brand-name .u{background:linear-gradient(90deg,#3B8BF5,#7B5CF0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{font-size:11px;letter-spacing:.16em;color:var(--muted);margin-top:3px}
 .preview-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-2);border:1.5px dashed #A7AFC0;border-radius:999px;padding:3px 10px;white-space:nowrap;background:#fff}
 button.preview-chip{cursor:pointer}
 .user{margin-left:auto;display:flex;align-items:center;gap:10px;text-align:right}
@@ -517,12 +522,52 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .t-postpone{--t:var(--hs);--t-bg:var(--hs-bg);--t-line:var(--hs-line)}
 .t-cancel{--t:var(--risk);--t-bg:var(--risk-bg);--t-line:var(--risk-line)}
 /* demo helper chat */
-.chat-fab{position:fixed;right:28px;bottom:28px;z-index:60;display:flex;align-items:center;gap:10px;padding:10px 20px 10px 10px;min-height:56px;border-radius:999px;border:0;background:var(--grad-btn);color:#fff;font-weight:600;font-size:15.5px;box-shadow:0 14px 30px rgba(11,102,240,.38);transition:transform .15s}
-.chat-fab:hover{transform:translateY(-2px)}
-.chat-fab .fi{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:19px;position:relative}
-.chat-fab .fi::after{content:"";position:absolute;top:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#3DDC97;border:2px solid #0B5FD6}
-.chat-fab[aria-expanded="true"]{background:var(--ink)}
-.chat{position:fixed;right:28px;bottom:96px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100dvh - 170px));display:flex;flex-direction:column;background:#fff;border:0;border-radius:24px;box-shadow:0 24px 60px rgba(15,23,41,.24);overflow:hidden;animation:rise .22s var(--ease) both}
+.ubot-fab{position:fixed;right:22px;bottom:20px;z-index:60;display:grid;justify-items:center;gap:2px;padding:4px;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ubot-fab .head{width:76px;height:76px;filter:drop-shadow(0 10px 18px rgba(90,62,208,.35));animation:ubot-float 3.6s ease-in-out infinite;transition:transform .18s var(--ease)}
+.ubot-fab:hover .head{transform:scale(1.06)}
+.ubot-fab .name{font-size:12.5px;font-weight:700;color:var(--hs);background:#fff;border:1px solid var(--hs-line);border-radius:999px;padding:1px 9px;box-shadow:0 4px 10px rgba(15,23,41,.08)}
+.ubot-fab:focus-visible{outline:none}
+.ubot-fab:focus-visible .head{outline:3px solid var(--blue);outline-offset:4px;border-radius:50%}
+.ubot-fab[aria-expanded="true"] .name{background:var(--hs);color:#fff;border-color:var(--hs)}
+@keyframes ubot-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
+.chat .av svg{width:34px;height:34px}
+.msg.card{max-width:96%;padding:12px 14px}
+.part-card{display:grid;gap:8px}
+.part-card table{width:100%;border-collapse:collapse;font-size:14px}
+.part-card th,.part-card td{padding:4px 6px;text-align:right;border-bottom:1px solid var(--line-2)}
+.part-card th:first-child,.part-card td:first-child{text-align:left;font-weight:600}
+.part-card td.chg{color:var(--hs);font-weight:700}
+.part-card .est{font-size:12.5px;color:var(--muted)}
+.part-card .row{display:flex;gap:8px;flex-wrap:wrap}
+.part-card .row button{min-height:40px;padding:0 16px;border-radius:999px;font-weight:700;border:1px solid var(--line);background:#fff}
+.part-card .row .ok{background:var(--grad-btn);color:#fff;border:0}
+.part-card .row button:disabled{opacity:.5;cursor:default}
+.part-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--hs);background:var(--hs-bg);border:1px solid var(--hs-line);border-radius:999px;padding:2px 9px}
+.est-note{font-size:12.5px;color:var(--muted)}
+.plist2{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:6px}
+.plist2 li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.plist2 li .k{display:flex;align-items:center;gap:8px;font-weight:600}
+.plist2 li .sw{width:12px;height:12px;border-radius:4px;flex:none}
+.plist2 li.crypto{background:var(--soft);border-style:dashed}
+.plist2 li small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.plist2 li b{white-space:nowrap}
+.tour-spot{position:fixed;z-index:121;border-radius:18px;box-shadow:0 0 0 4px var(--hs),0 0 0 9999px rgba(15,23,41,.55);pointer-events:none;transition:left .35s var(--ease),top .35s var(--ease),width .35s var(--ease),height .35s var(--ease),box-shadow .25s}
+.tour-spot.empty{box-shadow:0 0 0 9999px rgba(15,23,41,.55)}
+.onboarding-layer.tour{display:block;padding:0}
+.onboarding-layer.tour .onboarding-shade{display:none}
+.onboarding-layer.tour .onboarding-dialog{position:fixed;z-index:122;width:min(380px,calc(100vw - 24px));gap:12px;padding:20px 20px 18px;animation:none;transition:opacity .22s ease,transform .22s ease}
+.onboarding-layer.tour .onboarding-dialog.moving{opacity:0;transform:translateY(8px)}
+.tour-head{display:flex;align-items:center;gap:12px;padding-right:46px}
+.tour-dots{display:flex;gap:5px}
+.onboarding-layer.tour .onboarding-actions .skip{white-space:nowrap;padding:0 4px}
+.onboarding-layer.tour .onboarding-actions .btn{min-width:96px}
+.tour-dots span{width:7px;height:7px;border-radius:999px;background:#D8DCE4;transition:width .2s,background .2s}
+.tour-dots span.on{width:20px;background:var(--hs)}
+.onboarding-layer.tour .onboarding-copy h2{font-size:22px}
+.onboarding-layer.tour .onboarding-copy p{font-size:15.5px}
+.tour-count{font-size:13px;font-weight:700;color:var(--hs);margin:0}
+.tour-try{background:var(--hs-bg);border:1px solid var(--hs-line);border-radius:12px;padding:8px 12px;font-size:14.5px}
+.chat{position:fixed;right:28px;bottom:132px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100dvh - 170px));display:flex;flex-direction:column;background:#fff;border:0;border-radius:24px;box-shadow:0 24px 60px rgba(15,23,41,.24);overflow:hidden;animation:rise .22s var(--ease) both}
 .chat-h{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--grad-btn);color:#fff}
 .chat-h .av{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:19px;flex:none}
 .chat-h b{display:block;font-size:16px;font-weight:600}
@@ -540,7 +585,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .chat-in input{flex:1;min-width:0;min-height:46px;border:1px solid #CCD2DD;border-radius:999px;padding:0 16px;font-size:15px}
 .chat-in input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
 .chat-in button{width:46px;height:46px;border-radius:50%;border:0;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
-@media (max-width:1240px){ .chat-fab .lbl{display:none} .chat-fab{padding:9px} }
+
 
 .foot{max-width:1080px;margin:0 auto;padding:0 24px 36px;font-size:12.5px;color:var(--muted);display:flex;gap:6px 20px;flex-wrap:wrap;justify-content:center;text-align:center}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);z-index:90;background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;box-shadow:0 12px 30px rgba(15,23,41,.3);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s var(--ease);display:flex;gap:8px;align-items:center;max-width:calc(100vw - 32px)}
@@ -598,7 +643,7 @@ body.onboarding-open{overflow:hidden}
 @media (max-width:899px){
   .hdr{padding:10px 16px 0;gap:8px}
   .hdr .preview-chip,.user .who{display:none}
-  .logo{font-size:19px}.logo-mark{width:34px;height:34px;font-size:17px}
+  .brand-mark{width:34px;height:34px}.brand-name{font-size:17px}
   .iconbtn,.avatar{width:38px;height:38px}
   .navwrap{position:static;border-bottom:1px solid var(--line);padding:8px 12px 10px;background:#fff}
   .pillnav{width:100%;justify-content:space-around;box-shadow:0 5px 16px rgba(15,23,41,.06);padding:4px;gap:1px}
@@ -646,15 +691,24 @@ body.onboarding-open{overflow:hidden}
   .toast{bottom:24px}
 }
 @media (max-width:440px){ .grid2{grid-template-columns:1fr} .split2 .val{font-size:15.5px} }
+/* Pre-existing 320px overflow: the Safe to Spend card needs ~200px, so stack the wallet columns. */
+@media (max-width:600px){ .split2{grid-template-columns:1fr;gap:12px} }
+@media (max-width:420px){ .brand small{display:none} }
 @media (max-width:899px){
   .actions2{padding-inline:12px;border-radius:0}
   .primary-act{min-height:60px}
   .pa-txt b{font-size:17px}
   .sec-acts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sact small{display:none}
-  .chat-fab{position:static;margin:0 auto 20px;width:max-content}
-  .chat{left:8px;right:8px;width:auto;bottom:14px;height:calc(100dvh - 150px)}
-  body.sheet-open .chat-fab{display:none}
+  body{padding-bottom:92px}
+  /* Mobile: an edge tab inside the page's right margin, so it never covers card content. */
+  .ubot-fab{right:0;top:46%;bottom:auto;width:30px;height:46px;padding:0 0 0 2px;place-items:center;background:#fff;border:1px solid var(--hs-line);border-right:0;border-radius:25px 0 0 25px;box-shadow:-4px 6px 16px rgba(90,62,208,.22)}
+  .ubot-fab .head{width:27px;height:27px;filter:none}
+  .ubot-fab .name{display:none}
+  .chat{left:8px;right:8px;top:auto;width:auto;bottom:14px;height:calc(100dvh - 150px)}
+  body.sheet-open .ubot-fab,body.chat-open .ubot-fab{display:none}
+  .cp-head .preview-chip{display:none}
+  .onboarding-layer.tour .onboarding-dialog{left:12px!important;right:12px!important;width:auto}
 }
 /* ---------- easy-for-everyone pass: larger type, stronger contrast, no light weights, bigger targets ---------- */
 :root{--muted:#4A5367;--ink-2:#2E3649}
@@ -756,9 +810,9 @@ body.sheet-open .stepbody.enter{animation:none}
 </style>
 </head>
 <body>
-<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>U-HANDSHAKE decision-safety integration</b> · U-Topia reference preview with fictional data. No real money is moved.</span></div>
+<div class="simbar" role="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>Simulation</b> · Safe-to-Pay inside a U-Topia-style wallet. Fictional data; no real money moves.</span></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-mark" aria-hidden="true">U</div>U-Topia</div>
+  <div class="logo" aria-label="U-HANDSHAKE, Think Before You Pay"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="bmU" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4AA3F8"/><stop offset=".55" stop-color="#5C7BF2"/><stop offset="1" stop-color="#8E5CF0"/></linearGradient><linearGradient id="bmH" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E68F2"/><stop offset="1" stop-color="#4F86F6"/></linearGradient></defs><path d="M50 3c1.6 7.8 3.3 9.5 11 11-7.7 1.5-9.4 3.2-11 11-1.6-7.8-3.3-9.5-11-11 7.7-1.5 9.4-3.2 11-11z" fill="#7B6CF0"/><path d="M25 22v34a25 25 0 0 0 50 0V22" fill="none" stroke="url(#bmU)" stroke-width="21" stroke-linecap="round"/><path d="M80 44c-7-1.5-14 .5-20 4.5L47 57c-3.2 2.2-3.6 6-.8 8 2.5 1.7 5.4 1 7.8-.8l5.4-4c3.8 3.2 8.6 4.6 13 3.6 4.4-1 7.6-4.6 8.4-9 .6-3.6-.1-7.4-.8-10.8z" fill="url(#bmH)" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/><g fill="#8A7BF3" stroke="#fff" stroke-width="2.2"><rect x="33" y="61" width="7" height="13" rx="3.5" transform="rotate(-58 36.5 67.5)"/><rect x="37" y="66" width="7" height="13" rx="3.5" transform="rotate(-58 40.5 72.5)"/><rect x="42" y="70" width="7" height="12" rx="3.5" transform="rotate(-58 45.5 76)"/></g></svg><span class="brand"><b class="brand-name"><span class="u">U</span>-HANDSHAKE</b><small>Think Before You Pay</small></span></div>
   <button class="preview-chip" type="button" data-act="howItWorks">How it works</button>
   <div class="user">
     <div class="textsize" role="group" aria-label="Text size"><span class="ts-l">Text size</span><button type="button" data-zoom="1" aria-pressed="true" aria-label="Normal text" style="font-size:14px">A</button><button type="button" data-zoom="1.12" aria-pressed="false" aria-label="Large text" style="font-size:17px">A+</button><button type="button" data-zoom="1.25" aria-pressed="false" aria-label="Extra large text" style="font-size:19px">A++</button></div>
@@ -772,27 +826,28 @@ body.sheet-open .stepbody.enter{animation:none}
 <div id="strip"></div>
 <main id="page"></main>
 <footer class="foot">
-  <span>U-Topia — Reference Integration Preview for a hackathon demo. Not the production app; all data is fictional.</span>
-  <span>Only Pay is interactive. U-HANDSHAKE never blocks a payment. You always decide.</span>
+  <span>U-HANDSHAKE hackathon preview for U-Topia · fictional data · Safe-to-Pay never blocks a payment. You decide.</span>
 </footer>
 <div class="backdrop" id="backdrop" data-act="closeSheet"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="onboarding-layer" id="onboarding" hidden>
   <div class="onboarding-shade" aria-hidden="true"></div>
-  <section class="onboarding-dialog" role="dialog" aria-modal="true" aria-label="Meet Safe-to-Pay" tabindex="-1">
+  <div class="tour-spot" id="tour-spot" hidden></div>
+  <section class="onboarding-dialog" role="dialog" aria-modal="true" aria-label="Safe-to-Pay tour" aria-describedby="tour-title" tabindex="-1">
     <button class="onboarding-close" id="onboarding-close" type="button" data-onboarding="close" aria-label="Close introduction"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div id="onboarding-content"></div>
   </section>
 </div>
-<button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat"><span class="fi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><span class="lbl">Help</span></button>
-<section class="chat" id="chat" hidden aria-label="Demo helper chat">
-  <div class="chat-h"><span class="av"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5"/></svg></span><div><b>Demo helper</b><small>Rule-based answers about Safe-to-Pay &amp; this demo</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-  <div class="chat-note">Demo assistant · fictional data · not financial advice</div>
+<button class="ubot-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat" aria-label="Open U-Bot Simulation assistant"><svg class="head" viewBox="0 0 80 80" aria-hidden="true"><defs><radialGradient id="ubv" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#2B2668"/><stop offset="1" stop-color="#120F33"/></radialGradient><linearGradient id="ubh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6E1FF"/></linearGradient></defs><rect x="18" y="12" width="5" height="12" rx="2.5" fill="#D9D3FF"/><rect x="57" y="12" width="5" height="12" rx="2.5" fill="#D9D3FF"/><circle cx="20.5" cy="10" r="8.5" fill="#7C6CF2"/><circle cx="18" cy="7.5" r="3" fill="#A99CFA"/><circle cx="59.5" cy="10" r="8.5" fill="#7C6CF2"/><circle cx="57" cy="7.5" r="3" fill="#A99CFA"/><ellipse cx="40" cy="46" rx="29" ry="28" fill="url(#ubh)"/><path d="M15 34a27 27 0 0 1 50 0" fill="none" stroke="#8B7CF6" stroke-width="5" stroke-linecap="round" opacity=".55"/><rect x="5" y="38" width="10" height="20" rx="5" fill="#8B7CF6"/><rect x="65" y="38" width="10" height="20" rx="5" fill="#8B7CF6"/><rect x="17" y="30" width="46" height="36" rx="17" fill="url(#ubv)"/><rect x="29" y="38" width="5" height="12" rx="2.5" fill="#BFF2FF"/><path d="M43 45q5-6 10 0" fill="none" stroke="#BFF2FF" stroke-width="3.6" stroke-linecap="round"/><path d="M29 54q11 10 22 0z" fill="#BFF2FF"/><rect x="36" y="70" width="8" height="2.6" rx="1.3" fill="#C9C2FF"/></svg><span class="name" aria-hidden="true">U-Bot</span></button>
+<section class="chat" id="chat" hidden aria-label="U-Bot Simulation assistant">
+  <div class="chat-h"><span class="av"><svg class="head" viewBox="0 0 80 80" aria-hidden="true"><defs><radialGradient id="ubv2" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#2B2668"/><stop offset="1" stop-color="#120F33"/></radialGradient><linearGradient id="ubh2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6E1FF"/></linearGradient></defs><rect x="18" y="12" width="5" height="12" rx="2.5" fill="#D9D3FF"/><rect x="57" y="12" width="5" height="12" rx="2.5" fill="#D9D3FF"/><circle cx="20.5" cy="10" r="8.5" fill="#7C6CF2"/><circle cx="18" cy="7.5" r="3" fill="#A99CFA"/><circle cx="59.5" cy="10" r="8.5" fill="#7C6CF2"/><circle cx="57" cy="7.5" r="3" fill="#A99CFA"/><ellipse cx="40" cy="46" rx="29" ry="28" fill="url(#ubh2)"/><path d="M15 34a27 27 0 0 1 50 0" fill="none" stroke="#8B7CF6" stroke-width="5" stroke-linecap="round" opacity=".55"/><rect x="5" y="38" width="10" height="20" rx="5" fill="#8B7CF6"/><rect x="65" y="38" width="10" height="20" rx="5" fill="#8B7CF6"/><rect x="17" y="30" width="46" height="36" rx="17" fill="url(#ubv2)"/><rect x="29" y="38" width="5" height="12" rx="2.5" fill="#BFF2FF"/><path d="M43 45q5-6 10 0" fill="none" stroke="#BFF2FF" stroke-width="3.6" stroke-linecap="round"/><path d="M29 54q11 10 22 0z" fill="#BFF2FF"/><rect x="36" y="70" width="8" height="2.6" rx="1.3" fill="#C9C2FF"/></svg></span><div><b>U-Bot Simulation</b><small>Rule-based demo assistant · no AI call</small></div><button class="x" type="button" data-chat-close aria-label="Close chat"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chat-note">Simulation · not financial advice</div>
   <div class="chat-log" id="chat-log" aria-live="polite"></div>
   <div class="chat-sugg" id="chat-sugg"></div>
-  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask a question…" aria-label="Ask the demo helper" autocomplete="off"><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
+  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask, or try “Set my buffer to 4,000 baht”" aria-label="Message U-Bot" autocomplete="off"><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
 </section>
 
+<script src="/ubot-partition.js"></script>
 <script>
 (function(){
 const $ = s => document.querySelector(s);
@@ -864,8 +919,19 @@ const PROFILE = {
   essentials:[{id:'utilities',label:'Utilities & phone',amount:1200,due_in_days:3},{id:'rent',label:'Rent',amount:6000,due_in_days:5}],
   debts:[{id:'card_min',label:'Card minimum',amount:1500,due_in_days:8},{id:'bnpl',label:'BNPL installment',amount:1300,due_in_days:10}]
 };
-const MUST_KEEP = sum(PROFILE.essentials) + sum(PROFILE.debts);
-const STS0 = Math.max(0, PROFILE.balance - MUST_KEEP - PROFILE.buffer);
+/* Simulated Wallet Partition: session-only edits made through U-Bot after explicit
+   confirmation. Fixtures are never changed; the API remains the source of status. */
+const PARTITION_KEY = 'uh-partition-v1';
+const PART = {buffer:PROFILE.buffer, extraBills:0, undo:null};
+try { const saved = JSON.parse(sessionStorage.getItem(PARTITION_KEY) || 'null');
+  if (saved && Number.isInteger(saved.buffer) && Number.isInteger(saved.extraBills) && saved.buffer >= 0 && saved.extraBills >= 0) Object.assign(PART, {buffer:saved.buffer, extraBills:saved.extraBills}); } catch (e) {}
+const partEdited = () => PART.buffer !== PROFILE.buffer || PART.extraBills !== 0;
+const billsTotal = () => sum(PROFILE.essentials) + PART.extraBills;
+const mustKeep = () => billsTotal() + sum(PROFILE.debts);
+/* Browser-side estimate for display only; the Safe-to-Pay API confirms it. */
+const stsEstimate = () => Math.max(0, PROFILE.balance - mustKeep() - PART.buffer);
+const partProfile = () => ({balance:PROFILE.balance, baseBills:sum(PROFILE.essentials), debt:sum(PROFILE.debts)});
+function savePartition(){ try { sessionStorage.setItem(PARTITION_KEY, JSON.stringify({buffer:PART.buffer, extraBills:PART.extraBills})); } catch (e) {} }
 const SPEND = { /* fictional spending history for the breakdown chart */
   '7d':{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values:[320,0,450,180,90,600,240], max:800},
   '30d':{labels:['Week 1','Week 2','Week 3','Week 4'], values:[2100,1650,2400,1200], max:3000},
@@ -876,8 +942,8 @@ const NETWORKS = {uchain:{label:'U-Chain (fictional)', prefix:'uc1', used:true},
 const SCEN = {
   /* Mirrors examples/demo-scenarios/*.json; the E2E test asserts the request is identical. */
   A:{id:'safe-u-tag', title:'Safe purchase', short:'Safe', flow:'utag', recipient:'@coffee-lab', amount:'1290'},
-  B:{id:'balance-enough-safe-to-spend-not-enough', title:'Balance is enough, safe-to-spend is not', short:'Start main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
-  C:{id:'new-destination-crypto', title:'Suspicious crypto transfer', short:'Scam signals', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', destinationRef:'destination:demo-risk-001', network:'xnet', asset:'USDC', amount:'120', label:'Alpha Crypto Mentor',
+  B:{id:'balance-enough-safe-to-spend-not-enough', title:'Balance is enough, safe-to-spend is not', short:'Main demo', flow:'utag', recipient:'@phone-store', amount:'12900', main:true},
+  C:{id:'new-destination-crypto', title:'Suspicious crypto transfer', short:'Scam check', flow:'crypto', address:'xn1q-demo-0000-fict-7f3k', destinationRef:'destination:demo-risk-001', network:'xnet', asset:'USDC', amount:'120', label:'Alpha Crypto Mentor',
      message:'Guaranteed 30% return in 7 days. Send now, slots close tonight. Keep this between us.',
      /* Context flags the fictional message carries; supplied by the fixture, never inferred. */
      context:{urgency:true, secrecyRequest:true, guaranteedOrHighReturn:true}}
@@ -904,25 +970,18 @@ let S = Object.assign({
 }, blank());
 let runToken = 0, lastView = '', toastT;
 
-const ONBOARDING_KEY = 'uh-onboarding-v1';
+const ONBOARDING_KEY = 'uh-onboarding-v2';
+/* Spotlight tour: every target is a real element; steps navigate to its page first. */
 const ONBOARDING_STEPS = [
-  {
-    title:'Meet Safe-to-Pay',
-    copy:'An extra check before you pay, right inside your wallet. It helps explain the potential impact of a payment.',
-    visual:`<div class="onboarding-demo"><div class="note">${ic('info')}<span>This is a simulation using fictional data. No real money is moved.</span></div></div>`
-  },
-  {
-    title:"Know what's really available.",
-    copy:'Your wallet balance may include money already needed for bills, debt, or emergency protection.',
-    visual:`<div class="onboarding-demo onboarding-balance"><div><span>Balance</span><b class="num">฿18,500</b></div><strong aria-hidden="true">≠</strong><div><span>Safe to Spend</span><b class="num">฿5,500</b></div></div>`
-  },
-  {
-    title:'Check. Understand. Decide.',
-    copy:'See the impact of a payment, review relevant warnings, and choose what happens next.',
-    visual:`<div class="onboarding-demo onboarding-flow"><span>Pay</span><span class="arrow" aria-hidden="true">→</span><span>Safe-to-Pay</span><span class="arrow" aria-hidden="true">→</span><span>Your decision</span></div>`
-  }
+  {title:'Welcome to Safe-to-Pay', copy:'A one-minute tour. Everything here is a simulation with fictional data.'},
+  {page:'dashboard', target:'[data-tour="balance"]', title:'Your balance', copy:'Balance shows what you can pay. Safe-to-Pay shows what is safe to pay.'},
+  {page:'wallets', tab:'spending', target:'[data-tour="partition"]', title:'Wallet Partition', copy:'Your money is split into bills, debt, an emergency buffer, and what’s left to spend.'},
+  {page:'wallets', tab:'crypto', target:'[data-tour="crypto"]', title:'Crypto Wallet', copy:'Crypto stays in USDC. Without a live price, it isn’t counted in Safe-to-Spend.'},
+  {target:'#chatFab', title:'Meet U-Bot', copy:'Ask a question or change your buffer. U-Bot shows a preview first and changes nothing until you confirm.', tryText:'Try: “Set my emergency buffer to 4,000 baht”'},
+  {page:'dashboard', target:'#strip [data-scen="B"]', title:'Try a Safe-to-Pay check', copy:'Scenario B is a payment your balance covers but your bills can’t. Every payment is checked before you confirm.'},
+  {title:'You stay in control', copy:'Money and recipient risk are checked separately. Then you choose: Proceed, Reduce, Verify, Postpone or Cancel.'}
 ];
-const onboardingState = {open:false, step:0, opener:null};
+const onboardingState = {open:false, step:0, opener:null, returnTo:null, timer:0};
 
 function onboardingComplete(){
   try { return localStorage.getItem(ONBOARDING_KEY) === 'complete'; } catch (e) { return false; }
@@ -931,32 +990,75 @@ function rememberOnboarding(){
   try { localStorage.setItem(ONBOARDING_KEY, 'complete'); } catch (e) {}
 }
 function renderOnboarding(){
-  const step = ONBOARDING_STEPS[onboardingState.step];
-  const last = onboardingState.step === ONBOARDING_STEPS.length - 1;
-  $('#onboarding-content').innerHTML = `<div class="onboarding-hero">${ic('shieldC')}</div>
-    <div class="onboarding-copy"><h2>${step.title}</h2><p>${step.copy}</p></div>
-    ${step.visual}
-    <div class="onboarding-progress" aria-label="Step ${onboardingState.step + 1} of ${ONBOARDING_STEPS.length}">${ONBOARDING_STEPS.map((_, i) => `<span class="${i === onboardingState.step ? 'active' : ''}" aria-hidden="true"></span>`).join('')}</div>
+  const st = ONBOARDING_STEPS[onboardingState.step], i = onboardingState.step, n = ONBOARDING_STEPS.length, last = i === n - 1;
+  if (st.page && (S.page !== st.page || (st.tab && S.walletTab !== st.tab))){ S.page = st.page; if (st.tab) S.walletTab = st.tab; renderAll(); }
+  const dlg = $('.onboarding-dialog');
+  dlg.classList.add('moving');
+  $('#onboarding-content').innerHTML = `<div class="tour-head"><p class="tour-count" id="tour-count">Step ${i + 1} of ${n}</p><span class="tour-dots" aria-hidden="true">${ONBOARDING_STEPS.map((_, k) => `<span class="${k === i ? 'on' : ''}"></span>`).join('')}</span></div>
+    <div class="onboarding-copy"><h2 id="tour-title">${st.title}</h2><p>${st.copy}</p></div>
+    ${st.tryText ? `<div class="tour-try">${st.tryText}</div>` : ''}
     <div class="onboarding-actions">
-      <button class="skip" type="button" data-onboarding="skip">Skip</button>
+      <button class="skip" type="button" data-onboarding="skip">Skip tour</button>
       <span class="spacer"></span>
-      ${onboardingState.step ? '<button class="btn btn-out back" type="button" data-onboarding="back">Back</button>' : ''}
-      <button class="btn btn-primary next" type="button" data-onboarding="${last ? 'start' : 'next'}">${last ? 'Get Started' : 'Next'}</button>
+      ${i ? '<button class="btn btn-out back" type="button" data-onboarding="back">Back</button>' : ''}
+      ${last ? '<button class="btn btn-primary next" type="button" data-onboarding="start">Try Scenario B</button>' : '<button class="btn btn-primary next" type="button" data-onboarding="next">Next</button>'}
     </div>`;
+  /* Scroll the target into place first, move the spotlight, then fade the card in. */
+  const el = st.target ? document.querySelector(st.target) : null;
+  let wait = reduced ? 0 : 140;
+  if (el && getComputedStyle(el).position !== 'fixed'){
+    const r = el.getBoundingClientRect(), vh = innerHeight;
+    const top = mobile() || r.height > vh * 0.55 ? scrollY + r.top - 24 : scrollY + r.top - (vh - r.height) / 2;
+    if (Math.abs(top - scrollY) > 4){ window.scrollTo({top:Math.max(0, top), behavior: reduced ? 'auto' : 'smooth'}); wait = reduced ? 0 : 420; }
+  }
+  positionTour();
+  clearTimeout(onboardingState.timer);
+  onboardingState.timer = setTimeout(() => { positionTour(); dlg.classList.remove('moving'); }, wait);
+}
+function positionTour(){
+  if (!onboardingState.open) return;
+  const st = ONBOARDING_STEPS[onboardingState.step], spot = $('#tour-spot'), dlg = $('.onboarding-dialog');
+  const el = st.target ? document.querySelector(st.target) : null;
+  const vw = innerWidth, vh = innerHeight, dh = dlg.offsetHeight, dw = dlg.offsetWidth;
+  spot.hidden = false;
+  Object.assign(dlg.style, {left:'', top:'', bottom:''});
+  if (!el || !el.getClientRects().length){
+    spot.classList.add('empty');
+    Object.assign(spot.style, {left:vw / 2 + 'px', top:vh / 2 + 'px', width:'0px', height:'0px'});
+    if (mobile()) dlg.style.bottom = '12px';
+    else Object.assign(dlg.style, {left:Math.max(12, (vw - dw) / 2) + 'px', top:Math.max(12, (vh - dh) / 2) + 'px'});
+    return;
+  }
+  spot.classList.remove('empty');
+  const r = el.getBoundingClientRect(), pad = 8;
+  Object.assign(spot.style, {left:(r.left - pad) + 'px', top:(r.top - pad) + 'px', width:(r.width + pad * 2) + 'px', height:(r.height + pad * 2) + 'px'});
+  if (mobile()){ if (r.top > vh / 2 && r.height < vh / 3) dlg.style.top = '12px'; else dlg.style.bottom = '12px'; return; }
+  const side = r.left > vw / 2 && r.width < 240;
+  let left = side ? r.left - dw - 24 : Math.min(Math.max(12, r.left), vw - dw - 12);
+  let top = side ? r.bottom - dh : r.bottom + 16;
+  if (!side && top + dh > vh - 12) top = r.top - dh - 16;
+  Object.assign(dlg.style, {left:Math.max(12, left) + 'px', top:Math.min(Math.max(12, top), vh - dh - 12) + 'px'});
 }
 function openOnboarding(opener){
   onboardingState.open = true;
   onboardingState.step = 0;
   onboardingState.opener = opener instanceof HTMLElement ? opener : null;
-  renderOnboarding();
+  onboardingState.returnTo = {page:S.page, walletTab:S.walletTab};
+  if (CHAT.open) setChat(false);
+  $('#onboarding').classList.add('tour');
   $('#onboarding').hidden = false;
   document.body.classList.add('onboarding-open');
+  renderOnboarding();
   requestAnimationFrame(() => $('#onboarding-close').focus());
 }
 function closeOnboarding({complete=true, restoreFocus=true} = {}){
   if (complete) rememberOnboarding();
   onboardingState.open = false;
   $('#onboarding').hidden = true;
+  $('#tour-spot').hidden = true;
+  /* Skip/Close/Escape return to where the tour started; Try Scenario B navigates itself. */
+  const back = onboardingState.returnTo; onboardingState.returnTo = null;
+  if (back && restoreFocus && (S.page !== back.page || S.walletTab !== back.walletTab)){ S.page = back.page; S.walletTab = back.walletTab; renderAll(); }
   document.body.classList.remove('onboarding-open');
   const opener = onboardingState.opener;
   onboardingState.opener = null;
@@ -1024,14 +1126,15 @@ function buildRequest(){
   const contact = u ? CONTACTS.find(c => c.tag === normTag(S.recipient)) : null;
   const context = {};
   CONTEXT_KEYS.forEach(k => { context[k] = fixture && sc.context && sc.context[k] !== undefined ? SIMV(sc.context[k]) : NA(); });
+  const part = v => ({value:v, provenance: partEdited() ? 'user_provided' : 'simulated'});
   const req = {
     walletType: SIMV(u ? 'spending' : 'crypto'),
     transferMode: SIMV(u ? 'u_tag' : 'on_chain'),
     currency: SIMV('THB'),
     availableBalance: SIMV(PROFILE.balance),
-    essentialObligations: S.toggles.incomplete ? NA() : SIMV(sum(PROFILE.essentials)),
+    essentialObligations: S.toggles.incomplete ? NA() : part(billsTotal()),
     debtDue: S.toggles.incomplete ? NA() : SIMV(sum(PROFILE.debts)),
-    protectedBuffer: SIMV(PROFILE.buffer),
+    protectedBuffer: part(PART.buffer),
     amount: input(Number(S.amount)),
     asset: input(u ? 'THB' : S.asset),
     network: u ? NA() : input(NETWORKS[S.network].label),
@@ -1045,7 +1148,8 @@ function buildRequest(){
     recentMedianAmount: SIMV(u ? PROFILE.recentMedianThb : PROFILE.recentMedianUsdc),
     context
   };
-  return fixture ? {scenarioId: sc.id, ...req} : req;
+  /* An edited partition is no longer the canonical fixture, so no scenarioId. */
+  return fixture && !partEdited() ? {scenarioId: sc.id, ...req} : req;
 }
 
 /* ---------- map the authoritative API response to the view (no calculations here) ---------- */
@@ -1068,7 +1172,7 @@ function toView(res){
   const contact = S.flow === 'utag' ? CONTACTS.find(c => c.tag === normTag(S.recipient)) : null;
   const trust = {status:ta.status, indicators:ta.indicators, evidence:res.reasons.trust, probability:ta.riskScore, model_version:ta.modelVersion,
     reason: ta.status === 'unknown' ? 'Not enough recipient history or context was supplied to assess this recipient.'
-      : contact && ta.indicators.length === 0 ? `Saved contact, paid ${contact.paid} time${contact.paid === 1 ? '' : 's'} before (simulated history). No risk signals in the supplied context.` : ''};
+      : contact && ta.indicators.length === 0 ? `Saved contact, paid ${contact.paid === 1 ? 'once' : contact.paid + ' times'} before (simulated history).` : ''};
   const e = res.ai.explanation;
   return {engine_version:res.engineVersion, financial, trust, recommended_actions:res.recommendedActions,
     explanation:{source:e.source, text:e.summary + ' ' + e.nextStep}, ai:{mode:res.ai.mode, route:res.ai.route, grounding:res.ai.grounding}};
@@ -1154,22 +1258,35 @@ function stsBreakdown(){
   return `<div class="bx-pair">
       <div class="bx-cell"><span class="lbl">${ic('wallet')}Balance</span><span class="v num">${money(fmt(PROFILE.balance))}</span><span class="cap">Tells you whether you <b>can</b> pay.</span></div>
       <span class="neq" aria-label="is not the same as">≠</span>
-      <div class="bx-cell sts"><span class="lbl">${ic('shieldC')}Safe-to-spend</span><span class="v num">${money(fmt(STS0))}</span><span class="cap">After bills, debt and buffer. Tells you whether it’s <b>safe</b> to pay.</span></div>
+      <div class="bx-cell sts"><span class="lbl">${ic('shieldC')}Safe-to-spend</span><span class="v num">${money(fmt(stsEstimate()))}</span><span class="cap">After bills, debt and buffer. Tells you whether it’s <b>safe</b> to pay.</span></div>
     </div>
-    <div class="segbar" role="img" aria-label="Balance split: must keep ${fmt(MUST_KEEP)}, protected buffer ${fmt(PROFILE.buffer)}, safe-to-spend ${fmt(STS0)}">
-      <div style="width:${pct(MUST_KEEP)};background:var(--zone-mk)">Must keep</div>
-      <div style="width:${pct(PROFILE.buffer)};background:var(--zone-buf)">Buffer</div>
-      <div style="width:${pct(STS0)};background:var(--zone-sts)">Safe-to-spend</div>
+    <div class="segbar" role="img" aria-label="Balance split: must keep ${fmt(mustKeep())}, protected buffer ${fmt(PART.buffer)}, safe-to-spend ${fmt(stsEstimate())}">
+      <div style="width:${pct(mustKeep())};background:var(--zone-mk)">Must keep</div>
+      <div style="width:${pct(PART.buffer)};background:var(--zone-buf)">Buffer</div>
+      <div style="width:${pct(stsEstimate())};background:var(--zone-sts)">Safe-to-spend</div>
     </div>
     <div class="seglbl">
-      <div style="width:${pct(MUST_KEEP)}"><b>${money(fmt(MUST_KEEP))}</b><span>rent, bills, card, BNPL</span></div>
-      <div style="width:${pct(PROFILE.buffer)}"><b>${money(fmt(PROFILE.buffer))}</b><span>surprises</span></div>
-      <div style="width:${pct(STS0)}"><b style="color:var(--safe)">${money(fmt(STS0))}</b><span>free to spend</span></div>
+      <div style="width:${pct(mustKeep())}"><b>${money(fmt(mustKeep()))}</b><span>rent, bills, card, BNPL</span></div>
+      <div style="width:${pct(PART.buffer)}"><b>${money(fmt(PART.buffer))}</b><span>surprises</span></div>
+      <div style="width:${pct(stsEstimate())}"><b style="color:var(--safe)">${money(fmt(stsEstimate()))}</b><span>free to spend</span></div>
     </div>`;
+}
+function partitionHead(){
+  return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span class="est-note">Estimates · each payment is confirmed by the Safe-to-Pay check</span>${partEdited() ? `<span class="part-tag" data-testid="partition-edited">${ic('sliders')}Edited with U-Bot (simulation)</span>` : ''}</div>`;
+}
+function partitionList(){
+  const row = (color, label, value, note) => `<li><span class="k"><span class="sw" style="background:${color}"></span><span>${label}${note ? `<small>${note}</small>` : ''}</span></span><b class="num">${value}</b></li>`;
+  return `<ul class="plist2" aria-label="Wallet Partition" data-tour="partition">
+    ${row('var(--zone-sts)', 'Available to spend', money(fmt(stsEstimate())), 'Estimate')}
+    ${row('var(--zone-mk)', 'Reserved for bills', money(fmt(billsTotal())), PART.extraBills ? `Includes ${fmt(PART.extraBills)} you reserved` : 'Rent and utilities')}
+    ${row('var(--zone-mk)', 'Debt commitments', money(fmt(sum(PROFILE.debts))), 'Card minimum and BNPL')}
+    ${row('var(--zone-buf)', 'Emergency buffer', money(fmt(PART.buffer)), 'Protected from spending')}
+    <li class="crypto"><span class="k"><span class="sw" style="background:#2775CA"></span><span>Crypto holdings<small>Kept separate · not counted in Safe-to-Spend</small></span></span><b class="num">${money(fmtC(PROFILE.usdc, 'USDC'))}</b></li>
+  </ul>`;
 }
 function activityList(filter, emptyTitle){
   const list = S.activity.filter(filter);
-  if (!list.length) return `<div class="empty-st"><h3>${emptyTitle || 'No activity yet.'}</h3><p>Start by making your first transaction! Try a Safe-to-Pay demo above.</p></div>`;
+  if (!list.length) return `<div class="empty-st"><h3>${emptyTitle || 'No activity yet.'}</h3><p>Try Scenario B above to see a Safe-to-Pay check.</p></div>`;
   return list.map(a => `<div class="arow"><div class="aic">${ic(a.type === 'sent' ? 'sendNE' : a.type === 'postponed' ? 'clock' : 'x')}</div>
       <div><b>${a.type === 'sent' ? 'Simulated payment' : a.type === 'postponed' ? 'Postponed' : 'Cancelled'} · ${esc(a.to)}</b><div class="hint">Scenario ${a.scen || 'custom'} · Money ${FIN[a.status].label}${' · Recipient ' + TRUST[a.trust].label}</div></div>
       <div class="amt num">${a.type === 'sent' ? '−' + a.amt : '<span class="hint">not sent</span>'}</div></div>`).join('');
@@ -1191,15 +1308,15 @@ function chart(){
 function dashboard(){
   return `<div class="content">
     <div class="welcome"><h1>Welcome!</h1><p>Mint (fictional)</p></div>
-    <div class="card card-in" style="margin-top:14px">
+    <div class="card card-in" style="margin-top:14px" data-tour="balance">
       <div class="card-h"><h2>Total Balance</h2><div class="tools"><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh">${ic('refresh')}</button><button class="tool lbl" type="button" data-act="eye" aria-pressed="${S.hideBal}">${ic(S.hideBal ? 'eyeOff' : 'eye')}${S.hideBal ? 'Show' : 'Hide'}</button></div></div>
       <div class="amt-lg num">${money(fmt(PROFILE.balance))} <span class="hint" style="font-size:18px">+ ${money(fmtC(PROFILE.usdc, 'USDC'))}</span></div>
-      <div class="hint">Different currencies are shown separately; no exchange rate is applied in this demo.</div>
+      <div class="hint">USDC is shown separately. No exchange rate is applied.</div>
       <div class="divider"></div>
       <div class="split2">
         <div><div class="lbl">Crypto Wallet</div><div class="val num">${money(fmtC(PROFILE.usdc, 'USDC'))}</div></div>
         <div><div class="lbl">Spending Wallet</div><div class="val num">${money(fmt(PROFILE.balance))}</div>
-          <div class="sts-discovery" data-testid="safe-spend-discovery"><div class="feature"><span class="tag hs">${ic('shieldC')}Safe to Spend</span><b class="num">${money(fmt(STS0))}</b><small>After upcoming bills, debt, and buffer</small></div><button class="linkbtn" type="button" data-act="howItWorks">How it works</button></div></div>
+          <div class="sts-discovery" data-testid="safe-spend-discovery"><div class="feature"><span class="tag hs">${ic('shieldC')}Safe to Spend</span><b class="num">${money(fmt(stsEstimate()))}</b><small>Estimate after bills, debt and buffer</small></div><button class="linkbtn" type="button" data-act="howItWorks">How it works</button></div></div>
       </div>
     </div>
     <div class="pillrow c3">
@@ -1225,7 +1342,7 @@ function wallets(){
     <div class="card card-in">
       <div class="card-h"><h2>${sp ? 'Spending Balance' : 'Crypto Balance'}</h2><div class="tools"><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh">${ic('refresh')}</button><button class="tool lbl" type="button" data-act="eye" aria-pressed="${S.hideBal}">${ic(S.hideBal ? 'eyeOff' : 'eye')}${S.hideBal ? 'Show' : 'Hide'}</button></div></div>
       <div class="amt-lg num">${money(sp ? fmt(PROFILE.balance) : fmtC(PROFILE.usdc, 'USDC'))}</div>
-      ${sp ? `<div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(STS0))}</b></div>` : `<div class="hint">Shown in USDC. No exchange rate is applied in this demo.</div>`}
+      ${sp ? `<div class="sts-mini"><span class="tag hs">${ic('shieldC')}Safe-to-spend</span><b class="num">${money(fmt(stsEstimate()))}</b><span class="est-note">estimate</span></div>` : `<div class="hint">Shown in USDC. No exchange rate is applied in this demo.</div>`}
     </div>
     <div class="pillrow c4">
       <button class="pbtn t-recv" type="button" data-oos="Receive"><span class="pi">${ic('recv')}</span>Receive</button>
@@ -1234,13 +1351,14 @@ function wallets(){
       <button class="pbtn t-top" type="button" data-oos="Top Up"><span class="pi">${ic('sendNE')}</span>Top Up</button>
     </div>
     ${sp ? `<div class="sec-h"><h2>Safe-to-spend</h2><span class="tag hs">${ic('shieldC')}U-HANDSHAKE</span></div>
-      <div class="card card-in">${stsBreakdown()}
+      <div class="card card-in">${partitionHead()}${stsBreakdown()}${partitionList()}
         <div class="eyebrow" style="margin:18px 0 8px">Must keep · due before payday in ${PROFILE.nextIncome} days</div>
         <ul class="list">${[...PROFILE.essentials, ...PROFILE.debts].sort((a, b) => a.due_in_days - b.due_in_days).map(c => `<li class="citem"><span>${c.label} <b class="num">${money(fmt(c.amount))}</b></span><span class="st hint" style="font-weight:500">Due in ${c.due_in_days} days</span></li>`).join('')}</ul></div>`
     : `<div class="sec-h"><h2>Holdings</h2></div>
-      <div class="card">${[['USDC', PROFILE.usdc, '#2775CA', 'USD Coin · fictional holding']].map(([a, n, c, d]) => `
+      <div class="card" data-tour="crypto">${[['USDC', PROFILE.usdc, '#2775CA', 'USD Coin · fictional holding']].map(([a, n, c, d]) => `
         <div class="holding"><div class="coin" style="background:${c}">${a.slice(0, 1)}</div><div><b style="font-weight:500">${a}</b><div class="hint">${d}</div></div>
-        <div class="amt num"><b>${money(fmtC(n, a))}</b></div></div>`).join('')}</div>`}
+        <div class="amt num"><b>${money(fmtC(n, a))}</b></div></div>`).join('')}
+        <p class="est-note" style="margin:0;padding:0 18px 16px">Fictional holding. Without a live price, crypto is not counted in Safe-to-Spend.</p></div>`}
     <div class="sec-h"><h2>Recent ${sp ? 'Spending' : 'Crypto'} Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
     <div class="card">${activityList(a => a.flow === (sp ? 'utag' : 'crypto'))}</div>
   </div>`;
@@ -1316,7 +1434,7 @@ function stepDest(){
 function amountMsg(){
   const e = amountError();
   if (e && String(S.amount) !== '') return `<div class="err">${ic('info')}<span>${e}</span></div>`;
-  if (S.flow === 'utag') return `<div class="hint num">Balance ${fmt(PROFILE.balance)} · <b style="color:var(--safe)">safe-to-spend ${fmt(STS0)}</b></div>`;
+  if (S.flow === 'utag') return `<div class="hint num">Balance ${fmt(PROFILE.balance)} · <b style="color:var(--safe)">safe-to-spend about ${fmt(stsEstimate())}</b> (estimate; the check confirms it)</div>`;
   const n = Number(S.amount);
   return `<div class="hint num">You hold ${fmtC(PROFILE.usdc, S.asset)}${n > 0 && !e ? ' · no THB conversion is applied' : ''}</div>`;
 }
@@ -1816,6 +1934,8 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => {
   if (onboardingState.open){
+    const nav = e.key === 'ArrowRight' ? $('.onboarding-dialog .next') : e.key === 'ArrowLeft' ? $('.onboarding-dialog .back') : null;
+    if (nav){ e.preventDefault(); nav.click(); return; }
     if (e.key === 'Escape'){ e.preventDefault(); closeOnboarding(); }
     else trapOnboardingFocus(e);
     return;
@@ -1830,13 +1950,15 @@ $('#onboarding').addEventListener('click', e => {
   if (!control) return;
   const action = control.dataset.onboarding;
   if (action === 'next'){ onboardingState.step++; renderOnboarding(); $('.onboarding-dialog .next').focus(); }
-  else if (action === 'back'){ onboardingState.step--; renderOnboarding(); $('.onboarding-dialog .back').focus(); }
-  else if (action === 'start'){ closeOnboarding({restoreFocus:false}); go('pay'); }
+  else if (action === 'back'){ onboardingState.step--; renderOnboarding(); ($('.onboarding-dialog .back') || $('.onboarding-dialog .next')).focus(); }
+  else if (action === 'start'){ closeOnboarding({restoreFocus:false}); loadScenario('B'); }
   else closeOnboarding();
 });
+addEventListener('resize', () => positionTour());
+addEventListener('scroll', () => positionTour(), {passive:true});
 
-/* ---------- Demo helper chat: rule-based, quotes only the profile and API results ---------- */
-const CHAT = {open:false, log:[{who:'bot', t:'Hi, I’m the demo helper. Ask me about Safe-to-Pay, safe-to-spend, or how this demo works. I’m rule-based, not an AI.'}]};
+/* ---------- U-Bot Simulation chat: rule-based, quotes only the profile and API results ---------- */
+const CHAT = {open:false, pending:null, seq:0, log:[{who:'bot', t:'Hi, I’m U-Bot (simulation). Ask me about Safe-to-Pay, or ask me to adjust your emergency buffer or bills reserve. I’m rule-based, not an AI.'}]};
 const stripTags = s => s.replace(/<[^>]+>/g, '');
 const ACT_LABEL = {proceed:'Proceed', reduce_amount:'Reduce the amount', verify_recipient:'Verify the recipient', postpone:'Postpone until payday', cancel:'Cancel'};
 function botAnswer(q){
@@ -1848,9 +1970,9 @@ function botAnswer(q){
     if (r && r.trust.indicators) return `The recipient check found ${r.trust.indicators.length} signal${r.trust.indicators.length === 1 ? '' : 's'}: ${r.trust.indicators.map(indLabel).join(', ')}. These are risk indicators, not proof that the recipient is a scammer.`;
     return 'The recipient check looks for signals like a new recipient, urgency, guaranteed returns or secrecy. They are risk indicators, not proof.';
   }
-  if (has('must keep','obligation','bill','rent','ค่าเช่า','บิล')) return `Must keep = essential bills ${fmt(sum(PROFILE.essentials))} (${PROFILE.essentials.map(e => e.label.toLowerCase() + ' ' + fmt(e.amount)).join(', ')}) + debt & BNPL ${fmt(sum(PROFILE.debts))} = ${fmt(MUST_KEEP)}.`;
-  if (has('buffer','กันชน','สำรอง')) return `The protected buffer is ${fmt(PROFILE.buffer)} kept aside for surprises. Safe-to-spend never counts it.`;
-  if (has('safe-to-spend','safe to spend','ใช้ได้','ยอดปลอดภัย')) return `Safe-to-spend is what’s left after bills, debt and your buffer: ${fmt(PROFILE.balance)} − ${fmt(MUST_KEEP)} − ${fmt(PROFILE.buffer)} = ${fmt(STS0)}. Balance says whether you can pay; safe-to-spend says whether it’s safe.`;
+  if (has('must keep','obligation','bill','rent','ค่าเช่า','บิล')) return `Must keep = bills ${fmt(billsTotal())} (${PROFILE.essentials.map(e => e.label.toLowerCase() + ' ' + fmt(e.amount)).join(', ')}${PART.extraBills ? ', plus ' + fmt(PART.extraBills) + ' you reserved' : ''}) + debt & BNPL ${fmt(sum(PROFILE.debts))} = ${fmt(mustKeep())}.`;
+  if (has('buffer','กันชน','สำรอง')) return `The protected buffer is ${fmt(PART.buffer)} kept aside for surprises. Safe-to-spend never counts it.`;
+  if (has('safe-to-spend','safe to spend','ใช้ได้','ยอดปลอดภัย')) return `Safe-to-spend is what’s left after bills, debt and your buffer: ${fmt(PROFILE.balance)} − ${fmt(mustKeep())} − ${fmt(PART.buffer)} = about ${fmt(stsEstimate())}. That's an estimate; the Safe-to-Pay check confirms it for each payment. Balance says whether you can pay; safe-to-spend says whether it’s safe.`;
   if (has('why','result','status','high risk','review','verdict','ทำไม','ผล')){
     if (r){ const v = verdictText(r); return stripTags(v.h) + (r.financial.missing_fields ? '' : ' ' + r.financial.reasons[0]); }
     return 'Statuses follow fixed rules. Safe: balance after ≥ must keep + buffer. Review: covers must keep but uses the buffer. High Risk: drops below must keep.';
@@ -1863,17 +1985,80 @@ function botAnswer(q){
   if (/\b(hi|hello|hey)\b/.test(t) || t.includes('สวัสดี')) return 'Hi! Ask me what safe-to-spend means, why a payment got its status, or what to do next.';
   return 'I can help with Safe-to-Pay, safe-to-spend, must keep, the buffer, recipient signals and how to run the demo. Try a suggestion below.';
 }
-function chatSuggestions(){ return S.result && (S.phase === 'result' || S.phase === 'outcome') ? ['Why this result?','What should I do?','Is the recipient a scam?','What is safe-to-spend?'] : ['What is safe-to-spend?','How do I start the demo?','How is must keep calculated?','Is this real money?']; }
+function chatSuggestions(){ return S.result && (S.phase === 'result' || S.phase === 'outcome') ? ['Why this result?','What should I do?','Set my buffer to 4,000 baht','Is the recipient a scam?'] : ['What is safe-to-spend?','Set my buffer to 4,000 baht','How do I start the demo?','Is this real money?']; }
+const PART_ROWS = [['Emergency buffer','buffer'],['Reserved for bills','bills'],['Must keep (bills + debt)','mustKeep'],['Safe-to-spend estimate','safeToSpendEstimate']];
+function partitionCard(c){
+  const rows = PART_ROWS.map(([l, k]) => `<tr><td>${l}</td><td class="num">${fmt(c.before[k])}</td><td class="num ${c.before[k] !== c.after[k] ? 'chg' : ''}">${fmt(c.after[k])}</td></tr>`).join('');
+  const status = c.state === 'confirmed' ? '<b style="color:var(--safe)">Confirmed</b>' : c.state === 'cancelled' ? '<b style="color:var(--muted)">Cancelled · nothing changed</b>'
+    : `<div class="row"><button type="button" class="ok" data-part="confirm" data-pid="${c.pid}">Confirm change</button><button type="button" data-part="cancel" data-pid="${c.pid}">Cancel</button></div>`;
+  return `<div class="part-card" data-testid="partition-preview"><b>${esc(c.title)}</b>
+    <table><thead><tr><th scope="col">Item</th><th scope="col">Before</th><th scope="col">After</th></tr></thead><tbody>${rows}</tbody></table>
+    <span class="est">Safe-to-spend here is an estimate. After you confirm, any open check is re-run. Simulation only.</span>${status}</div>`;
+}
 function renderChatLog(){
-  const log = $('#chat-log'); log.innerHTML = CHAT.log.map(m => `<div class="msg ${m.who}">${esc(m.t)}</div>`).join(''); log.scrollTop = log.scrollHeight;
+  const log = $('#chat-log');
+  log.innerHTML = CHAT.log.map(m => m.card ? `<div class="msg bot card">${partitionCard(m.card)}</div>`
+    : `<div class="msg ${m.who}">${esc(m.t)}${m.undo && PART.undo ? ' <button type="button" class="linkbtn" data-part="undo">Undo</button>' : ''}</div>`).join('');
+  log.scrollTop = log.scrollHeight;
   $('#chat-sugg').innerHTML = chatSuggestions().map(s => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('');
 }
-function setChat(open){ CHAT.open = open; $('#chat').hidden = !open; $('#chatFab').setAttribute('aria-expanded', open); if (open){ renderChatLog(); $('#chat-q').focus(); } }
+function setChat(open){ CHAT.open = open; $('#chat').hidden = !open; $('#chatFab').setAttribute('aria-expanded', open); document.body.classList.toggle('chat-open', open); if (open){ renderChatLog(); $('#chat-q').focus(); } }
 async function ask(q){
   q = q.trim(); if (!q) return;
   CHAT.log.push({who:'me', t:q}, {who:'bot typing', t:'Typing…'}); renderChatLog();
-  await sleep(reduced ? 100 : 450);
-  CHAT.log.pop(); CHAT.log.push({who:'bot', t:botAnswer(q)}); renderChatLog();
+  await sleep(reduced ? 100 : 350);
+  CHAT.log.pop();
+  const P = window.UBotPartition, cmd = P ? P.parseCommand(q) : {kind:'none'};
+  if (cmd.kind === 'none') CHAT.log.push({who:'bot', t:botAnswer(q)});
+  else await partitionCommand(cmd);
+  renderChatLog();
+}
+const PART_LABEL = {buffer:'emergency buffer', bills:'bills reserve'};
+function proposePartition(title, next){
+  CHAT.log.forEach(m => { if (m.card && m.card.state === 'pending') m.card.state = 'cancelled'; });
+  const P = window.UBotPartition, prof = partProfile();
+  const card = {pid:++CHAT.seq, title, state:'pending', before:P.summary({buffer:PART.buffer, extraBills:PART.extraBills}, prof), after:P.summary(next, prof), next};
+  CHAT.pending = card; CHAT.log.push({who:'bot', card});
+}
+async function partitionCommand(cmd){
+  const P = window.UBotPartition;
+  if (cmd.kind === 'clarify'){ CHAT.log.push({who:'bot', t:`${cmd.message} For example: “${cmd.examples[0]}” or “${cmd.examples[1]}”.`}); return; }
+  if (cmd.kind === 'undo'){ await undoPartition(); return; }
+  if (cmd.kind === 'reset'){
+    if (!partEdited()){ CHAT.log.push({who:'bot', t:'Your partition already uses the profile defaults.'}); return; }
+    proposePartition('Reset partition to profile defaults', {buffer:PROFILE.buffer, extraBills:0}); return;
+  }
+  const res = P.propose({buffer:PART.buffer, extraBills:PART.extraBills}, cmd, partProfile());
+  if (!res.ok){ CHAT.log.push({who:'bot', t:res.message}); return; }
+  const verb = cmd.op === 'set' ? 'Set' : cmd.op === 'increase' ? 'Increase' : 'Decrease';
+  proposePartition(`${verb} ${PART_LABEL[cmd.category]} (preview)`, res.next);
+}
+async function applyPartition(next, message){
+  PART.undo = {buffer:PART.buffer, extraBills:PART.extraBills};
+  Object.assign(PART, {buffer:next.buffer, extraBills:next.extraBills});
+  savePartition();
+  CHAT.log.push({who:'bot', t:message, undo:true});
+  await recheckAfterPartition();
+}
+async function undoPartition(){
+  if (!PART.undo){ CHAT.log.push({who:'bot', t:'There is nothing to undo.'}); return; }
+  const prev = PART.undo;
+  Object.assign(PART, {buffer:prev.buffer, extraBills:prev.extraBills, undo:null});
+  savePartition();
+  CHAT.log.push({who:'bot', t:`Undone. Emergency buffer ${fmt(PART.buffer)}, bills reserve ${fmt(billsTotal())}.`});
+  await recheckAfterPartition();
+}
+/* Status is never computed here: an open check is re-run through POST /api/evaluate. */
+async function recheckAfterPartition(){
+  if (S.page === 'pay' && (S.phase === 'result' || S.phase === 'error')){
+    CHAT.log.push({who:'bot', t:'Re-checking your open payment with the Safe-to-Pay API…'}); renderChatLog();
+    await runCheck();
+    const r = S.result;
+    CHAT.log.push({who:'bot', t: S.phase === 'result' && r ? `Safe-to-Pay API result: Money ${FIN[r.financial.status].label}, Recipient ${TRUST[r.trust.status].label}.` : 'The re-check couldn’t finish. Run the Safe-to-Pay check again from the payment.'});
+  } else {
+    renderAll();
+    CHAT.log.push({who:'bot', t: S.phase === 'outcome' ? 'Your last payment is already finished, so it wasn’t changed. Your next Safe-to-Pay check will use the new partition.' : 'Your next Safe-to-Pay check will use the new partition, and the API will confirm the result.'});
+  }
 }
 $('#chatFab').addEventListener('click', () => setChat(!CHAT.open));
 /* text size (per-viewer convenience; works without storage) */
@@ -1884,7 +2069,19 @@ function setZoom(z){
 }
 try { const z = localStorage.getItem('uh-zoom'); if (z) setZoom(z); } catch (e) {}
 document.addEventListener('click', e => { const b = e.target.closest('[data-zoom]'); if (b) setZoom(b.dataset.zoom); });
-$('#chat').addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (b) ask(b.dataset.ask); if (e.target.closest('[data-chat-close]')){ setChat(false); $('#chatFab').focus(); } });
+$('#chat').addEventListener('click', async e => {
+  const b = e.target.closest('[data-ask]'); if (b) ask(b.dataset.ask);
+  if (e.target.closest('[data-chat-close]')){ setChat(false); $('#chatFab').focus(); return; }
+  const p = e.target.closest('[data-part]'); if (!p) return;
+  const action = p.dataset.part, card = CHAT.pending;
+  if (action === 'undo'){ await undoPartition(); renderChatLog(); return; }
+  if (!card || String(card.pid) !== p.dataset.pid || card.state !== 'pending') return;
+  CHAT.pending = null;
+  if (action === 'cancel'){ card.state = 'cancelled'; CHAT.log.push({who:'bot', t:'Cancelled. Nothing changed.'}); renderChatLog(); return; }
+  card.state = 'confirmed'; renderChatLog();
+  await applyPartition(card.next, `Done. Emergency buffer ${fmt(card.next.buffer)}, bills reserve ${fmt(partProfile().baseBills + card.next.extraBills)}. Simulation only; no real wallet changed.`);
+  renderChatLog();
+});
 $('#chat-form').addEventListener('submit', e => { e.preventDefault(); const i = $('#chat-q'); ask(i.value); i.value = ''; });
 
 renderAll();

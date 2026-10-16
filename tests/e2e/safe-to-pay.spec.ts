@@ -12,7 +12,7 @@ const staticPreview = pathToFileURL(fileURLToPath(new URL("../../public/u-topia-
 const isEvaluate = (request: Request) => request.url().endsWith("/api/evaluate") && request.method() === "POST";
 
 async function dismissOnboarding(page: Page) {
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   if (await dialog.isVisible()) await dialog.getByRole("button", { name: "Skip" }).click();
 }
 
@@ -34,7 +34,7 @@ async function runCheck(page: Page, scenario: "A" | "B" | "C") {
 
 test("onboarding appears on a clean first visit and Close dismisses it", async ({ page }) => {
   await page.goto("/");
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Close introduction" }).click();
   await expect(dialog).toBeHidden();
@@ -42,53 +42,54 @@ test("onboarding appears on a clean first visit and Close dismisses it", async (
 
 test("onboarding Skip persists across reloads", async ({ page }) => {
   await page.goto("/");
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   await dialog.getByRole("button", { name: "Skip" }).click();
   await page.reload();
   await expect(dialog).toBeHidden();
 });
 
-test("onboarding Back and Next lead Get Started to the Pay chooser", async ({ page }) => {
+test("tour Back and Next walk real targets and finish on Scenario B", async ({ page }) => {
   await page.goto("/");
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
+  await expect(dialog).toContainText("Step 1 of 7");
   await dialog.getByRole("button", { name: "Next" }).click();
-  await expect(dialog).toContainText("Know what's really available");
+  await expect(dialog).toContainText("Your balance");
+  await expect(page.locator("#tour-spot")).toBeVisible();
   await dialog.getByRole("button", { name: "Back" }).click();
-  await expect(dialog).toContainText("Meet Safe-to-Pay");
-  await dialog.getByRole("button", { name: "Next" }).click();
-  await dialog.getByRole("button", { name: "Next" }).click();
-  await expect(dialog).toContainText("Check. Understand. Decide.");
-  await dialog.getByRole("button", { name: "Get Started" }).click();
+  await expect(dialog).toContainText("Welcome to Safe-to-Pay");
+  for (let i = 0; i < 6; i += 1) await dialog.getByRole("button", { name: "Next" }).click();
+  await expect(dialog).toContainText("Step 7 of 7");
+  await dialog.getByRole("button", { name: "Try Scenario B" }).click();
   await expect(dialog).toBeHidden();
-  await expect(page.getByRole("heading", { name: "Pay", exact: true })).toBeVisible();
+  await expect(page.locator("#f-amount")).toHaveValue("12900");
 });
 
 test("How it works reopens onboarding without clearing the active scenario", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   await page.locator('[data-scen="B"]').click();
   await expect(page.locator("#f-amount")).toHaveValue("12900");
   const opener = page.getByRole("button", { name: "How it works" }).first();
   await opener.click();
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Close introduction" }).click();
   await expect(page.locator("#f-amount")).toHaveValue("12900");
 });
 
 test("onboarding Escape restores focus to How it works", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   const opener = page.getByRole("button", { name: "How it works" }).first();
   await opener.click();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog", { name: "Meet Safe-to-Pay" })).toBeHidden();
+  await expect(page.getByRole("dialog", { name: "Safe-to-Pay tour" })).toBeHidden();
   await expect(opener).toBeFocused();
 });
 
 test("onboarding traps keyboard focus inside the dialog", async ({ page }) => {
   await page.goto("/");
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   await page.keyboard.press("Shift+Tab");
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
   await page.keyboard.press("Tab");
@@ -101,7 +102,7 @@ test("onboarding survives a storage failure", async ({ page }) => {
     Storage.prototype.setItem = () => { throw new Error("storage unavailable"); };
   });
   await page.goto("/");
-  const dialog = page.getByRole("dialog", { name: "Meet Safe-to-Pay" });
+  const dialog = page.getByRole("dialog", { name: "Safe-to-Pay tour" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Skip" }).click();
   await expect(dialog).toBeHidden();
@@ -110,7 +111,7 @@ test("onboarding survives a storage failure", async ({ page }) => {
 
 test("Scenario B works after onboarding dismissal", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("dialog", { name: "Meet Safe-to-Pay" }).getByRole("button", { name: "Skip" }).click();
+  await page.getByRole("dialog", { name: "Safe-to-Pay tour" }).getByRole("button", { name: "Skip" }).click();
   await page.locator('[data-scen="B"]').click();
   const responsePromise = page.waitForResponse((response) => isEvaluate(response.request()));
   await page.locator("#nextbtn").click();
@@ -119,7 +120,7 @@ test("Scenario B works after onboarding dismissal", async ({ page }) => {
 });
 
 test("host shell keeps Safe to Spend as compact Dashboard discovery", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Total Balance" })).toBeVisible();
   await expect(page.locator('[data-testid="safe-spend-discovery"]')).toHaveCount(1);
@@ -128,7 +129,7 @@ test("host shell keeps Safe to Spend as compact Dashboard discovery", async ({ p
 });
 
 test("narrow viewport keeps top navigation and every demo control visible", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/");
@@ -143,13 +144,13 @@ test("narrow viewport keeps top navigation and every demo control visible", asyn
 });
 
 test("Reset Demo returns to Dashboard without reopening onboarding", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   await page.locator('[data-scen="B"]').click();
   await page.locator(".stage > summary").click();
   await page.getByRole("button", { name: "Reset demo" }).click();
   await expect(page.getByRole("heading", { name: "Welcome!" })).toBeVisible();
-  await expect(page.getByRole("dialog", { name: "Meet Safe-to-Pay" })).toBeHidden();
+  await expect(page.getByRole("dialog", { name: "Safe-to-Pay tour" })).toBeHidden();
 });
 
 test("Scenario B: the real API decides High Risk, the user reduces, then proceeds (simulated)", async ({ page }) => {
@@ -340,7 +341,7 @@ test("checkpoint actions do not overlap financial or recipient content", async (
 });
 
 test("visual regression mobile header and Help avoid wallet content", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto("/");
   await expect(page.locator(".user .avatar")).toBeVisible();
@@ -354,14 +355,14 @@ test("visual regression mobile header and Help avoid wallet content", async ({ p
 });
 
 test("visual regression simulation notice leaves the viewport on scroll", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   await page.evaluate(() => window.scrollTo(0, 900));
   expect(await page.locator(".simbar").evaluate((node) => node.getBoundingClientRect().bottom <= 0)).toBe(true);
 });
 
 test("Safe-to-Pay feature surfaces keep a visibly thick perimeter", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v1", "complete"));
+  await page.addInitScript(() => localStorage.setItem("uh-onboarding-v2", "complete"));
   await page.goto("/");
   for (const locator of [page.locator(".demostrip"), page.locator('[data-testid="safe-spend-discovery"]')]) {
     expect(await locator.evaluate((node) => parseFloat(getComputedStyle(node).borderTopWidth))).toBeGreaterThanOrEqual(3);
