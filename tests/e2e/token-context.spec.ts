@@ -45,6 +45,14 @@ test("live data shows unlock progress and key facts per token, labelled as token
   await expect(detail.getByRole("link", { name: "View unlock schedule" })).toHaveAttribute("href", "https://tokenomist.ai/arbitrum");
 });
 
+test("without a max supply, percentages use the supply Tokenomist tracks and say so", async ({ page }) => {
+  const TIA = { ...ARB, id: "celestia", name: "Celestia", symbol: "TIA", maxSupply: null, lockedAmount: 250, tbdLockedAmount: 0, unlockedAmount: 750, untrackedAmount: 0, websiteUrl: "https://tokenomist.ai/celestia" };
+  await mockContext(page, { status: "ok", tokens: { TIA: { status: "ok", symbol: "TIA", token: TIA } } });
+  await openCrypto(page);
+  await page.locator('details.tk[data-token="TIA"] summary').click();
+  await expect(page.getByTestId("token-detail-TIA")).toContainText("75.0% unlocked · 25.0% locked of tracked supply");
+});
+
 test("unavailable: the wallet says so honestly and still works", async ({ page }) => {
   await mockContext(page, { status: "unavailable", reason: "timeout", tokens: {} });
   await openCrypto(page);
