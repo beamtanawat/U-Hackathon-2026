@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "id": "scenario-a-safe-u-tag",
+  "title": "Safe U-Tag purchase",
+  "demoGoal": "A routine payment to a known contact stays within Safe-to-Spend; no AI call is needed.",
+  "assumptions": [
+    "All values are fictional demo data with provenance \"simulated\"; none is verified user history.",
+    "Profile (balance 18,500 THB; essentials 7,200; debt/BNPL 2,800; protected buffer 3,000) is taken from Ete's prototype PROFILE so every layer shows one user.",
+    "recentMedianAmount 2,500 THB is an assumed simulated baseline, not observed history; it only feeds the trust model's unusual-amount feature.",
+    "Recipient @coffee-lab with 6 previous transfers is a simulated contact."
+  ],
+  "request": {
+    "scenarioId": "safe-u-tag",
+    "walletType": {
+      "value": "spending",
+      "provenance": "simulated"
+    },
+    "transferMode": {
+      "value": "u_tag",
+      "provenance": "simulated"
+    },
+    "currency": {
+      "value": "THB",
+      "provenance": "simulated"
+    },
+    "availableBalance": {
+      "value": 18500,
+      "provenance": "simulated"
+    },
+    "essentialObligations": {
+      "value": 7200,
+      "provenance": "simulated"
+    },
+    "debtDue": {
+      "value": 2800,
+      "provenance": "simulated"
+    },
+    "protectedBuffer": {
+      "value": 3000,
+      "provenance": "simulated"
+    },
+    "amount": {
+      "value": 1290,
+      "provenance": "simulated"
+    },
+    "asset": {
+      "value": "THB",
+      "provenance": "simulated"
+    },
+    "network": {
+      "value": null,
+      "provenance": "unavailable"
+    },
+    "recipient": {
+      "kind": {
+        "value": "u_tag",
+        "provenance": "simulated"
+      },
+      "identifier": {
+        "value": "@coffee-lab",
+        "provenance": "simulated"
+      },
+      "isNew": {
+        "value": false,
+        "provenance": "simulated"
+      },
+      "previousTransactionCount": {
+        "value": 6,
+        "provenance": "simulated"
+      }
+    },
+    "recentMedianAmount": {
+      "value": 2500,
+      "provenance": "simulated"
+    },
+    "context": {
+      "urgency": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "secrecyRequest": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "guaranteedOrHighReturn": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "impersonation": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "unexpectedContact": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "moveMoneyToProtect": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "advanceFeeOrPrize": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "romanceOrOnlineOnlyRelationship": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "paymentMethodDemand": {
+        "value": null,
+        "provenance": "unavailable"
+      }
+    }
+  },
+  "expectedAssessment": {
+    "financial": {
+      "status": "safe",
+      "safeToSpendBefore": 5500,
+      "safeToSpendAfter": 4210,
+      "postTransactionBalance": 17210,
+      "affectedCommitments": [],
+      "reasonCodes": [
+        "WITHIN_SAFE_TO_SPEND"
+      ],
+      "missingFields": []
+    },
+    "trust": {
+      "status": "low",
+      "riskScore": 0.07962913284580567,
+      "indicators": [],
+      "modelVersion": "scam-context-v1"
+    }
+  }
+}

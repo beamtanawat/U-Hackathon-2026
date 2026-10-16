@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "id": "scenario-c-suspicious-crypto",
+  "title": "Suspicious crypto transfer",
+  "demoGoal": "A USDC transfer to a new destination with urgency, secrecy and guaranteed-return context: trust is High, and affordability is Review because no exchange rate is available.",
+  "assumptions": [
+    "All values are fictional demo data with provenance \"simulated\"; none is verified user history.",
+    "Profile (balance 18,500 THB; essentials 7,200; debt/BNPL 2,800; protected buffer 3,000) is taken from Ete's prototype PROFILE so every layer shows one user.",
+    "120 USDC is compared against THB obligations; no exchange rate is approved, so affordability is Review with exchangeRate missing.",
+    "recentMedianAmount 40 USDC is an assumed simulated crypto-wallet baseline.",
+    "Urgency, secrecy and guaranteed-return flags are supplied by the scenario's fictional message, not inferred by ML or an LLM.",
+    "destination:demo-risk-001 is a placeholder, not a real wallet address."
+  ],
+  "request": {
+    "scenarioId": "new-destination-crypto",
+    "walletType": {
+      "value": "crypto",
+      "provenance": "simulated"
+    },
+    "transferMode": {
+      "value": "on_chain",
+      "provenance": "simulated"
+    },
+    "currency": {
+      "value": "THB",
+      "provenance": "simulated"
+    },
+    "availableBalance": {
+      "value": 18500,
+      "provenance": "simulated"
+    },
+    "essentialObligations": {
+      "value": 7200,
+      "provenance": "simulated"
+    },
+    "debtDue": {
+      "value": 2800,
+      "provenance": "simulated"
+    },
+    "protectedBuffer": {
+      "value": 3000,
+      "provenance": "simulated"
+    },
+    "amount": {
+      "value": 120,
+      "provenance": "simulated"
+    },
+    "asset": {
+      "value": "USDC",
+      "provenance": "simulated"
+    },
+    "network": {
+      "value": "XNet (fictional)",
+      "provenance": "simulated"
+    },
+    "recipient": {
+      "kind": {
+        "value": "wallet_address",
+        "provenance": "simulated"
+      },
+      "identifier": {
+        "value": "destination:demo-risk-001",
+        "provenance": "simulated"
+      },
+      "isNew": {
+        "value": true,
+        "provenance": "simulated"
+      },
+      "previousTransactionCount": {
+        "value": 0,
+        "provenance": "simulated"
+      }
+    },
+    "recentMedianAmount": {
+      "value": 40,
+      "provenance": "simulated"
+    },
+    "context": {
+      "urgency": {
+        "value": true,
+        "provenance": "simulated"
+      },
+      "secrecyRequest": {
+        "value": true,
+        "provenance": "simulated"
+      },
+      "guaranteedOrHighReturn": {
+        "value": true,
+        "provenance": "simulated"
+      },
+      "impersonation": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "unexpectedContact": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "moveMoneyToProtect": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "advanceFeeOrPrize": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "romanceOrOnlineOnlyRelationship": {
+        "value": null,
+        "provenance": "unavailable"
+      },
+      "paymentMethodDemand": {
+        "value": null,
+        "provenance": "unavailable"
+      }
+    }
+  },
+  "expectedAssessment": {
+    "financial": {
+      "status": "review",
+      "safeToSpendBefore": null,
+      "safeToSpendAfter": null,
+      "postTransactionBalance": null,
+      "affectedCommitments": [],
+      "reasonCodes": [
+        "CURRENCY_CONVERSION_UNAVAILABLE"
+      ],
+      "missingFields": [
+        "exchangeRate"
+      ]
+    },
+    "trust": {
+      "status": "high",
+      "riskScore": 0.9709041650641165,
+      "indicators": [
+        "new_recipient",
+        "urgency",
+        "secrecy_request",
+        "guaranteed_or_high_return"
+      ],
+      "modelVersion": "scam-context-v1"
+    }
+  }
+}
