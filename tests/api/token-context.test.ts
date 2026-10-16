@@ -32,11 +32,11 @@ describe("GET /api/token-context (Tokenomist, server-side)", () => {
 
     expect(body.status).toBe("ok");
     expect(body.kind).toBe("tokenomics, not a price");
-    expect(body.token).toEqual({ id: "usd-coin", name: "USD Coin", symbol: "USDC", circulatingSupply: 1000, maxSupply: null, lockedAmount: 0, unlockedAmount: 1000, lastUpdated: "2026-10-15T00:00:00Z" });
+    expect(body.token).toEqual({ id: "usd-coin", name: "USD Coin", symbol: "USDC", circulatingSupply: 1000, maxSupply: null, lockedAmount: 0, tbdLockedAmount: null, unlockedAmount: 1000, untrackedAmount: null, latestFundraisingRound: null, hasBurn: null, hasBuyback: null, websiteUrl: null, lastUpdated: "2026-10-15T00:00:00Z" });
     expect(text).not.toContain(KEY);
     expect(text).not.toMatch(/"(marketCap|price|referencePrice|credit)"/);
     const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("https://api.tokenomist.ai/v5/token/list?tokenId=usd-coin%2Cusdc");
+    expect(url).toBe("https://api.tokenomist.ai/v5/token/list?tokenId=" + encodeURIComponent("usd-coin,usdc,arbitrum,optimism,sui,aptos,starknet,celestia,ethena"));
     expect(url).not.toContain(KEY);
     expect((init.headers as Record<string, string>)["x-api-key"]).toBe(KEY);
     expect(response.headers.get("cache-control")).toContain("s-maxage=21600");
@@ -135,5 +135,34 @@ describe("GET /api/token-context (Tokenomist, server-side)", () => {
     const body = await (await handler(get())).json();
     expect(body.status).toBe("stale");
     expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("answers several symbols from ONE Tokenomist call and keeps the documented tokenomics fields", async () => {
+    const arb = { id: "arbitrum", name: "Arbitrum", symbol: "ARB", listedMethod: "INTERNAL", circulatingSupply: 500, marketCap: 999, maxSupply: 1000, totalLockedAmount: 400, tbdLockedAmount: 10, unlockedAmount: 550, untrackedAmount: 40, latestFundraisingRound: "Series B", hasBurn: false, hasBuyback: true, websiteUrl: "https://tokenomist.ai/arbitrum", lastUpdatedDate: "2026-10-15T00:00:00Z" };
+    const fetchImpl = respond(200, { status: true, data: [arb, { ...arb, id: "x", symbol: "OP", websiteUrl: "https://evil.example/op" }] });
+    const handler = createTokenContextHandler({ env: live, fetchImpl });
+    const req = (ip: string) => new Request("http://localhost/api/token-context?symbols=USDC,ARB,OP", { headers: { "x-forwarded-for": ip } });
+    const text = await (await handler(req("203.0.113.7"))).text();
+    const body = JSON.parse(text);
+    expect(body.status).toBe("ok");
+    expect(body.tokens.USDC.status).toBe("not_covered");
+    expect(body.tokens.OP.status).toBe("not_covered"); // id is not the demo slug for OP
+    expect(body.tokens.ARB.token).toMatchObject({ lockedAmount: 400, unlockedAmount: 550, latestFundraisingRound: "Series B", hasBuyback: true, websiteUrl: "https://tokenomist.ai/arbitrum" });
+    expect(text).not.toMatch(/"(marketCap|price|listedMethod)"/);
+    await handler(new Request("http://localhost/api/token-context?symbol=ARB"));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("drops a websiteUrl that is not a tokenomist.ai page", async () => {
+    const t = { id: "arbitrum", name: "Arbitrum", symbol: "ARB", websiteUrl: "javascript:alert(1)" };
+    const body = await (await createTokenContextHandler({ env: live, fetchImpl: respond(200, { status: true, data: [t] }) })(get("ARB"))).json();
+    expect(body.token.websiteUrl).toBeNull();
+  });
+
+  it("rejects a symbols list containing anything outside the allow-list", async () => {
+    const fetchImpl = vi.fn();
+    const res = await createTokenContextHandler({ env: live, fetchImpl })(new Request("http://localhost/api/token-context?symbols=ARB,BTC"));
+    expect(res.status).toBe(400);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 });

@@ -17,7 +17,13 @@ const tokenSchema = z.object({
   circulatingSupply: nullableNumber,
   maxSupply: nullableNumber,
   totalLockedAmount: z.number().finite().optional(),
+  tbdLockedAmount: z.number().finite().optional(),
   unlockedAmount: z.number().finite().optional(),
+  untrackedAmount: z.number().finite().optional(),
+  latestFundraisingRound: z.string().max(80).nullable().optional(),
+  hasBurn: z.boolean().optional(),
+  hasBuyback: z.boolean().optional(),
+  websiteUrl: z.string().max(200).optional(),
   lastUpdatedDate: z.string().max(40).optional(),
 });
 
@@ -40,7 +46,14 @@ export interface TokenContext {
   circulatingSupply: number | null;
   maxSupply: number | null;
   lockedAmount: number | null;
+  tbdLockedAmount: number | null;
   unlockedAmount: number | null;
+  untrackedAmount: number | null;
+  latestFundraisingRound: string | null;
+  hasBurn: boolean | null;
+  hasBuyback: boolean | null;
+  /** Only kept when it points at tokenomist.ai. */
+  websiteUrl: string | null;
   lastUpdated: string | null;
 }
 
@@ -103,7 +116,13 @@ export async function fetchTokenList(
       circulatingSupply: t.circulatingSupply ?? null,
       maxSupply: t.maxSupply ?? null,
       lockedAmount: t.totalLockedAmount ?? null,
+      tbdLockedAmount: t.tbdLockedAmount ?? null,
       unlockedAmount: t.unlockedAmount ?? null,
+      untrackedAmount: t.untrackedAmount ?? null,
+      latestFundraisingRound: t.latestFundraisingRound ?? null,
+      hasBurn: t.hasBurn ?? null,
+      hasBuyback: t.hasBuyback ?? null,
+      websiteUrl: t.websiteUrl && /^https:\/\/tokenomist\.ai\/[a-z0-9-]+$/.test(t.websiteUrl) ? t.websiteUrl : null,
       lastUpdated: t.lastUpdatedDate ?? null,
     });
   }

@@ -15,3 +15,5 @@ test-results/
 playwright-report/
 *.tsbuildinfo
 .playwright-browsers/
+.playwright-browsers
+tokenomist-coverage.local.json
