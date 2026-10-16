@@ -203,17 +203,31 @@ button.preview-chip{cursor:pointer}
 .tk>.holding{border-bottom:0}
 .tk summary{list-style:none;cursor:pointer}
 .tk summary::-webkit-details-marker{display:none}
-.tk summary .more{font-size:12px;color:var(--muted);margin-top:2px}
+.tk summary .more{font-size:12px;color:var(--blue);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:3px}
+.tk summary .more .ic{transition:transform .2s}
+.tk[open] summary .more .ic{transform:rotate(180deg)}
 .tk[open] summary .more{display:none}
+.tk-state{font-size:12px;color:var(--muted);margin-top:2px}
 .tk-body{padding:0 18px 14px 70px;font-size:13px}
-.tk-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line-2);margin:6px 0 4px}
-.tk-bar i{display:block;height:100%}
-.tk-grid{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
-.tk-grid dt{color:var(--muted)}
-.tk-grid dd{margin:0;text-align:right}
-.tk-tags{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
-.tk-tags span{font-size:11.5px;padding:2px 8px;border-radius:10px;background:var(--line-2)}
+.price-line{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:2px;font-size:13px}
+.price-line b{font-weight:700}
+[data-change="positive"]{color:var(--safe)}
+[data-change="negative"]{color:var(--risk)}
+[data-change="flat"]{color:var(--muted)}
+.price-chart{width:100%;height:120px;display:block;margin:8px 0 12px;border-radius:12px;background:linear-gradient(180deg,var(--blue-bg),#fff);overflow:visible}
+.price-chart .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.price-chart .line{fill:none;stroke:var(--blue);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.market-grid>div{padding:9px;border-radius:10px;background:var(--soft);min-width:0}
+.market-grid small{display:block;color:var(--muted);font-size:11.5px}
+.market-grid b{display:block;font-size:13px;overflow-wrap:anywhere}
+.unlock-card{border:1px solid var(--hs-line);background:var(--hs-bg);border-radius:12px;padding:11px;margin-top:10px}
+.unlock-card h4{margin:0 0 6px;font-size:14px;color:var(--hs)}
+.unlock-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0}
+.unlock-grid dt{color:var(--muted)} .unlock-grid dd{margin:0;text-align:right;font-weight:600}
+.allocation-list{margin:7px 0 0;padding-left:18px;color:var(--ink-2)}
 @media (max-width:420px){.tk-body{padding-left:18px}}
+@media (max-width:420px){.market-grid{grid-template-columns:1fr 1fr}.market-grid>div:first-child{grid-column:1 / -1}}
 .coin{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff;flex:none}
 .holding .amt{margin-left:auto;text-align:right}
 .holding .amt b{display:block;font-weight:500;font-size:16px}
@@ -601,7 +615,7 @@ textarea.field{resize:vertical;min-height:70px;font-size:14.5px}
 .chat-in input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
 .chat-in button{width:46px;height:46px;border-radius:50%;border:0;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
 .chat-in .mic{background:#fff;color:var(--hs);border:1px solid var(--hs-line)}
-.chat-in .mic:disabled{opacity:.55}
+.chat-in .mic:disabled{opacity:.55;cursor:not-allowed;background:var(--soft);color:var(--muted);border-color:var(--line)}
 .chat-in .mic.rec{background:var(--risk);color:#fff;border-color:var(--risk);animation:micpulse 1.2s ease-in-out infinite}
 @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(212,48,48,.35)}50%{box-shadow:0 0 0 6px rgba(212,48,48,0)}}
 .mic-status{font-size:13px;color:var(--ink-2);padding:0 16px 8px}
@@ -866,8 +880,8 @@ body.sheet-open .stepbody.enter{animation:none}
   <div class="chat-note">Simulation · not financial advice</div>
   <div class="chat-log" id="chat-log" aria-live="polite"></div>
   <div class="chat-sugg" id="chat-sugg"></div>
-  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask, or try “Set my buffer to 4,000 baht”" aria-label="Message U-Bot" autocomplete="off"><button type="button" class="mic" id="mic-btn" aria-label="Speak to U-Bot" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
-  <div class="mic-status" id="mic-status" role="status" aria-live="polite"></div>
+  <form class="chat-in" id="chat-form"><input id="chat-q" type="text" placeholder="Ask, or try “Set my buffer to 4,000 baht”" aria-label="Message U-Bot" autocomplete="off"><button type="button" class="mic" id="mic-btn" aria-label="Voice input unavailable" aria-describedby="mic-status" disabled><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="submit" aria-label="Send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button></form>
+  <div class="mic-status" id="mic-status" role="status" aria-live="polite">Checking voice input availability…</div>
 </section>
 
 <script src="/ubot-partition.js"></script>
@@ -1359,57 +1373,69 @@ function dashboard(){
 }
 
 /* ---------- wallets ---------- */
-/* Tokenomist token context (server-side; off unless enabled). One request per page load for all
-   demo tokens, never polled. Tokenomics only: supply and unlocks, never a price. */
-const TOKEN_CTX = {state:'idle', status:null, tokens:{}};
-function loadTokenContext(){
-  if (TOKEN_CTX.state !== 'idle' || location.protocol === 'file:') return;
-  TOKEN_CTX.state = 'loading';
+/* CoinGecko price history + Tokenomist upcoming unlocks, loaded once for all demo tokens.
+   Prices remain display-only and are never converted to THB or used by Safe-to-Spend. */
+const CRYPTO_DETAILS = {state:'idle', status:null, tokens:{}};
+function loadCryptoDetails(){
+  if (CRYPTO_DETAILS.state !== 'idle' || location.protocol === 'file:') return;
+  CRYPTO_DETAILS.state = 'loading';
   const syms = ['USDC', ...PROFILE.tokens.map(t => t.s)].join(',');
-  fetch('/api/token-context?symbols=' + syms).then(r => r.ok ? r.json() : null).catch(() => null).then(body => {
-    TOKEN_CTX.state = 'done';
-    TOKEN_CTX.status = body && body.status ? body.status : 'unavailable';
-    TOKEN_CTX.tokens = body && body.tokens && typeof body.tokens === 'object' ? body.tokens : {};
-    if (TOKEN_CTX.status !== 'disabled' && S.page === 'wallets' && S.walletTab === 'crypto') renderPage();
+  fetch('/api/crypto-details?symbols=' + syms).then(r => r.ok ? r.json() : null).catch(() => null).then(body => {
+    CRYPTO_DETAILS.state = 'done';
+    CRYPTO_DETAILS.status = body && body.status ? body.status : 'unavailable';
+    CRYPTO_DETAILS.tokens = body && body.tokens && typeof body.tokens === 'object' ? body.tokens : {};
+    if (S.page === 'wallets' && S.walletTab === 'crypto') renderPage();
   });
 }
 const tkNum = v => v == null ? '—' : Number(v).toLocaleString('en-US', {maximumFractionDigits:0});
-const tkPct = (v, max) => v == null || !max ? null : Math.max(0, Math.min(100, v / max * 100));
+const usd = v => v == null ? '—' : Number(v).toLocaleString('en-US', {style:'currency', currency:'USD', minimumFractionDigits:2, maximumFractionDigits:Math.abs(v) < 1 ? 4 : 2});
+const change = v => v == null ? {text:'—', state:'flat'} : {text:(v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%', state:v > 0 ? 'positive' : v < 0 ? 'negative' : 'flat'};
+function priceChart(sym, prices){
+  if (!Array.isArray(prices) || prices.length < 2) return '<div class="hint">7-day chart is unavailable.</div>';
+  const min = Math.min(...prices), max = Math.max(...prices), span = max - min || 1;
+  const points = prices.map((p, i) => `${(i / (prices.length - 1) * 300).toFixed(1)},${(105 - (p - min) / span * 90).toFixed(1)}`).join(' ');
+  return `<svg class="price-chart" viewBox="0 0 300 120" preserveAspectRatio="none" role="img" aria-label="${esc(sym)} 7-day price chart"><path class="grid" d="M0 30H300M0 60H300M0 90H300"/><polyline class="line" points="${points}"/></svg>`;
+}
 function tokenDetail(sym){
-  const e = TOKEN_CTX.tokens[sym], t = e && e.token;
-  if (!t) return '';
-  const tracked = [t.lockedAmount, t.tbdLockedAmount, t.unlockedAmount, t.untrackedAmount].reduce((a, v) => a + (v || 0), 0);
-  const max = t.maxSupply, base = max || tracked || null, of = max ? 'of max supply' : 'of tracked supply';
-  const un = tkPct(t.unlockedAmount, base), lo = tkPct(t.lockedAmount, base), tbd = tkPct(t.tbdLockedAmount, base);
-  const when = t.lastUpdated ? new Date(t.lastUpdated).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : null;
-  const row = (k, v) => v == null ? '' : `<dt>${k}</dt><dd class="num">${v}</dd>`;
-  const tags = [t.latestFundraisingRound ? `Latest raise: ${esc(t.latestFundraisingRound)}` : null, t.hasBurn ? 'Has burns' : null, t.hasBuyback ? 'Has buybacks' : null].filter(Boolean);
+  const e = CRYPTO_DETAILS.tokens[sym]; if (!e) return '';
+  const m = e.market || {}, u = e.unlock || {};
+  if (m.status !== 'ok' && u.status !== 'ok') return '';
+  const c1 = change(m.change1hPct), c24 = change(m.change24hPct), c7 = change(m.change7dPct);
+  const market = m.status === 'ok' ? `${priceChart(sym, m.sparkline7d)}<div class="market-grid">
+    <div><small>Price · USD</small><b class="num">${usd(m.priceUsd)}</b></div><div><small>24h high</small><b class="num">${usd(m.high24hUsd)}</b></div><div><small>24h low</small><b class="num">${usd(m.low24hUsd)}</b></div>
+    <div><small>1h</small><b data-change="${c1.state}">${c1.text}</b></div><div><small>24h</small><b data-change="${c24.state}">${c24.text}</b></div><div><small>7d</small><b data-change="${c7.state}">${c7.text}</b></div></div>
+    <div class="est-note">Price and 7-day chart: CoinGecko · USD display only</div>` : '<div class="hint">Live price and chart are unavailable.</div>';
+  let unlock;
+  if (u.status === 'ok') {
+    const when = new Date(u.date).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    const updated = u.updatedAt ? new Date(u.updatedAt).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : null;
+    unlock = `<div class="unlock-card"><h4>Upcoming Unlock</h4><dl class="unlock-grid"><dt>Date</dt><dd>${esc(when)}</dd>${u.amount != null ? `<dt>Amount</dt><dd class="num">${tkNum(u.amount)} ${esc(sym)}</dd>` : ''}${u.valueToMarketCapPct != null ? `<dt>Event value / market cap</dt><dd>${Number(u.valueToMarketCapPct).toFixed(2)}%</dd>` : ''}</dl>${Array.isArray(u.allocations) && u.allocations.length ? `<ul class="allocation-list">${u.allocations.map(a => `<li>${esc(a.name)}${a.amount != null ? ` · ${tkNum(a.amount)} ${esc(sym)}` : ''}</li>`).join('')}</ul>` : ''}<div class="est-note">Tokenomist${updated ? ` · updated ${esc(updated)}` : ''}</div></div>`;
+  } else if (u.status === 'not_covered') unlock = `<div class="unlock-card"><h4>Upcoming Unlock</h4><div class="hint">Tokenomist has no upcoming unlock schedule for ${esc(sym)}.</div></div>`;
+  else if (u.status === 'disabled') unlock = '<div class="unlock-card"><h4>Upcoming Unlock</h4><div class="hint">Live Tokenomist unlock details are disabled.</div></div>';
+  else unlock = '<div class="unlock-card"><h4>Upcoming Unlock</h4><div class="hint">Upcoming unlock data is unavailable.</div></div>';
   return `<div class="tk-body" data-testid="token-detail-${esc(sym)}">
-    ${un != null ? `<div class="tk-bar" role="img" aria-label="Unlocked ${un.toFixed(1)}%, locked ${(lo ?? 0).toFixed(1)}% ${of}"><i style="width:${un}%;background:#16a34a"></i><i style="width:${lo ?? 0}%;background:#f59e0b"></i>${tbd ? `<i style="width:${tbd}%;background:#94a3b8"></i>` : ''}</div>
-    <div class="hint"><b style="color:#16a34a">${un.toFixed(1)}% unlocked</b> · ${(lo ?? 0).toFixed(1)}% locked${tbd ? ` · ${tbd.toFixed(1)}% TBD` : ''} ${of}</div>` : ''}
-    <dl class="tk-grid">${row('Max supply', max != null ? tkNum(max) + ' ' + esc(t.symbol) : null)}${row('Circulating', t.circulatingSupply != null ? tkNum(t.circulatingSupply) : null)}${row('Unlocked', t.unlockedAmount != null ? tkNum(t.unlockedAmount) : null)}${row('Still locked', t.lockedAmount != null ? tkNum(t.lockedAmount) : null)}${row('Unlock date TBD', t.tbdLockedAmount ? tkNum(t.tbdLockedAmount) : null)}${row('Untracked', t.untrackedAmount ? tkNum(t.untrackedAmount) : null)}</dl>
-    ${tags.length ? `<div class="tk-tags">${tags.map(x => `<span>${x}</span>`).join('')}</div>` : ''}
-    <div class="est-note">Tokenomist${e.status === 'stale' ? ' (cached)' : ''}${when ? ` · updated ${esc(when)}` : ''} · tokenomics only, not a price${t.websiteUrl ? ` · <a href="${esc(t.websiteUrl)}" target="_blank" rel="noopener noreferrer">View unlock schedule</a>` : ''}</div>
-  </div>`;
+    ${market}${unlock}</div>`;
 }
 function holdingRow(sym, n, color, desc){
-  const head = `<div class="holding"><div class="coin" style="background:${color}">${esc(sym.slice(0, 1))}</div><div><b style="font-weight:500">${esc(sym)}</b><div class="hint">${desc}</div>$MORE</div>
+  const e = CRYPTO_DETAILS.tokens[sym], m = e && e.market, c = m && m.status === 'ok' ? change(m.change24hPct) : null;
+  const marketLine = m && m.status === 'ok' ? `<div class="price-line"><b class="num">${usd(m.priceUsd)}</b><span data-change="${c.state}">${c.text} · 24h</span></div>` : '';
+  const head = `<div class="holding"><div class="coin" style="background:${color}">${esc(sym.slice(0, 1))}</div><div><b style="font-weight:500">${esc(sym)}</b><div class="hint">${desc}</div>${marketLine}$MORE</div>
     <div class="amt num"><b>${money(fmtC(n, sym))}</b></div></div>`;
   const detail = tokenDetail(sym);
-  if (!detail) return head.replace('$MORE', '');
-  return `<details class="tk" data-token="${esc(sym)}"><summary>${head.replace('$MORE', '<div class="more">Show unlock data</div>')}</summary>${detail}</details>`;
+  if (detail) return `<details class="tk" data-token="${esc(sym)}"><summary>${head.replace('$MORE', `<div class="more">View token details ${ic('chev')}</div>`)}</summary>${detail}</details>`;
+  const state = CRYPTO_DETAILS.state === 'loading' || CRYPTO_DETAILS.state === 'idle' ? 'loading' : CRYPTO_DETAILS.status === 'disabled' ? 'disabled' : 'unavailable';
+  const label = state === 'loading' ? 'Loading price and unlock details…' : state === 'disabled' ? 'Live price and unlock details disabled' : 'Price and unlock details unavailable';
+  return head.replace('$MORE', `<div class="tk-state" data-token-state="${state}">${label}</div>`).replace('class="holding"', `class="holding" data-token="${esc(sym)}"`);
 }
-function tokenContextLine(){
-  loadTokenContext();
-  const st = TOKEN_CTX.status;
-  if (!st || st === 'disabled' || TOKEN_CTX.state !== 'done') return '';
-  const usdc = TOKEN_CTX.tokens.USDC;
-  const msg = st === 'unavailable' ? 'Token data from Tokenomist is unavailable right now.'
-    : usdc && usdc.status === 'not_covered' ? 'Tokenomist doesn’t track USDC (a stablecoin with no unlock schedule). Tap a token to see its unlock data.' : '';
-  return msg ? `<p class="est-note" data-testid="token-context" data-status="${esc(st)}" style="margin:0;padding:0 18px 16px">${msg}</p>` : '';
+function cryptoDetailsLine(){
+  if (CRYPTO_DETAILS.state === 'loading' || CRYPTO_DETAILS.state === 'idle') return '<p class="est-note" data-testid="crypto-details-status" data-status="loading" style="margin:0;padding:0 18px 16px">Loading price and unlock details… Holdings remain available.</p>';
+  const st = CRYPTO_DETAILS.status;
+  const msg = st === 'disabled' ? 'Live price and unlock details are disabled in this deployment. Holdings remain available.' : st === 'unavailable' ? 'Live price and unlock details are unavailable right now. Holdings remain available.' : st === 'partial' ? 'Some live details are unavailable; available data is shown.' : '';
+  return msg ? `<p class="est-note" data-testid="crypto-details-status" data-status="${esc(st)}" style="margin:0;padding:0 18px 16px">${msg}</p>` : '';
 }
 function wallets(){
   const sp = S.walletTab === 'spending';
+  if (!sp) loadCryptoDetails();
   return `<div class="content">
     <h1 class="ptitle">Your Wallets</h1>
     <div style="display:flex;justify-content:center;margin:16px 0 20px"><div class="wseg" role="group" aria-label="Wallet">
@@ -1432,7 +1458,7 @@ function wallets(){
         <ul class="list">${[...PROFILE.essentials, ...PROFILE.debts].sort((a, b) => a.due_in_days - b.due_in_days).map(c => `<li class="citem"><span>${c.label} <b class="num">${money(fmt(c.amount))}</b></span><span class="st hint" style="font-weight:500">Due in ${c.due_in_days} days</span></li>`).join('')}</ul></div>`
     : `<div class="sec-h"><h2>Holdings</h2></div>
       <div class="card" data-tour="crypto">${holdingRow('USDC', PROFILE.usdc, '#2775CA', 'USD Coin · fictional holding')}${PROFILE.tokens.map(t => holdingRow(t.s, t.n, t.c, `${esc(t.name)} · fictional holding`)).join('')}
-        <p class="est-note" style="margin:0;padding:0 18px 16px">Fictional holdings, shown by quantity. Without a live price, crypto is not counted in Safe-to-Spend.</p>${tokenContextLine()}</div>`}
+        <p class="est-note" style="margin:0;padding:0 18px 16px">Fictional holdings. USD prices are display-only; crypto is not counted in Safe-to-Spend.</p>${cryptoDetailsLine()}</div>`}
     <div class="sec-h"><h2>Recent ${sp ? 'Spending' : 'Crypto'} Transactions</h2><button class="tool" type="button" data-oos="Refresh" aria-label="Refresh" style="width:32px;height:32px">${ic('refresh')}</button><button class="all" type="button" data-oos="All transactions">All ${ic('chevR')}</button></div>
     <div class="card">${activityList(a => a.flow === (sp ? 'utag' : 'crypto'))}</div>
   </div>`;
@@ -2159,17 +2185,16 @@ $('#chat').addEventListener('click', async e => {
 /* ---------- Voice input: push-to-talk ElevenLabs STT via /api/transcribe ----------
    Records only after a click and mic permission, stops at 15 s, sends one request
    at a time, and only fills the input: the user still reviews and presses Send. */
-const VOICE = {enabled:false, state:'idle', rec:null, stream:null, chunks:[], timer:0, mime:'', last:0};
+const VOICE = {enabled:false, ready:false, state:'idle', rec:null, stream:null, chunks:[], timer:0, mime:'', last:0};
 const MIC_ICON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>', STOP_ICON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>';
 function voiceStatus(text, err){ const el = $('#mic-status'); el.textContent = text || ''; el.classList.toggle('err', !!err); }
 function voiceUI(){
   const b = $('#mic-btn'); if (!b) return;
-  b.hidden = !VOICE.enabled;
   const rec = VOICE.state === 'recording';
   b.classList.toggle('rec', rec);
-  b.disabled = VOICE.state === 'processing';
+  b.disabled = !VOICE.enabled || VOICE.state === 'processing';
   b.innerHTML = rec ? STOP_ICON : MIC_ICON;
-  b.setAttribute('aria-label', rec ? 'Stop recording' : 'Speak to U-Bot');
+  b.setAttribute('aria-label', rec ? 'Stop recording' : VOICE.enabled ? 'Speak to U-Bot' : 'Voice input unavailable');
 }
 function pickMime(){
   if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
@@ -2177,6 +2202,7 @@ function pickMime(){
 }
 function stopTracks(){ if (VOICE.stream) VOICE.stream.getTracks().forEach(t => t.stop()); VOICE.stream = null; }
 async function startRecording(){
+  if (!VOICE.enabled){ voiceStatus('Voice input isn’t active in this deployment. You can type instead.', true); return; }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){ voiceStatus('Voice input isn’t supported in this browser. You can type instead.', true); return; }
   if (Date.now() - VOICE.last < 3000){ voiceStatus('Please wait a moment before recording again.', true); return; }
   try { VOICE.stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
@@ -2216,7 +2242,10 @@ async function transcribe(){
   voiceStatus('Check the text, then press Send.');
 }
 $('#mic-btn').addEventListener('click', () => { if (VOICE.state === 'recording') stopRecording(); else if (VOICE.state === 'idle') startRecording(); });
-if (location.protocol !== 'file:') fetch('/api/transcribe').then(r => r.ok ? r.json() : null).then(b => { VOICE.enabled = !!(b && b.enabled); voiceUI(); }).catch(() => {});
+if (location.protocol !== 'file:') fetch('/api/transcribe').then(r => r.ok ? r.json() : null).then(b => {
+  VOICE.ready = true; VOICE.enabled = !!(b && b.enabled); voiceUI();
+  voiceStatus(VOICE.enabled ? '' : 'Voice input isn’t active in this deployment. You can type instead.', !VOICE.enabled);
+}).catch(() => { VOICE.ready = true; VOICE.enabled = false; voiceUI(); voiceStatus('Voice input is unavailable. You can type instead.', true); });
 $('#chat-form').addEventListener('submit', e => { e.preventDefault(); const i = $('#chat-q'); ask(i.value); i.value = ''; });
 
 renderAll();
