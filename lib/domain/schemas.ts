@@ -83,7 +83,29 @@ export const evaluationRequestSchema = z
       })
       .strict(),
   })
-  .strict();
+  .strict()
+  .superRefine((input, context) => {
+    const mode = input.transferMode.value;
+    if (mode === null) return;
+
+    const expectedWallet = mode === "u_tag" ? "spending" : "crypto";
+    const expectedRecipient = mode === "u_tag" ? "u_tag" : "wallet_address";
+
+    if (input.walletType.value !== null && input.walletType.value !== expectedWallet) {
+      context.addIssue({
+        code: "custom",
+        path: ["walletType", "value"],
+        message: `wallet type does not match transfer mode ${mode}`,
+      });
+    }
+    if (input.recipient.kind.value !== null && input.recipient.kind.value !== expectedRecipient) {
+      context.addIssue({
+        code: "custom",
+        path: ["recipient", "kind", "value"],
+        message: `recipient kind does not match transfer mode ${mode}`,
+      });
+    }
+  });
 
 export const financialAssessmentSchema = z
   .object({

@@ -58,7 +58,7 @@ test("uses validated Qwen analysis with canonical attribution", async () => {
   const result = await runAiAnalysis({ assessment: suspiciousAssessment, transaction }, { qwenProvider: qwenWith({ explanation, review }) });
   assert.equal(result.explanation.source, "qwen");
   assert.equal(result.qwenReview?.model, "qwen/qwen3.5-9b");
-  assert.deepEqual(result.comparison.providerStatus, { qwen: "completed", jev: "not_run" });
+  assert.deepEqual(result.comparison.providerStatus, { qwen: "completed", jev: "unavailable" });
   assert.deepEqual(result.comparison.supportedAgreement, ["urgency"]);
 });
 
@@ -97,7 +97,7 @@ test("invalid Qwen JSON produces deterministic fallback", async () => {
   const result = await runAiAnalysis({ assessment: suspiciousAssessment, transaction }, { qwenProvider: qwenWith("not json") });
   assert.equal(result.explanation.source, "fallback");
   assert.equal(result.qwenReview, null);
-  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "not_run" });
+  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "unavailable" });
 });
 
 test("invalid Qwen schema produces deterministic fallback", async () => {
@@ -106,7 +106,7 @@ test("invalid Qwen schema produces deterministic fallback", async () => {
   });
   assert.equal(result.explanation.source, "fallback");
   assert.equal(result.qwenReview, null);
-  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "not_run" });
+  assert.deepEqual(result.comparison.providerStatus, { qwen: "unavailable", jev: "unavailable" });
 });
 
 test("times out Qwen independently", async () => {
@@ -205,7 +205,7 @@ test("uncertain path returns deterministic fallback when providers are unavailab
   assert.deepEqual(first.authoritativeAssessment, unsafeAssessment);
   assert.equal(first.explanation.source, "fallback");
   assert.equal(first.qwenReview, null);
-  assert.deepEqual(first.comparison.providerStatus, { qwen: "unavailable", jev: "not_run" });
+  assert.deepEqual(first.comparison.providerStatus, { qwen: "unavailable", jev: "unavailable" });
 });
 
 test("missing context remains separate in fallback", async () => {

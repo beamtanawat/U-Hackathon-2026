@@ -1562,7 +1562,7 @@ function ubotCard(r){
     : mode === 'budget_exhausted' ? 'The hourly AI budget is used up.' : r.ai.route === 'none' ? 'No AI call was needed for this result.'
     : r.ai.grounding && r.ai.grounding.violations.length ? 'The AI explanation was rejected because it was not grounded in the assessment.' : 'The AI provider was unavailable.';
   return `<section class="ubot" aria-labelledby="ub-h">
-    <div class="panel-h"><h3 id="ub-h">${ic('bot')}Explanation</h3><span class="src ${fb ? 'fb' : ''}">${fb ? ic('info') + 'Rules-engine explanation' : 'Qwen3.5-9B · checked'}</span></div>
+    <div class="panel-h"><h3 id="ub-h">${ic('bot')}U-Bot Simulation</h3><span class="src ${fb ? 'fb' : ''}">${fb ? ic('info') + 'Rules-engine fallback' : 'Jev primary · Qwen secondary'}</span></div>
     <p>${esc(e.text)}</p>
     ${fb ? `<div class="hint">${why} The result, reasons and actions come from the deterministic engine and are unchanged.</div>` : '<div class="hint">AI wording only. It cannot change the amounts or the status.</div>'}
   </section>`;
@@ -1588,6 +1588,7 @@ function detailsBlock(r){
         ${t.probability != null ? `<span>model risk score</span><span>${t.probability.toFixed(2)} (ranking score, not a fraud probability)</span><span>model</span><span>${esc(t.model_version)}</span>` : ''}
         <span>explanation.source</span><span>${esc(r.explanation.source)}</span>
         <span>ai.mode · route</span><span>${esc(r.ai.mode)} · ${esc(r.ai.route)}</span>
+        <span>simulation pipeline</span><span>Jev Primary · Qwen Secondary · No official U-Bot API</span>
       </div></div></details>`;
 }
 function verifyPanel(){

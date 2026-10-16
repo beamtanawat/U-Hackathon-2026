@@ -124,7 +124,7 @@ type EvaluateResponse = {
   // Supporting AI layer. Never changes anything above.
   ai: {
     mode: "disabled" | "live" | "budget_exhausted" | "client_opt_out";
-    route: "none" | "qwen" | "qwen_jev";
+    route: "none" | "jev_qwen";
     explanation: {
       summary: string;
       reasons: Array<{ category: "financial" | "trust" | "missing_context"; text: string; evidenceIds: string[] }>;
@@ -171,9 +171,10 @@ type EvaluateResponse = {
 - When `breakdown` is `null`, show the `reasons.financial` messages and `missingContext.financial`, never a computed number.
 - The UI always offers all five actions; `recommendedActions` only highlights some. The user decides.
 - `ai.explanation.source === "fallback"` is deterministic copy built from the assessment. Do not label it as AI.
-- `ai.explanation.source === "qwen"` means Qwen3.5-9B prose passed schema validation, evidence/provenance checks and the grounding rules (`ai.grounding.accepted === true`).
-- `ai.route` is what the assessment *would* use; `ai.mode` says whether paid AI was allowed. With `mode !== "live"` and `route !== "none"`, Qwen reports `unavailable` and the fallback is shown. Use `mode` to explain why (disabled / budget / opt-out), not to signal an error.
-- `qwenReview === null` never means safe. `jevDecision === null` is normal unless `route === "qwen_jev"` and Qwen completed.
+- Label the feature-facing layer **U-Bot Simulation** and disclose `Jev Primary · Qwen Secondary · No official U-Bot API` in technical details.
+- `ai.explanation.source === "qwen"` means the secondary Qwen3.5-9B prose passed schema validation, evidence/provenance checks and the grounding rules (`ai.grounding.accepted === true`).
+- `ai.route` is what the assessment *would* use; `ai.mode` says whether paid AI was allowed. With `mode !== "live"` and `route !== "none"`, both providers report `unavailable` and the fallback is shown. Use `mode` to explain why (disabled / budget / opt-out), not to signal an error.
+- `qwenReview === null` and `jevDecision === null` never mean safe. On `jev_qwen`, Jev runs first and Qwen runs independently afterward.
 - Show `missingContextQuestions` as optional prompts, not as reasons or failures.
 - Keep `unsupportedClaims`, `grounding.violations` and `usage` in the integration inspector / diagnostics.
 
@@ -182,11 +183,10 @@ Expected AI states:
 | Situation | `mode` | `route` | `explanation.source` | Qwen | Jev |
 | --- | --- | --- | --- | --- | --- |
 | Safe, Low, no indicators | any | `none` | `fallback` (`review.status: not_run`) | `not_run` | `not_run` |
-| AI off / budget / opt-out, any other route | not `live` | `qwen` or `qwen_jev` | `fallback` (`unavailable`) | `unavailable` | `not_run` |
-| Live, contextual, Qwen accepted | `live` | `qwen` | `qwen` | `completed` | `not_run` |
-| Live, uncertain, both completed | `live` | `qwen_jev` | `qwen` | `completed` | `completed` |
-| Live, Qwen failed or rejected by grounding | `live` | `qwen` or `qwen_jev` | `fallback` | `unavailable` or `completed` | `not_run` or `completed` |
-| Live, Jev failed after valid Qwen | `live` | `qwen_jev` | `qwen` | `completed` | `unavailable` |
+| AI off / budget / opt-out, any other route | not `live` | `jev_qwen` | `fallback` (`unavailable`) | `unavailable` | `unavailable` |
+| Live, both completed | `live` | `jev_qwen` | `qwen` | `completed` | `completed` |
+| Live, Qwen failed or rejected by grounding | `live` | `jev_qwen` | `fallback` | `unavailable` or `completed` | `completed` or `unavailable` |
+| Live, Jev failed but Qwen passed | `live` | `jev_qwen` | `qwen` | `completed` | `unavailable` |
 
 ## Errors
 
@@ -450,7 +450,7 @@ Response (`200`, AI disabled):
   "recommendedActions": ["reduce_amount", "postpone"],
   "ai": {
     "mode": "disabled",
-    "route": "qwen",
+    "route": "jev_qwen",
     "explanation": {
       "summary": "The authoritative assessment indicates this transaction would leave required commitments uncovered.",
       "reasons": [
@@ -480,7 +480,7 @@ Response (`200`, AI disabled):
     "qwenReview": null,
     "jevDecision": null,
     "comparison": {
-      "providerStatus": { "qwen": "unavailable", "jev": "not_run" },
+      "providerStatus": { "qwen": "unavailable", "jev": "unavailable" },
       "supportedAgreement": [],
       "differingFindings": [],
       "qwenSupportedIndicators": [],
@@ -488,7 +488,7 @@ Response (`200`, AI disabled):
       "missingEvidence": [],
       "contradictions": [],
       "suggestedEscalation": false,
-      "jevVerification": "not_run"
+      "jevVerification": "unavailable"
     },
     "usage": []
   }
@@ -608,7 +608,7 @@ Response (`200`, AI disabled):
   "recommendedActions": ["verify_recipient", "cancel"],
   "ai": {
     "mode": "disabled",
-    "route": "qwen_jev",
+    "route": "jev_qwen",
     "explanation": {
       "summary": "Affordability could not be fully checked because some financial context is missing, so the result is marked Review. No values were estimated.",
       "reasons": [
@@ -658,7 +658,7 @@ Response (`200`, AI disabled):
     "qwenReview": null,
     "jevDecision": null,
     "comparison": {
-      "providerStatus": { "qwen": "unavailable", "jev": "not_run" },
+      "providerStatus": { "qwen": "unavailable", "jev": "unavailable" },
       "supportedAgreement": [],
       "differingFindings": [],
       "qwenSupportedIndicators": [],
@@ -666,7 +666,7 @@ Response (`200`, AI disabled):
       "missingEvidence": [],
       "contradictions": [],
       "suggestedEscalation": false,
-      "jevVerification": "not_run"
+      "jevVerification": "unavailable"
     },
     "usage": []
   }

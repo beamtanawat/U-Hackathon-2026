@@ -180,7 +180,6 @@ test("Scenario B: the real API decides High Risk, the user reduces, then proceed
   await expect(financial).toContainText("After payment");
   await expect(financial).toContainText("฿5,600");
   await expect(financial).toContainText("฿4,400 short");
-  await expect(cp).toContainText("Rules-engine explanation");
   await expect(cp).toHaveClass(/feature-pulse/);
   const technical = cp.locator("details.details");
   await expect(technical.locator("summary")).toContainText("Technical details");
@@ -188,7 +187,9 @@ test("Scenario B: the real API decides High Risk, the user reduces, then proceed
   await expect(page.locator("#inspector .insp-toggle")).toBeVisible();
   await expect(page.locator(".flow-top .back")).toBeVisible();
   await expect(cp.locator('[data-act="cancel"]')).toBeVisible();
-  await expect(page.locator("body")).not.toContainText("U-Bot");
+  await expect(cp).toContainText("Rules-engine fallback");
+  await expect(cp).toContainText("U-Bot Simulation");
+  await expect(cp).toContainText("Jev Primary · Qwen Secondary · No official U-Bot API");
   await page.screenshot({ path: "test-results/scenario-b-1-high-risk.png", animations: "disabled" });
 
   // Suggested action: pay the engine's maximum safe amount; the API re-evaluates it.

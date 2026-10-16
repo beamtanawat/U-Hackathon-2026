@@ -4,7 +4,7 @@ import type { Provenance } from "../domain/types";
 
 export type { Provenance };
 export type ProviderStatus = "completed" | "not_run" | "unavailable";
-export type AiRoute = "none" | "qwen" | "qwen_jev";
+export type AiRoute = "none" | "jev_qwen";
 
 export interface AssessmentReason {
   code: string;
@@ -136,8 +136,6 @@ export interface QwenAnalysis {
 
 export interface JevVerificationRequest {
   context: ProviderContext;
-  qwenSuggestedEscalation: boolean;
-  qwenIndicators: Array<Pick<QwenIndicator, "type" | "evidenceId" | "provenance">>;
 }
 
 export interface JevDecision {

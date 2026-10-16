@@ -122,7 +122,7 @@ describe("AI routing and cost controls", () => {
   };
 
   it("makes 0, 1 and 2 provider calls for Scenario A, B and C", async () => {
-    for (const [scenario, qwen, jev, route] of [[scenarioA, 0, 0, "none"], [scenarioB, 1, 0, "qwen"], [scenarioC, 1, 1, "qwen_jev"]] as const) {
+    for (const [scenario, qwen, jev, route] of [[scenarioA, 0, 0, "none"], [scenarioB, 1, 1, "jev_qwen"], [scenarioC, 1, 1, "jev_qwen"]] as const) {
       const { handler, qwenCalls, jevCalls } = live();
       const body = await (await handler(post(scenario.request))).json();
       expect([qwenCalls.length, jevCalls.length, body.ai.route, body.ai.mode]).toEqual([qwen, jev, route, "live"]);

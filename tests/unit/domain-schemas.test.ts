@@ -104,4 +104,26 @@ describe("evaluationRequestSchema", () => {
 
     expect(parsed.context.urgency).toEqual({ value: null, provenance: "unavailable" });
   });
+
+  it.each([
+    ["U-Tag with a crypto wallet", { walletType: "crypto", transferMode: "u_tag", recipientKind: "u_tag" }],
+    ["U-Tag with a wallet address", { walletType: "spending", transferMode: "u_tag", recipientKind: "wallet_address" }],
+    ["on-chain with a spending wallet", { walletType: "spending", transferMode: "on_chain", recipientKind: "wallet_address" }],
+    ["on-chain with a U-Tag", { walletType: "crypto", transferMode: "on_chain", recipientKind: "u_tag" }],
+  ] as const)("rejects contradictory host fields: %s", (_label, values) => {
+    const request = validRequest();
+    request.walletType = host(values.walletType);
+    request.transferMode = host(values.transferMode);
+    request.recipient.kind = host(values.recipientKind);
+
+    expect(() => evaluationRequestSchema.parse(request)).toThrow(/does not match transfer mode/);
+  });
+
+  it("keeps unavailable host fields valid for the Review flow", () => {
+    const request = validRequest();
+    request.walletType = unavailable();
+    request.recipient.kind = unavailable();
+
+    expect(evaluationRequestSchema.parse(request).transferMode.value).toBe("u_tag");
+  });
 });
