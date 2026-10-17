@@ -8,6 +8,8 @@ import { clientKey, createRateLimiter } from "../api/guards";
 export const COINGECKO_TIERS = {
   demo: { base: "https://api.coingecko.com/api/v3", header: "x-cg-demo-api-key" },
   pro: { base: "https://pro-api.coingecko.com/api/v3", header: "x-cg-pro-api-key" },
+  /** Keyless public API: low rate limit, covered by the 5-minute cache and single in-flight call. */
+  public: { base: "https://api.coingecko.com/api/v3", header: null },
 } as const;
 export type MarketErrorCode = "auth_failed" | "rate_limited" | "upstream_http" | "timeout" | "invalid_response" | "misconfigured";
 class MarketError extends Error {
@@ -60,7 +62,7 @@ export interface CryptoDetailsDependencies {
 
 const finite = (value: unknown): number | null => typeof value === "number" && Number.isFinite(value) ? value : null;
 const date = (value: unknown): string | null => typeof value === "string" && Number.isFinite(Date.parse(value)) ? value : null;
-const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": status === 200 ? "public, s-maxage=300, stale-while-revalidate=3600" : "no-store" } });
+const json = (body: unknown, status = 200, cacheable = status === 200) => Response.json(body, { status, headers: { "Cache-Control": cacheable ? "public, s-maxage=300, stale-while-revalidate=3600" : "no-store" } });
 
 async function timedFetch(fetchImpl: typeof fetch, url: string, headers: Record<string, string>): Promise<Response> {
   const controller = new AbortController();
@@ -80,11 +82,11 @@ export function createCryptoDetailsHandler(dependencies: CryptoDetailsDependenci
   let unlockInflight: Promise<Record<string, UnlockEntry>> | null = null;
 
   async function markets(): Promise<{ status: ProviderStatus; entries: Record<string, MarketEntry>; reason?: MarketErrorCode }> {
-    const key = env.COINGECKO_API_KEY;
-    if (env.COINGECKO_MODE !== "live" || !key) return { status: "disabled", entries: {} };
+    const key = env.COINGECKO_API_KEY ?? "";
     const tierName = (env.COINGECKO_API_TIER ?? "demo").trim().toLowerCase();
-    if (tierName !== "demo" && tierName !== "pro") {
-      console.warn("[crypto-details] CoinGecko misconfigured: COINGECKO_API_TIER must be demo or pro");
+    if (env.COINGECKO_MODE !== "live" || (tierName !== "public" && !key)) return { status: "disabled", entries: {} };
+    if (tierName !== "demo" && tierName !== "pro" && tierName !== "public") {
+      console.warn("[crypto-details] CoinGecko misconfigured: COINGECKO_API_TIER must be demo, pro or public");
       return { status: "unavailable", entries: {}, reason: "misconfigured" };
     }
     const tier = COINGECKO_TIERS[tierName];
@@ -92,7 +94,15 @@ export function createCryptoDetailsHandler(dependencies: CryptoDetailsDependenci
     if (marketCache && time - marketCache.at < MARKET_TTL_MS) return { status: "ok", entries: marketCache.entries };
     if (!marketInflight) {
       const query = new URLSearchParams({ ids: Object.values(CRYPTO_IDS).join(","), vs_currency: "usd", sparkline: "true", price_change_percentage: "1h,24h,7d", precision: "full" });
-      marketInflight = timedFetch(fetchImpl, `${tier.base}/coins/markets?${query}`, { [tier.header]: key, accept: "application/json" })
+      const url = (base: string) => `${base}/coins/markets?${query}`;
+      const keyed = tier.header ? { [tier.header]: key, accept: "application/json" } : { accept: "application/json" };
+      marketInflight = timedFetch(fetchImpl, url(tier.base), keyed)
+        .then(async (response) => {
+          // A rejected key (401/403, or 400 for the wrong tier's host) falls back ONCE to the keyless public API.
+          if (!tier.header || ![400, 401, 403].includes(response.status)) return response;
+          console.warn(`[crypto-details] CoinGecko ${tierName} key rejected (HTTP ${response.status}); using the public API`);
+          return timedFetch(fetchImpl, url(COINGECKO_TIERS.public.base), { accept: "application/json" });
+        })
         .catch((error: unknown) => { throw new MarketError(error instanceof Error && error.name === "AbortError" ? "timeout" : "upstream_http"); })
         .then(async (response) => {
         if (response.status === 401 || response.status === 403) throw new MarketError("auth_failed", response.status);
@@ -188,6 +198,8 @@ export function createCryptoDetailsHandler(dependencies: CryptoDetailsDependenci
       market: market.entries[symbol] ?? { status: market.status === "ok" ? "not_covered" : market.status, ...(market.reason ? { reason: market.reason } : {}) },
       unlock: unlock.entries[symbol] ?? { status: unlock.status === "ok" ? "not_covered" : unlock.status },
     }]));
-    return json({ status, currency: "usd", sources: { market: "CoinGecko", unlocks: "Tokenomist" }, tokens });
+    // Do not let the CDN keep a failed provider result.
+    const cacheable = market.status !== "unavailable" && unlock.status !== "unavailable";
+    return json({ status, currency: "usd", sources: { market: "CoinGecko", unlocks: "Tokenomist" }, tokens }, 200, cacheable);
   };
 }
